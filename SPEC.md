@@ -1,4 +1,4 @@
-# Personal IP Site Generator — Product Spec
+# Personal IP Site Generator — 产品规格书
 
 ## 产品概述
 
@@ -12,24 +12,58 @@
 
 ## 已完成 ✅
 
-### 代码库（Monorepo）
-- `skill/` — 完整的 Python 生成引擎（24KB css_builder + renderer + 54 design systems registry）
-- `saas/` — FastAPI 后端 + 路由结构（routes.py 已写，API 实现 TODO）
+### Monorepo 结构（github.com/lj22503/ip-website-generator）
+```
+ip-website-generator/
+├── SPEC.md              # 本文件
+├── README.md
+├── pyproject.toml
+├── skill/               # Skill 版本（Python CLI）
+│   ├── SKILL.md         # [未完成 — 暂无]
+│   ├── core.py
+│   ├── cli.py
+│   ├── data/hermes_7modules.json  # Hermes 完整7模块示例数据
+│   ├── examples/        # 3个示例HTML（Claude/Linear/Stripe风格）
+│   ├── design_systems/  # 54 design systems registry
+│   ├── modules/         # 内容模块定义
+│   ├── narrative/       # MBTI叙事生成
+│   └── rendering/       # CSS builder + renderer（920行）
+└── saas/                # SaaS 版本
+    ├── nextjs/          # Next.js 14 前端
+    │   ├── app/
+    │   │   ├── page.tsx  # 主页面（3步向导）
+    │   │   ├── layout.tsx
+    │   │   └── api/
+    │   │       ├── designs/route.ts   # GET: 54 design systems
+    │   │       └── generate/route.ts   # POST: 生成HTML
+    │   ├── lib/
+    │   │   ├── css-builder.ts  # TypeScript CSS生成（642行，10个design systems）
+    │   │   ├── mbti-styles.ts  # MBTI样式
+    │   │   └── renderer.ts     # TypeScript HTML渲染
+    │   ├── package.json
+    │   └── tsconfig.json
+    ├── public/           # 静态文件
+    │   ├── examples/      # 3个示例HTML（Claude/Linear/Stripe风格）
+    │   └── screenshots/   # 3个示例截图
+    ├── main.py           # FastAPI入口
+    ├── api/routes.py     # FastAPI路由
+    ├── css_builder.py    # Python CSS builder（复用skill版）
+    └── renderer.py       # Python renderer（复用skill版）
+```
 
-### 示例站（已生成，均为 Hermes 本人内容）
+### 示例站（Hermes 本人内容）
 | 文件 | 风格 | 大小 |
 |------|------|------|
 | `hermes_personal_site.html` | Personal Site · Claude 暖赭 | 30KB |
 | `hermes_portfolio_linear.html` | Portfolio · Linear 深黑 | 23KB |
 | `hermes_career_stripe.html` | Career Archive · Stripe 紫蓝 | 18KB |
-| `shot_rich_claude.png` | Claude 暖赭截图 | — |
-| `shot_rich_linear.png` | Linear 深黑截图 | — |
-| `shot_rich_stripe.png` | Stripe 紫蓝截图 | — |
+| `shot_hermes_personal.png` | Claude 暖赭截图 | — |
+| `shot_hermes_portfolio.png` | Linear 深黑截图 | — |
+| `shot_hermes_career.png` | Stripe 紫蓝截图 | — |
 
 ### 设计系统
-- 54 个 design systems（从 popular-web-designs skill 提取）
-- CSS variables + typography + spacing 完整
-- 覆盖：Claude/Linear/Stripe/Framer/Notion/Vercel/Airbnb 等
+- Python: `skill/rendering/css_builder.py` — 920行，54个design systems完整CSS变量
+- TypeScript: `saas/nextjs/lib/css-builder.ts` — 642行，10个design systems（notion, linear.app, stripe, figma, apple, framer, airbnb, spotify, vercel, claude）
 
 ### 七模块框架（内部内容架构）
 1. **Soul** — 价值观/使命/热情/信念
@@ -45,28 +79,20 @@
 ## 未完成 🔨
 
 ### Skill 版本
-- [ ] `SKILL.md` — Hermes skill 格式，触发词、步骤、示例
-- [ ] `skill/data/hermes_7modules.json` — Hermes 完整7模块数据（用于示例）
-- [ ] `skill/scripts/generate.py` — CLI 入口（已有 cli.py，需补充）
-- [ ] 复制 example HTMLs 到 `skill/examples/`
+- [ ] `SKILL.md` — Hermes skill 格式（触发词、步骤、7模块说明、示例）
+- [ ] `skill/cli.py` — 补充完整CLI交互（已有骨架）
 
 ### SaaS 版本
-- [ ] `saas/public/examples/` — 三个示例 HTML 文件（未复制）
-- [ ] `saas/public/screenshots/` — 三个截图（未复制）
-- [ ] `saas/app/page.tsx` — Next.js 前端页面（空文件）
-- [ ] `saas/app/api/extract/route.ts` — POST: 文档 → 7模块 JSON
-- [ ] `saas/app/api/generate/route.ts` — POST: 7模块 + design_system → HTML
-- [ ] `saas/app/api/designs/route.ts` — GET: 54 design systems 列表
-- [ ] `saas/lib/css-builder.ts` — CSS 生成逻辑（TypeScript 移植）
-- [ ] `saas/lib/renderer.ts` — HTML 生成逻辑（TypeScript 移植）
-- [ ] `saas/lib/design-systems.ts` — 54 design systems 数据（TypeScript）
-- [ ] `saas/lib/llm.ts` — OpenAI API 调用封装
-- [ ] `saas/package.json` — Next.js 14 + TypeScript + openai
-- [ ] `saas/vercel.json` — 部署配置
-- [ ] `saas/.env.example` — OPENAI_API_KEY=sk-...
+- [ ] `saas/nextjs/lib/css-builder.ts` — **仅10个design systems**，需补充至54个（可以从 Python css_builder.py 提取剩余44个）
+- [ ] `saas/nextjs/lib/renderer.ts` — **基础版本**，需与 Python renderer.py 对齐
+- [ ] `saas/nextjs/app/page.tsx` — 需要接入 example HTML 预览（tab切换设计系统）
+- [ ] `saas/.env.example` — OPENAI_API_KEY=
+- [ ] `saas/nextjs/.env.local` — 本地开发用
 
 ### Vercel 部署
-- [ ] Vercel 项目创建 + 环境变量配置
+- [ ] 创建 Vercel 项目（连接 GitHub repo）
+- [ ] 配置环境变量（OPENAI_API_KEY）
+- [ ] vercel.json 配置（Node 18，API route 支持）
 - [ ] 域名绑定（可选）
 
 ---
@@ -76,21 +102,11 @@
 | 组件 | 技术 |
 |------|------|
 | Skill 生成引擎 | Python 3.10+ |
-| SaaS 后端 | FastAPI (Python) |
+| SaaS 后端 | FastAPI (Python) + Next.js API Routes |
 | SaaS 前端 | Next.js 14 (TypeScript) |
-| LLM 调用 | OpenAI API (用户自备 key) |
+| LLM 调用 | OpenAI API（用户自备 key） |
 | 部署 | Vercel |
-| 设计系统 | 54 popular design systems (CSS custom properties) |
-
----
-
-## 产品路线图
-
-1. **Phase 0（当前）**：Monorepo 建好，代码推送 GitHub
-2. **Phase 1**：Skill 版本完成（SKILL.md + 7模块数据 + example 文件）
-3. **Phase 2**：SaaS 前端完成（Next.js UI + 三个示例预览）
-4. **Phase 3**：Vercel 部署（后端 API + 前端）
-5. **Phase 4**：用户流程测试 + 迭代
+| 设计系统 | 54 popular design systems |
 
 ---
 
@@ -101,4 +117,14 @@
 - "帮我写个落地页" / "生成我的网站"
 
 **SaaS 版本**：
-- 访问 ip-website-generator.vercel.app
+- 访问部署后的 Vercel 域名
+
+---
+
+## Git Commits
+
+| Commit | 内容 |
+|--------|------|
+| `95b0d8f` | Initial monorepo: skill/ + saas/ tracks |
+| `5ed8d6e` | Add: example HTMLs, Hermes 7-module data, SPEC.md |
+| `ac5f23d` | feat(saas): Add Next.js frontend with TypeScript ports |
