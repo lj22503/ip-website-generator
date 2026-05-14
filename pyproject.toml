@@ -1,0 +1,13 @@
+[project]
+name = "ip-website-generator"
+version = "0.1.0"
+description = "Personal IP Website Generator with 54 design systems and MBTI narrative engine"
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.uv]
+package-root = "."
+
+[tool.uv.sources]
+skill = { path = "skill" }
+saas = { path = "saas" }
