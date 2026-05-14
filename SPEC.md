@@ -1,163 +1,104 @@
-# IP Website Generator — Monorepo Spec v1
+# Personal IP Site Generator — Product Spec
 
-## Overview
+## 产品概述
 
-Two-track monorepo for Personal IP Website Generator:
+**一句话**：上传简历/文档 → AI 提取7个模块 → 选择设计系统 → 生成专属个人网站 HTML。
 
-| Track | Purpose | Target Users |
-|-------|---------|-------------|
-| **skill/** | Standalone AI skill for local/offline use | Developers, designers who want self-hosted solution |
-| **saas/** | Web SaaS platform with API + hosting | End users who want managed hosted experience |
+**两条路径**：
+- `skill/` — Hermes Skill 安装版（本地运行，CLI 交互）
+- `saas/` — Vercel 部署版（Web UI，API 调用）
 
-## Architecture
+---
 
-```
-ip-website-generator/
-├── SPEC.md                          ← This spec
-├── README.md                         ← Quick start
-├── LICENSE
-│
-├── skill/                           ← ⭐ Self-hosted skill track
-│   ├── __init__.py
-│   ├── core.py                      ← Entry point (app.py)
-│   ├── cli.py                       ← Interactive CLI
-│   ├── design_systems/
-│   │   ├── __init__.py
-│   │   ├── registry.py             ← 54 design system metadata
-│   │   └── loader.py               ← Loading utilities
-│   ├── modules/
-│   │   ├── __init__.py
-│   │   └── registry.py             ← Content module definitions
-│   ├── narrative/
-│   │   ├── __init__.py
-│   │   ├── generator.py            ← 8-knives evaluation, de-AI
-│   │   └── mbti_styles.py          ← MBTI→style mapping
-│   └── rendering/
-│       ├── __init__.py
-│       ├── css_builder.py          ← Design system → CSS variables
-│       └── renderer.py             ← HTML rendering
-│
-├── saas/                            ← 🌐 SaaS platform track
-│   ├── __init__.py
-│   ├── main.py                      ← FastAPI entry point
-│   ├── cli.py                       ← Admin CLI
-│   ├── renderer.py                  ← Legacy HTML renderer
-│   ├── css_builder.py              ← CSS builder
-│   ├── html_renderer.py             ← Full page renderer
-│   ├── api/
-│   │   ├── __init__.py
-│   │   ├── routes.py               ← REST endpoints
-│   │   └── auth.py                  ← Auth utilities
-│   ├── models/
-│   │   ├── __init__.py
-│   │   └── schemas.py              ← Pydantic models
-│   ├── templates/                   ← HTML templates
-│   └── static/                      ← CSS, JS, assets
-│
-├── shared/                          ← Shared code between tracks
-│   ├── __init__.py
-│   ├── design_systems/              ← Same as skill/design_systems
-│   ├── modules/                     ← Same as skill/modules
-│   └── narrative/                   ← Same as skill/narrative
-│
-└── tests/                           ← Shared tests
-```
+## 已完成 ✅
 
-## Skill Track
+### 代码库（Monorepo）
+- `skill/` — 完整的 Python 生成引擎（24KB css_builder + renderer + 54 design systems registry）
+- `saas/` — FastAPI 后端 + 路由结构（routes.py 已写，API 实现 TODO）
 
-Self-contained Python skill that runs entirely locally.
+### 示例站（已生成，均为 Hermes 本人内容）
+| 文件 | 风格 | 大小 |
+|------|------|------|
+| `hermes_personal_site.html` | Personal Site · Claude 暖赭 | 30KB |
+| `hermes_portfolio_linear.html` | Portfolio · Linear 深黑 | 23KB |
+| `hermes_career_stripe.html` | Career Archive · Stripe 紫蓝 | 18KB |
+| `shot_rich_claude.png` | Claude 暖赭截图 | — |
+| `shot_rich_linear.png` | Linear 深黑截图 | — |
+| `shot_rich_stripe.png` | Stripe 紫蓝截图 | — |
 
-### Usage
+### 设计系统
+- 54 个 design systems（从 popular-web-designs skill 提取）
+- CSS variables + typography + spacing 完整
+- 覆盖：Claude/Linear/Stripe/Framer/Notion/Vercel/Airbnb 等
 
-```bash
-# Interactive CLI
-python -m skill.core
+### 七模块框架（内部内容架构）
+1. **Soul** — 价值观/使命/热情/信念
+2. **Framework** — 方法论/决策逻辑/学习方式/工作流
+3. **Skills** — 硬技能/软技能/行业经验
+4. **Work** — 代表作/内容/知识体系/证书
+5. **Timeline** — 经历/成长曲线/未来方向
+6. **Resources** — 人脉/信息工具/影响力
+7. **Form** — 外在呈现/品牌关键词/他人评价/氛围
 
-# Generate from config
-python -m skill.core --config mysite.json --design linear.app
+---
 
-# List designs
-python -m skill.core --list-designs
+## 未完成 🔨
 
-# Demo output
-python -m skill.core --demo
-```
+### Skill 版本
+- [ ] `SKILL.md` — Hermes skill 格式，触发词、步骤、示例
+- [ ] `skill/data/hermes_7modules.json` — Hermes 完整7模块数据（用于示例）
+- [ ] `skill/scripts/generate.py` — CLI 入口（已有 cli.py，需补充）
+- [ ] 复制 example HTMLs 到 `skill/examples/`
 
-### Design Systems (54)
+### SaaS 版本
+- [ ] `saas/public/examples/` — 三个示例 HTML 文件（未复制）
+- [ ] `saas/public/screenshots/` — 三个截图（未复制）
+- [ ] `saas/app/page.tsx` — Next.js 前端页面（空文件）
+- [ ] `saas/app/api/extract/route.ts` — POST: 文档 → 7模块 JSON
+- [ ] `saas/app/api/generate/route.ts` — POST: 7模块 + design_system → HTML
+- [ ] `saas/app/api/designs/route.ts` — GET: 54 design systems 列表
+- [ ] `saas/lib/css-builder.ts` — CSS 生成逻辑（TypeScript 移植）
+- [ ] `saas/lib/renderer.ts` — HTML 生成逻辑（TypeScript 移植）
+- [ ] `saas/lib/design-systems.ts` — 54 design systems 数据（TypeScript）
+- [ ] `saas/lib/llm.ts` — OpenAI API 调用封装
+- [ ] `saas/package.json` — Next.js 14 + TypeScript + openai
+- [ ] `saas/vercel.json` — 部署配置
+- [ ] `saas/.env.example` — OPENAI_API_KEY=sk-...
 
-From popular-web-designs skill:
-- Linear, Notion, Stripe, Figma, Apple, Vercel, Framer
-- Claude, ElevenLabs, SpaceX, Supabase, Raycast
-- Airbnb, Spotify, Coinbase, Revolut, Mintlify
-- ... (54 total)
+### Vercel 部署
+- [ ] Vercel 项目创建 + 环境变量配置
+- [ ] 域名绑定（可选）
 
-### Content Modules
+---
 
-**Portfolio modules:**
-- hero_featured (required) — 精选封面
-- about (required) — 关于我
-- skills (required) — 技能
-- projects (required) — 作品/项目
-- contact (required) — 联系
-- awards (optional) — 荣誉/奖项
-- clients (optional) — 客户/合作伙伴
+## 技术栈
 
-**Personal site modules:**
-- All portfolio modules +
-- hero_story (required) — 故事封面
-- story (required) — 我的故事 (MBTI-driven)
-- blog (optional) — 博客/文章
-- life (optional) — 生活瞬间
+| 组件 | 技术 |
+|------|------|
+| Skill 生成引擎 | Python 3.10+ |
+| SaaS 后端 | FastAPI (Python) |
+| SaaS 前端 | Next.js 14 (TypeScript) |
+| LLM 调用 | OpenAI API (用户自备 key) |
+| 部署 | Vercel |
+| 设计系统 | 54 popular design systems (CSS custom properties) |
 
-### MBTI Narrative System
+---
 
-| MBTI | Style | Description |
-|------|-------|-------------|
-| INFJ | 隐喻型 | 深度疗愈，文学感 |
-| INFP | 自传型 | 真诚柔软 |
-| ENFJ | 鼓舞型 | 召唤行动 |
-| ENFP | 即兴型 | 跳跃生动 |
-| INTJ | 战略型 | 冷静洞察 |
-| ENTP | 颠覆型 | 爱挑战 |
-| ESFP | 表演型 | 活在当下 |
-| ISFJ | 守护型 | 温暖务实 |
+## 产品路线图
 
-**Quality pipeline:**
-1. 8-knives evaluation (8 dimensions)
-2. De-AI-ization detection (7 rules)
-3. Ethical review (3 principles)
+1. **Phase 0（当前）**：Monorepo 建好，代码推送 GitHub
+2. **Phase 1**：Skill 版本完成（SKILL.md + 7模块数据 + example 文件）
+3. **Phase 2**：SaaS 前端完成（Next.js UI + 三个示例预览）
+4. **Phase 3**：Vercel 部署（后端 API + 前端）
+5. **Phase 4**：用户流程测试 + 迭代
 
-## SaaS Track
+---
 
-FastAPI-based web platform with:
-- REST API for generation
-- User authentication
-- Custom domain support
-- Template marketplace
+## 触发词
 
-### API Endpoints
+**Skill 版本**：
+- "生成个人网站" / "帮我做个个人网站" / "personal ip site"
+- "帮我写个落地页" / "生成我的网站"
 
-```
-POST /api/v1/generate     — Generate website
-GET  /api/v1/designs      — List design systems
-GET  /api/v1/templates    — List templates
-POST /api/v1/preview      — Preview generation
-GET  /api/v1/status/{id}  — Check generation status
-```
-
-## Shared Spec
-
-The three layers remain unified across both tracks:
-
-```
-┌────────────────────────────────────────────┐
-│  Style Layer: 54 design systems            │
-│  → skill/rendering + saas/css_builder      │
-├────────────────────────────────────────────┤
-│  Content Layer: Modular content blocks     │
-│  → skill/modules + shared/modules           │
-├────────────────────────────────────────────┤
-│  Narrative Layer: MBTI-driven generation   │
-│  → skill/narrative + shared/narrative       │
-└────────────────────────────────────────────┘
-```
+**SaaS 版本**：
+- 访问 ip-website-generator.vercel.app
