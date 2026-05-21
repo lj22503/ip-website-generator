@@ -57,7 +57,7 @@ def render_hero_story(data, spec, dark):
     return f"""
 <section class="hero-story section">
     <div class="container-narrow">
-        <p class="hero-label caption">我是谁</p>
+        <p class="hero-label">我是谁</p>
         <h1 class="display hero-headline">{headline}</h1>
         <p class="hero-subtitle">{subtitle}</p>
     </div>
@@ -537,9 +537,12 @@ def render_page(
 }}
 
 .hero-label {{
+    font-size: 12px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 2px;
     margin-bottom: 24px;
+    color: var(--accent, var(--text-secondary));
 }}
 
 .hero-headline {{

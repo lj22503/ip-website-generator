@@ -4,11 +4,15 @@ Personal IP Website Generator — App Entry Point
 
 Usage:
     python app.py                           # Interactive CLI
-    python app.py --design linear.app      # Specify design system
+    python app.py --design linear.app       # Specify design system
     python app.py --list-designs            # List all design systems
+    python app.py --list-surfaces           # List all surfaces (用途层)
+    python app.py --list-templates          # List external template assets
     python app.py --demo                    # Generate demo with sample data
     python app.py --preview                 # Preview in browser
-    python app.py --product personal_site    # Use personal_site instead of portfolio
+    python app.py --product personal_site   # Use personal_site instead of portfolio
+    python app.py --surface story           # Choose surface (用途场景)
+    python app.py --fetch-templates         # Download external templates
 """
 
 import argparse
@@ -24,6 +28,11 @@ from rendering.renderer import render_page
 from rendering.css_builder import build_css, get_spec, DESIGN_SPECS
 from design_systems.registry import get_design_system, list_design_systems, get_categories
 from modules.registry import get_required_modules, get_optional_modules, get_modules_by_product
+from surfaces import (
+    get_surface, list_surfaces, suggest_surface,
+    SURFACES, EXTERNAL_TEMPLATES
+)
+from template_registry import list_template_assets, template_count
 
 
 # ============================================================
@@ -163,7 +172,7 @@ DEMO_PERSONAL_SITE = {
 
 def list_designs():
     """List all available design systems."""
-    print("\n可用设计系统（共{}套）:\n".format(len(DESIGN_SPECS)))
+    print(f"\n可用设计系统（共{len(DESIGN_SPECS)}套）:\n")
     print(f"{'名称':<20} {'分类':<25} {'描述':<40} {'适用'}")
     print("-" * 100)
 
@@ -178,6 +187,32 @@ def list_designs():
     print("\n提示：用 --design <name> 选择设计系统，例：")
     print("  python app.py --design notion --demo")
     print("  python app.py --design linear.app --demo")
+
+
+def list_surfaces_cmd():
+    """List all available surfaces (用途层)."""
+    surfaces = list_surfaces()
+    print(f"\n可用场景（共{len(surfaces)}种）:\n")
+    print(f"{'ID':<15} {'名称':<20} {'描述':<35} {'推荐设计系统'}")
+    print("-" * 100)
+    for s in surfaces:
+        rec = ", ".join(s.get("recommended_designs", [])[:3])
+        print(f"{s['id']:<15} {s['name']:<20} {s['description']:<35} {rec}")
+    print("\n提示：用 --surface <id> 选择场景，例：")
+    print("  python app.py --surface story --design notion --demo")
+
+
+def list_templates_cmd():
+    """List all external template assets."""
+    assets = list_template_assets()
+    total = template_count()
+    print(f"\n外部模板资产（共{len(assets)}类，{total}个文件）:\n")
+    print(f"{'ID':<30} {'名称':<30} {'数量':<6} {'使用场景'}")
+    print("-" * 90)
+    for a in assets:
+        print(f"{a['id']:<30} {a['name']:<30} {a.get('count',0):<6} {a.get('use_case','')}")
+    print("\n来源: AI-Animation-Skill (MIT License)")
+    print("提示: 下载模板: python app.py --fetch-templates")
 
 
 def generate(args):
@@ -241,8 +276,17 @@ def main():
                         help="产品类型（默认: portfolio）")
     parser.add_argument("--list-designs", "-l", action="store_true",
                         help="列出所有设计系统")
+    parser.add_argument("--list-surfaces", action="store_true",
+                        help="列出所有用途场景（Surface）")
+    parser.add_argument("--list-templates", action="store_true",
+                        help="列出外部模板资产")
     parser.add_argument("--demo", action="store_true",
                         help="使用示例数据生成演示网站")
+    parser.add_argument("--surface", "-s", default=None,
+                        choices=["landing", "story", "portfolio", "resume"],
+                        help="选择用途场景（Surface）")
+    parser.add_argument("--fetch-templates", action="store_true",
+                        help="下载外部模板资产（AI-Animation-Skill MIT）")
     parser.add_argument("--output", "-o",
                         help="输出HTML路径（默认: /tmp/ip_website_*.html）")
     parser.add_argument("--content", "-c",
@@ -256,6 +300,20 @@ def main():
 
     if args.list_designs:
         list_designs()
+        return
+
+    if args.list_surfaces:
+        list_surfaces_cmd()
+        return
+
+    if args.list_templates:
+        list_templates_cmd()
+        return
+
+    if args.fetch_templates:
+        from fetch_templates import download_all
+        print("开始下载外部模板资产...")
+        download_all()
         return
 
     if args.demo or args.content:
