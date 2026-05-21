@@ -262,8 +262,8 @@ def main():
         generate(args)
     else:
         # Default: run interactive CLI
-        from cli import run_cli
-        run_cli(args.design)
+        from cli import interactive_mode
+        interactive_mode()
 
 
 if __name__ == "__main__":

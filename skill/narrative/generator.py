@@ -11,7 +11,58 @@ Implements the narrative-personal-ip skill logic:
 
 import json
 import re
+import os
+import re as regex_module
 from typing import Optional
+
+# MiniMax API client
+def _get_minimax_client():
+    """Get MiniMax OpenAI-compatible client."""
+    try:
+        from openai import OpenAI
+    except ImportError:
+        return None
+    
+    env_path = os.path.expanduser("~/.hermes/.env")
+    api_key = None
+    if os.path.exists(env_path):
+        with open(env_path) as f:
+            for line in f:
+                if "MINIMAX_API_KEY=" in line and "***" not in line:
+                    val = line.strip().split("=", 1)[1]
+                    # Strip any ANSI escape codes
+                    cleaned = regex_module.sub(r"\x1b\[[A-Z0-9;]+", "", val)
+                    api_key = cleaned.strip()
+                    break
+    
+    if not api_key:
+        return None
+    
+    return OpenAI(api_key=api_key, base_url="https://api.minimaxi.com/v1")
+
+
+def _strip_reasoning(text: str) -> str:
+    """Remove thinking/reasoning traces from model output.
+    
+    MiniMax M2.7 with thinking_budget:0 still sometimes embeds the full
+    reasoning trace as narrative text. Detection: check for mixed signals.
+    If output reads like an instruction list, discard and use fallback.
+    """
+    if not text:
+        return text
+    
+    lines = [l.strip() for l in text.split("\n") if l.strip()]
+    
+    # Count bullet/metadata lines vs real narrative lines
+    bullet_count = sum(1 for l in lines if l.startswith("- ") or l.startswith("• ") or l.startswith("* "))
+    short_meta = sum(1 for l in lines if len(l) < 30 and not l.endswith("。") and not l.endswith("？"))
+    total_lines = len(lines)
+    
+    # If more than 30% lines are bullets or short metadata, this is likely a thinking trace
+    if total_lines > 3 and (bullet_count / total_lines > 0.3 or short_meta / total_lines > 0.4):
+        return ""  # Signal to caller: use fallback
+    
+    return text
 
 
 # ============================================================
@@ -310,45 +361,167 @@ def generate_story(
 
 def _generate_full_story(name, role, experiences, challenges, insights, style, audience):
     """
-    Generate full narrative story.
-    In production: calls LLM API with structured prompt.
+    Generate full narrative story via MiniMax LLM.
+    Falls back to structured template if API unavailable.
     """
-    # Placeholder: generate a structured narrative using templates
-    # This would be replaced with actual LLM call
+    client = _get_minimax_client()
     
-    template = f"""辞职那天，我发了一条朋友圈："以后没有KPI了"。收获了192个赞。
+    mbti_upper = style.get("tone", "真诚但有温度")
+    narrative_structure = style.get("structure", "真诚开场 → 内心独白 → 成长 → 价值观宣言")
+    
+    system_prompt = f"""你是一个叙事写作专家，帮助用户写"关于我"页面的人生故事。
 
-那是2023年，我{role}。每天的生活……直到有一天，{challenges[:30] if challenges else "一件意外的事让我重新审视一切"}。
+写作要求：
+1. 用真实、有画面感的叙事风格，不要模板套话
+2. 第一人称"我"，自然口语化，像在和朋友聊天
+3. 包含具体场景细节（时间/地点/对话/感受），不要空洞的总结
+4. 篇幅：400-600字，分3-4段，不要加小标题
+5. 核心原则：真实比完美更重要，有脆弱感的叙事才打动人
+6. 不要用"首先、其次、最后、因此、值得注意的是、可以说"等模板词
+7. 不要过度解释，让故事自己说话
+8. 结尾用一句有共鸣感的话收尾，不要喊口号
 
-{challenges}
+叙事人格风格：{mbti_upper}——{style.get('description', '')}
+叙事结构：{narrative_structure}"""
 
-那是我第一次意识到：{insights[:50] if insights else "原来我一直活在外界的标准里"}。
+    user_prompt = f"""{name}，{role}
 
+【我做过什么】
 {experiences}
 
-现在我{role}，{insights}。
+【我遭遇过什么】
+{challenges}
 
-因为我知道，真正的改变不是离开哪里，是决定去哪里。"""
-    
+【我学到什么/我看重什么】
+{insights}
+
+请根据以上真实素材，写一篇完整的人生故事。直接输出正文，不要加"以下是"等引导语，不要分段标题。"""
+
+    if client:
+        try:
+            response = client.chat.completions.create(
+                model="MiniMax-M2.7",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                max_tokens=1200,
+                temperature=0.8,
+                extra_body={"thinking_budget": 0}
+            )
+            raw = response.choices[0].message.content.strip()
+            story = _strip_reasoning(raw)
+            if story:
+                return story
+        except Exception:
+            pass
+
+    # Fallback: structured template with MBTI-aware framing
+    template = _build_story_template(name, role, experiences, challenges, insights, style)
     return template
 
 
-def _generate_short_story(name, role, experiences, challenges, insights, style):
-    """Generate 300-word short version for Hero section."""
+def _build_story_template(name, role, experiences, challenges, insights, style):
+    """Fallback when LLM unavailable: build story from structured template."""
     
-    short = f""""你有没有想过，你真正想要的生活是什么样的？"
+    # Extract a hook from experiences
+    first_line = ""
+    if experiences:
+        first_sentence = experiences.split("。")[0].split("\n")[0][:60]
+        if first_sentence:
+            first_line = first_sentence
+    
+    # Build with MBTI-aware tone
+    tone = style.get("tone", "真诚但有温度")
+    name_first = name[0] if name else "我"
+    
+    template = f"""{first_line or f"从{role}开始，我走上了一条不那么标准的路。"}
 
-这个问题，我问过自己很多次。
+{experiences[:200] if experiences else "这些年，我一直在探索适合自己的路。"}
+    
+{challenges[:200] if challenges else ""}
+    
+那段时间，我反复问自己：{insights[:60] if insights else "什么才是真正重要的？"}
+    
+现在回头看，{insights[:80] if insights else "那些困难都成了养分"}。
+    
+{role}这些年，我最深的体会是：{insights[:50] if insights else "做真实的自己，比做别人期待的自己更难，也更值得。"}"""
 
-{challenges[:100] if challenges else "直到有一天，我的生活突然停了下来"}。
+    return template.strip()
 
-{insights[:80] if insights else "那一刻我才明白，真正的自由不是去哪里，而是决定不去哪里"}。
 
-现在我做{role}，帮人找到自己的答案。
+def _generate_short_story(name, role, experiences, challenges, insights, style):
+    """Generate 150-300 word short version for Hero section via MiniMax LLM."""
+    
+    client = _get_minimax_client()
+    
+    system_prompt = f"""你是一个叙事写作专家，帮助用户写个人网站首页的"一句话故事"。
 
-如果你也在寻找，来聊聊。
-"""
-    return short.strip()
+写作要求：
+1. 150-300字，一口气可以读完的短故事
+2. 第一人称，有场景感，有情感共鸣
+3. 开头用一个hook（问句或场景）吸引注意力
+4. 结尾落脚到当下的身份和使命
+5. 自然口语化，不要书面腔，不要模板词
+6. 不要分段，不要小标题，直接输出正文
+
+叙事人格：{style.get('tone', '真诚')}——{style.get('description', '')}"""
+
+    user_prompt = f"""{name}，{role}
+
+【我做过什么】
+{experiences[:300]}
+
+【我遭遇过什么】
+{challenges[:300]}
+
+【我看重什么/我学到什么】
+{insights[:300]}
+
+请写一篇首页用的短故事（150-300字），直接输出正文。"""
+
+    if client:
+        try:
+            response = client.chat.completions.create(
+                model="MiniMax-M2.7",
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ],
+                max_tokens=500,
+                temperature=0.8,
+                extra_body={"thinking_budget": 0}
+            )
+            story = response.choices[0].message.content.strip()
+            story = _strip_reasoning(story)
+            if story and len(story) > 80:
+                return story
+        except Exception:
+            pass
+
+    # Fallback: better narrative hook when LLM fails
+    first_exp = experiences.split("。")[0].split("\n")[0][:50] if experiences else ""
+    first_challenge = challenges.split("。")[0].split("\n")[0][:60] if challenges else ""
+    core_insight = insights[:60].rstrip("。") if insights else "找到真正重要的东西"
+    
+    if first_challenge:
+        hook = f"有一段时间，我{first_challenge}"
+    elif first_exp:
+        hook = f"那段时间，我{first_exp}"
+    else:
+        hook = "每天醒来，不知道该做什么"
+    
+    fallback = f"""你有没有过这种感觉——做着别人觉得不错的工作，心里却一直有个声音在问：这就是我想要的？
+
+{hook}。
+
+后来我终于明白：真正的改变，不是离开哪里，而是决定不再等别人告诉我答案。
+
+我现在做{role}，{core_insight}。
+
+如果你也在找自己的节奏，来聊聊。"""
+
+    return fallback
 
 
 def _generate_bio(name, role, experiences, insights):

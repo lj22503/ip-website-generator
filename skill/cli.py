@@ -7,9 +7,9 @@ import json
 import sys
 from pathlib import Path
 
-from mbti_styles import MBTI_STYLES, get_style, recommend_mbti_from_content
-from narrative_generator import generate_story, evaluate_8_knives, detect_ai_style
-from html_renderer import render_website
+from narrative.mbti_styles import MBTI_STYLES, get_style, recommend_mbti_from_content
+from narrative.generator import generate_story, evaluate_8_knives, detect_ai_style
+from rendering.renderer import render_page
 
 
 def interactive_mode():
@@ -121,22 +121,37 @@ def interactive_mode():
             print(f"      → {sug}")
     
     de_ai = result["de_ai"]
-    print(f"\n🤖 去AI化检测: {'✅ 通过' if de_ai['passed'] else f'⚠️ {de_ai[\"failed_count\"]}项未通过'}")
+    ai_status = "✅ 通过" if de_ai["passed"] else f'⚠️ {de_ai["failed_count"]}项未通过'
+    print(f"\n🤖 去AI化检测: {ai_status}")
     for rule, (passed, detail) in de_ai["results"].items():
         status = "✅" if passed else "⚠️"
         print(f"   {status} {rule}: {detail}")
     
-    # Render
+    # Render — build content in render_page's expected module format
+    content = {
+        "hero_story": {
+            "headline": result["short_story"],
+            "subtitle": role,
+        },
+        "story": {
+            "experiences": experiences,
+            "challenges": challenges,
+            "insights": insights,
+            "mbti": mbti,
+        },
+        "skills": {"categories": []},
+        "projects": {"projects": []},
+        "blog": {"posts": []},
+        "contact": contact,
+    }
+    selected_modules = ["hero_story", "story", "skills", "projects", "contact"]
+
     print("\n🎨 正在渲染HTML...")
-    html = render_website(
-        name=name,
-        role=role,
-        full_story=result["full_story"],
-        short_story=result["short_story"],
-        bio=result["bio"],
-        mbti=mbti,
-        highlights=highlights,
-        contact=contact
+    html = render_page(
+        design_system="notion",
+        content=content,
+        selected_modules=selected_modules,
+        product_type="personal_site",
     )
     
     # Save
@@ -153,9 +168,4 @@ def interactive_mode():
 
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        # Delegate to app.py for argument parsing
-        from app import main
-        main()
-    else:
-        interactive_mode()
+    interactive_mode()
