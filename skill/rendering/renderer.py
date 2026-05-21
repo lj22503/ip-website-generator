@@ -413,6 +413,7 @@ def render_page(
     content,
     selected_modules,
     product_type="portfolio",
+    surface=None,
 ):
     """
     Render complete HTML page.
@@ -422,17 +423,42 @@ def render_page(
         content: Dict keyed by module name, each containing module data
         selected_modules: Ordered list of module names to render
         product_type: "portfolio" or "personal_site"
+        surface: "landing" | "story" | "portfolio" | "resume" — selects hero variant
     """
     spec = get_spec(design_system)
     bg = spec["colors"].get("bg", "#ffffff")
 
     dark = _is_dark(bg)
     css = build_css(design_system)
+
+    # Determine hero module based on surface
+    if surface == "story":
+        # story surface always uses hero_story
+        hero_modules = ["hero_story"]
+        story_modules = ["story"]
+    else:
+        # landing/portfolio/resume all use hero_featured
+        hero_modules = ["hero_featured"]
+        story_modules = []
+
+    # Inject hero variant into selected_modules if needed
+    effective_modules = []
+    hero_injected = False
+    story_injected = False
+    for mod in selected_modules:
+        if mod in hero_modules and not hero_injected:
+            effective_modules.append(mod)
+            hero_injected = True
+        elif mod in story_modules and not story_injected:
+            effective_modules.append(mod)
+            story_injected = True
+        else:
+            effective_modules.append(mod)
     nav = render_nav(selected_modules, dark)
 
     # Render modules
     modules_html = ""
-    for mod_name in selected_modules:
+    for mod_name in effective_modules:
         mod_data = content.get(mod_name, {})
         renderer = MODULE_RENDERERS.get(mod_name)
         if renderer and mod_data:

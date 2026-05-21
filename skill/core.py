@@ -219,9 +219,27 @@ def generate(args):
     """Generate website."""
     design = args.design
     product = args.product or "portfolio"
+    surface = args.surface
 
-    # Build content from args or demo
-    if args.demo:
+    # Surface overrides product and modules
+    if surface:
+        surface_data = get_surface(surface)
+        if surface_data:
+            # Surface explicitly sets modules
+            selected_modules = surface_data.get("modules", [])
+            # Surface suggests product type
+            if surface in ("story",):
+                demo = DEMO_PERSONAL_SITE
+                product = "personal_site"
+            else:
+                demo = DEMO_PORTFOLIO
+                product = "portfolio"
+            content = demo["content"]
+            print(f"[Surface模式] {surface} | {design} | {product}")
+        else:
+            print(f"⚠️ 未知 surface: {surface}")
+            return
+    elif args.demo:
         demo = DEMO_PERSONAL_SITE if product == "personal_site" else DEMO_PORTFOLIO
         content = demo["content"]
         selected_modules = demo["selected_modules"]
@@ -235,13 +253,14 @@ def generate(args):
             content = {}
         selected_modules = args.modules.split(",") if args.modules else []
 
-    output_path = args.output or f"/tmp/ip_website_{design.replace('.', '_')}.html"
+    output_path = args.output or f"/tmp/ip_website_{surface or product}_{design.replace('.', '_')}.html"
 
     html = render_page(
         design_system=design,
         content=content,
         selected_modules=selected_modules,
         product_type=product,
+        surface=surface,
     )
 
     with open(output_path, "w", encoding="utf-8") as f:
