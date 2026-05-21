@@ -46,7 +46,7 @@ ip-website-generator/
 │   ├── rendering/
 │   │   ├── __init__.py
 │   │   ├── renderer.py             # HTML 渲染器（11 个模块渲染函数）
-│   │   └── css_builder.py         # CSS 构建器（54 design systems，920行）
+│   │   └── css_builder.py         # CSS 构建器（29 design systems，~1400行）
 │   │
 │   ├── narrative/
 │   │   ├── __init__.py
@@ -165,7 +165,7 @@ ip-website-generator/
 ### Skill 版本
 - [x] `skill/html_templates/developerfolio/template.html` — story 区块 body 已有，导航栏缺少链接 | ✅ 已修复 → 加条件链接 |
 - [x] `skill/cli.py` — import 路径 | ✅ 已确认正确（narrative.mbti_styles / narrative.generator / rendering.renderer）|
-- [x] GitHub Pages — 无 workflow | ✅ 已添加 → `.github/workflows/deploy-pages.yml` |
+| 2026-05 | registry 声称54套，实际只有10套CSS | ✅ 已修复 → 29套CSS注入 + README同步 |
 
 ### SaaS 版本
 - [ ] `/api/generate` 响应字段名不一致

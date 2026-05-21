@@ -21,7 +21,7 @@
 | 求职者数字简历 | `resume` | 数字简历 |
 | 产品 / 工具推广 | `landing` | 产品落地页 |
 
-**设计系统：** 54 套真实设计系统（Linear、Notion、Vercel、Stripe、Airbnb……），换皮肤不换内容。
+**设计系统：** 29 套真实设计系统（Linear、Notion、Vercel、Stripe、Airbnb……），换皮肤不换内容。
 
 ---
 
@@ -58,7 +58,7 @@ HTML 页面（可下载）
 ### 路径 A — CSS 换肤（推荐，用于 story/portfolio/resume surface）
 
 ```
-content JSON → render_page() → 11个模块渲染函数 + css_builder(54套CSS)
+content JSON → render_page() → 11个模块渲染函数 + css_builder(29套CSS)
 ```
 
 ```bash
@@ -84,7 +84,7 @@ python skill/core.py --template developerfolio --content /tmp/content.json --out
 ```bash
 cd /home/aiecho/ip-website-generator/skill
 
-# 列出54套设计系统
+# 列出29套设计系统
 python core.py --list-designs
 
 # 路径A：CSS换肤（内容模块渲染，可用）
@@ -110,7 +110,7 @@ ip-website-generator/
 │   ├── template_registry.py            # 44个MIT模板资产注册表
 │   ├── rendering/
 │   │   ├── renderer.py                 # render_page() + render_html_template()
-│   │   └── css_builder.py              # 54套设计系统 CSS 变量（920行）
+│ │   └── css_builder.py             # 29套设计系统 CSS 变量
 │   ├── modules/
 │   │   └── data_adapter.py             # 数据适配层（450行，已接入）
 │   ├── html_templates/                 # 三套 Jinja2 完整模板
@@ -135,7 +135,7 @@ ip-website-generator/
 
 ## 设计系统
 
-`skill/rendering/css_builder.py` 有 **54 套**完整 CSS 变量，对应 popular-web-designs skill 中的真实设计系统。
+`skill/rendering/css_builder.py` 有 **29 套**完整 CSS 变量，对应 popular-web-designs skill 中的真实设计系统。
 
 ---
 
@@ -148,7 +148,7 @@ ip-website-generator/
 | SaaS 前端 | Next.js 14 + TypeScript |
 | SaaS 后端 | FastAPI + Vercel Python Runtime |
 | 模板引擎 | Jinja2 |
-| 设计系统 | 54 popular design systems（完整 CSS 变量） |
+| 设计系统 | 29 popular design systems（完整 CSS 变量） |
 
 ---
 
@@ -168,7 +168,7 @@ OPENAI_API_KEY=your_minimax_key_here
 | 2026-05 | `cat.items` Jinja2 dict.items() 冲突 | ✅ 已修复 → `skill_list` |
 | 2026-05 | alfolio/rahulbeniwal 无 story 渲染区块 | ✅ 已修复 → 独立 story section |
 | 2026-05 | adapter 中 `about` 存在时 story 被吞掉 | ✅ 已修复 → `elif` → `if` |
-| 2026-05 | README 声称「10套设计系统」 | ✅ 已修正 → 54套 |
+| 2026-05 | README 声称「10套设计系统」 | ✅ 已修正 → 29套 |
 | 2026-05 | README 声称「OpenAI」 | ✅ 已修正 → MiniMax |
 | 2026-05 | cli.py import 路径错误 | ✅ 已修复 |
-"| 2026-05 | developerfolio 导航栏缺少 story 链接 | ✅ 已修复 → 加条件链接 |\n| 2026-05 | GitHub Pages 未启用 | ✅ 已修复 → GitHub Actions workflow 自动部署 demo |\n| 2026-05 | data_adapter 是死代码 | ❌ 误解：adapter 已接入 renderer |"
+"| 2026-05 | developerfolio 导航栏缺少 story 链接 | ✅ 已修复 → 加条件链接 |\n| 2026-05 | GitHub Pages 未启用 | ✅ 已修复 → GitHub Actions workflow 自动部署 demo |\n| 2026-05 | registry 声称54套，实际10套CSS | ✅ 已修复 → 29套CSS全部注入 |
