@@ -263,6 +263,29 @@ def generate(args):
 
     output_path = args.output or f"/tmp/ip_website_{surface or product}_{design.replace('.', '_')}.html"
 
+    # Multi-template mode: use full Jinja2 template instead of CSS builder
+    if args.template:
+        from rendering.renderer import render_html_template
+        tpl_name = args.template
+        # Support both flat JSON and {"content": {...}} wrapped
+        if args.content:
+            with open(args.content) as f:
+                raw = json.load(f)
+                content = raw.get("content", raw)
+        elif args.demo:
+            demo = DEMO_PERSONAL_SITE if product == "personal_site" else DEMO_PORTFOLIO
+            content = demo["content"]
+        else:
+            content = {}
+        html = render_html_template(tpl_name, content, output_path=output_path)
+        size = os.path.getsize(output_path)
+        print(f"\n✅ 生成完成: {output_path} ({size:,} bytes)")
+        print(f"   模板: {tpl_name}")
+        print(f"   (自适应内容数据 → {tpl_name} 专属结构)")
+        if args.preview:
+            preview(output_path)
+        return
+
     html = render_page(
         design_system=design,
         content=content,
@@ -322,6 +345,9 @@ def main():
                         help="逗号分隔的模块列表（覆盖默认顺序）")
     parser.add_argument("--preview", action="store_true",
                         help="生成后浏览器预览")
+    parser.add_argument("--template", "-t", default=None,
+                        choices=["developerfolio", "alfolio", "rahulbeniwal"],
+                        help="使用完整HTML模板（多套不同页面结构）")
 
     args = parser.parse_args()
 

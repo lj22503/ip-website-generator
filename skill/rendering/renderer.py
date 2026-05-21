@@ -880,6 +880,94 @@ def render_page(
     return html
 
 
+# ============================================================
+# Multi-Template Rendering (Jinja2-based full HTML templates)
+# ============================================================
+
+def render_html_template(
+    template_name: str,
+    content: dict,
+    output_path: str = None,
+) -> str:
+    """
+    Render a full HTML page using a complete Jinja2 template.
+
+    Args:
+        template_name: One of "developerfolio", "alfolio", "rahulbeniwal"
+        content: Unified content JSON (with optional top-level "content" key)
+        output_path: Optional path to write the rendered HTML
+
+    Returns:
+        Rendered HTML string
+    """
+    import sys
+    from pathlib import Path
+
+    # Dynamically import to avoid hard dependency when not used
+    try:
+        from jinja2 import Template
+    except ImportError:
+        Template = None
+
+    # Resolve template path
+    templates_dir = Path(__file__).parent.parent / "html_templates"
+    template_file = templates_dir / template_name / "template.html"
+
+    if not template_file.exists():
+        raise FileNotFoundError(
+            f"Template '{template_name}' not found at {template_file}. "
+            f"Available templates: developerfolio, alfolio, rahulbeniwal"
+        )
+
+    template_html = template_file.read_text(encoding="utf-8")
+
+    # Adapt content to template schema
+    sys.path.insert(0, str(Path(__file__).parent.parent))
+    try:
+        from modules.data_adapter import adapt
+        template_data = adapt(content, template_name)
+    except ImportError:
+        # Fallback: use content as-is
+        template_data = content.get("content", content)
+
+    # Render
+    if Template:
+        tmpl = Template(template_html)
+        html = tmpl.render(data=template_data)
+    else:
+        # No jinja2 — do minimal {{}} replacement
+        html = template_html
+        for key, val in _flatten(template_data).items():
+            html = html.replace("{{ data." + key + " }}", str(val or ""))
+
+    if output_path:
+        Path(output_path).write_text(html, encoding="utf-8")
+
+    return html
+
+
+def _flatten(d, parent_key="", sep="."):
+    """Flatten nested dict for simple replacement."""
+    items = []
+    for k, v in d.items():
+        new_key = f"{parent_key}{sep}{k}" if parent_key else k
+        if isinstance(v, dict):
+            items.extend(_flatten(v, new_key, sep=sep).items())
+        elif isinstance(v, list):
+            for i, item in enumerate(v):
+                if isinstance(item, dict):
+                    items.extend(_flatten(item, f"{new_key}[{i}]", sep=sep).items())
+                else:
+                    items.append((f"{new_key}[{i}]", item))
+        else:
+            items.append((new_key, v))
+    return dict(items)
+
+
+# ============================================================
+# _is_dark helper
+# ============================================================
+
 def _is_dark(bg):
     """Check if background is dark."""
     bg = bg.lstrip("#")
