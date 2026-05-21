@@ -10,7 +10,12 @@ from typing import Any
 
 def to_developerfolio(content: dict) -> dict:
     """Convert content JSON → developerFolio template data."""
+    # Support both flat JSON and {"content": {...}} wrapped
     data = content.get("content", content)
+
+    # Top-level fields (name/role live at JSON root, not inside content)
+    name = content.get("name") or data.get("name", data.get("hero_name", ""))
+    role = content.get("role") or data.get("role") or data.get("hero_label", "")
 
     # Socials
     socials = {}
@@ -20,9 +25,9 @@ def to_developerfolio(content: dict) -> dict:
             socials[key] = val
 
     result = {
-        "name": data.get("name", data.get("hero_name", "")),
-        "title": data.get("hero_label", data.get("title", "")),
-        "subtitle": data.get("hero_story", ""),
+        "name": name,
+        "title": role,
+        "subtitle": "",  # hero_story handled separately below
         "avatar": data.get("avatar", ""),
         "greeting": "你好，我是",
         "resume_url": data.get("resume_url", ""),
@@ -32,6 +37,32 @@ def to_developerfolio(content: dict) -> dict:
         "year": data.get("year", "2026"),
         "footer": data.get("footer", ""),
     }
+
+    # Hero story — handle both dict and string
+    hero_story = data.get("hero_story", {})
+    if isinstance(hero_story, dict):
+        result["headline"] = hero_story.get("headline", "")
+        result["hero_subtitle"] = hero_story.get("subtitle", "")
+    elif hero_story:
+        result["headline"] = hero_story
+        result["hero_subtitle"] = ""
+
+    # Story — experiences/challenges/insights as structured narrative
+    # Convert \n\n to HTML paragraphs
+    if data.get("story"):
+        story = data["story"]
+        def to_paragraphs(text):
+            if not text:
+                return []
+            return [p.strip() for p in text.split("\n\n") if p.strip()]
+        result["story"] = {
+            "experiences": story.get("experiences", ""),
+            "experiences_paragraphs": to_paragraphs(story.get("experiences", "")),
+            "challenges": story.get("challenges", ""),
+            "challenges_paragraphs": to_paragraphs(story.get("challenges", "")),
+            "insights": story.get("insights", ""),
+            "insights_paragraphs": to_paragraphs(story.get("insights", "")),
+        }
 
     # About
     if data.get("about"):
@@ -90,13 +121,15 @@ def to_developerfolio(content: dict) -> dict:
         elif isinstance(edu, dict):
             result["education"] = [edu]
 
-    # Projects
+    # Projects — support {"projects": [...]} or {"items": [...]} or [...]
     if data.get("projects"):
         projs = data["projects"]
-        if isinstance(projs, dict) and "items" in projs:
-            result["projects"] = projs["items"]
+        if isinstance(projs, dict):
+            result["projects"] = projs.get("projects") or projs.get("items") or []
         elif isinstance(projs, list):
             result["projects"] = projs
+        else:
+            result["projects"] = []
         # Enrich with background/outcome from project entries
         for p in result.get("projects", []):
             if isinstance(p, dict):
@@ -121,7 +154,12 @@ def to_developerfolio(content: dict) -> dict:
 
 def to_alfolio(content: dict) -> dict:
     """Convert content JSON → al-folio template data."""
+    # Support both flat JSON and {"content": {...}} wrapped
     data = content.get("content", content)
+
+    # Top-level fields (name/role live at JSON root)
+    name = content.get("name") or data.get("name", data.get("hero_name", ""))
+    role = content.get("role") or data.get("role") or data.get("hero_label", "")
 
     socials = {}
     for key in ["github", "linkedin", "twitter", "email"]:
@@ -129,10 +167,22 @@ def to_alfolio(content: dict) -> dict:
         if val:
             socials[key] = val
 
+    # Hero story — handle both dict and string
+    hero_story = data.get("hero_story", {})
+    headline = ""
+    hero_subtitle = ""
+    if isinstance(hero_story, dict):
+        headline = hero_story.get("headline", "")
+        hero_subtitle = hero_story.get("subtitle", "")
+    elif hero_story:
+        headline = hero_story
+
     result = {
-        "name": data.get("name", data.get("hero_name", "")),
-        "title": data.get("hero_label", data.get("title", "")),
-        "bio_short": data.get("hero_story", ""),
+        "name": name,
+        "title": role,
+        "headline": headline,
+        "hero_subtitle": hero_subtitle,
+        "bio_short": "",  # handled in about below
         "avatar": data.get("avatar", ""),
         "accent_color": data.get("accent_color", "#7c3aed"),
         "socials": socials,
@@ -153,10 +203,28 @@ def to_alfolio(content: dict) -> dict:
         parts = []
         if story.get("experiences"):
             parts.append(story["experiences"])
+        if story.get("challenges"):
+            parts.append(story["challenges"])
         if story.get("insights"):
             parts.append(story["insights"])
         if parts:
             result["about"] = {"paragraphs": parts, "subtitle": ""}
+
+    # Also surface story as top-level fields for templates that use them
+    def to_paragraphs(text):
+        if not text:
+            return []
+        return [p.strip() for p in text.split("\n\n") if p.strip()]
+    if data.get("story"):
+        story = data["story"]
+        result["story"] = {
+            "experiences": story.get("experiences", ""),
+            "experiences_paragraphs": to_paragraphs(story.get("experiences", "")),
+            "challenges": story.get("challenges", ""),
+            "challenges_paragraphs": to_paragraphs(story.get("challenges", "")),
+            "insights": story.get("insights", ""),
+            "insights_paragraphs": to_paragraphs(story.get("insights", "")),
+        }
 
     # News
     if data.get("news"):
@@ -169,15 +237,18 @@ def to_alfolio(content: dict) -> dict:
     # Projects
     if data.get("projects"):
         projs = data["projects"]
-        if isinstance(projs, dict) and "items" in projs:
-            projs = projs["items"]
+        if isinstance(projs, dict):
+            projs = projs.get("projects") or projs.get("items") or []
+        elif not isinstance(projs, list):
+            projs = []
         result["projects"] = [
             {
                 "name": p.get("title", p.get("name", "")),
                 "description": p.get("description", p.get("background", "")),
+                "outcome": p.get("outcome", p.get("result", "")),
                 "tags": p.get("tags", []),
             }
-            for p in (projs if isinstance(projs, list) else [])
+            for p in projs
         ]
 
     # Skills
@@ -214,7 +285,12 @@ def to_alfolio(content: dict) -> dict:
 
 def to_rahulbeniwal(content: dict) -> dict:
     """Convert content JSON → rahulbeniwal template data."""
+    # Support both flat JSON and {"content": {...}} wrapped
     data = content.get("content", content)
+
+    # Top-level fields (name/role live at JSON root)
+    name = content.get("name") or data.get("name", data.get("hero_name", ""))
+    role = content.get("role") or data.get("role") or data.get("hero_label", "")
 
     socials = {}
     for key in ["github", "linkedin", "twitter", "email"]:
@@ -222,11 +298,22 @@ def to_rahulbeniwal(content: dict) -> dict:
         if val:
             socials[key] = val
 
+    # Hero story — handle both dict and string
+    hero_story = data.get("hero_story", {})
+    headline = ""
+    hero_subtitle = ""
+    if isinstance(hero_story, dict):
+        headline = hero_story.get("headline", "")
+        hero_subtitle = hero_story.get("subtitle", "")
+    elif hero_story:
+        headline = hero_story
+
     result = {
-        "name": data.get("name", data.get("hero_name", "")),
-        "title": data.get("hero_label", data.get("title", "")),
-        "hero_label": data.get("hero_label", "Portfolio"),
-        "hero_tagline": data.get("hero_story", ""),
+        "name": name,
+        "title": role,
+        "headline": headline,
+        "hero_label": role or "Portfolio",
+        "hero_tagline": hero_subtitle,
         "avatar": data.get("avatar", ""),
         "accent_color": data.get("accent_color", "#e8ff58"),
         "bg_color": data.get("bg_color", "#08080c"),
@@ -256,12 +343,45 @@ def to_rahulbeniwal(content: dict) -> dict:
         bio = about.get("bio", about.get("description", ""))
         paragraphs = [p.strip() for p in bio.split("\n\n") if p.strip()]
         result["about"]["paragraphs"] = paragraphs if paragraphs else [bio]
+    elif data.get("story"):
+        story = data["story"]
+        parts = []
+        if story.get("experiences"):
+            parts.append(story["experiences"])
+        if story.get("challenges"):
+            parts.append(story["challenges"])
+        if story.get("insights"):
+            parts.append(story["insights"])
+        if parts:
+            result["about"] = {
+                "title": "About Me",
+                "image": "",
+                "paragraphs": parts,
+            }
+
+    # Surface story as top-level fields
+    def to_paragraphs(text):
+        if not text:
+            return []
+        return [p.strip() for p in text.split("\n\n") if p.strip()]
+    if data.get("story"):
+        story = data["story"]
+        result["story"] = {
+            "experiences": story.get("experiences", ""),
+            "experiences_paragraphs": to_paragraphs(story.get("experiences", "")),
+            "challenges": story.get("challenges", ""),
+            "challenges_paragraphs": to_paragraphs(story.get("challenges", "")),
+            "insights": story.get("insights", ""),
+            "insights_paragraphs": to_paragraphs(story.get("insights", "")),
+        }
 
     # Projects — big cards
     if data.get("projects"):
         projs = data["projects"]
-        if isinstance(projs, dict) and "items" in projs:
-            projs = projs["items"]
+        if isinstance(projs, dict):
+            projs = projs.get("projects") or projs.get("items") or []
+        elif not isinstance(projs, list):
+            projs = []
         result["projects"] = [
             {
                 "name": p.get("title", p.get("name", "")),
@@ -271,7 +391,7 @@ def to_rahulbeniwal(content: dict) -> dict:
                 "url": p.get("url", ""),
                 "icon": p.get("icon", "layers"),
             }
-            for p in (projs if isinstance(projs, list) else [])
+            for p in projs
         ]
 
     # Mini projects

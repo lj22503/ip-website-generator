@@ -568,7 +568,7 @@ body {
   <div class="hero-greeting">{{ data.greeting or "Hello, I'm" }}</div>
   <h1 class="hero-name">{{ data.name }}</h1>
   <p class="hero-title">{{ data.title }}</p>
-  <p class="hero-subtitle">{{ data.subtitle or "" }}</p>
+  <p class="hero-subtitle">{{ data.hero_subtitle or data.headline or "" }}</p>
 
   {% if data.badges %}
   <div class="hero-badges">
@@ -613,6 +613,42 @@ body {
   </div>
   <div style="max-width:720px">
     <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;white-space:pre-line">{{ data.about.bio }}</p>
+  </div>
+</section>
+{% endif %}
+
+<!-- ═══ STORY / 叙事 ════════════════════════════════ -->
+{% if data.story %}
+<section class="section" id="story">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">我的故事</h2>
+  </div>
+  <div class="story-block" style="max-width:720px">
+    {% if data.story.experiences_paragraphs %}
+    <div class="story-card" style="margin-bottom:32px">
+      <h3 style="color:var(--accent);font-size:1.1rem;margin-bottom:12px">✦ 经历</h3>
+      {% for para in data.story.experiences_paragraphs %}
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">{{ para }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if data.story.challenges_paragraphs %}
+    <div class="story-card" style="margin-bottom:32px">
+      <h3 style="color:var(--accent-secondary,#a855f7);font-size:1.1rem;margin-bottom:12px">✦ 挑战</h3>
+      {% for para in data.story.challenges_paragraphs %}
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">{{ para }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if data.story.insights_paragraphs %}
+    <div class="story-card">
+      <h3 style="color:#f59e0b;font-size:1.1rem;margin-bottom:12px">✦ 洞见</h3>
+      {% for para in data.story.insights_paragraphs %}
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">{{ para }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
   </div>
 </section>
 {% endif %}

@@ -268,13 +268,14 @@ def generate(args):
         from rendering.renderer import render_html_template
         tpl_name = args.template
         # Support both flat JSON and {"content": {...}} wrapped
+        # Pass FULL raw JSON so adapter can access top-level name/role
         if args.content:
             with open(args.content) as f:
                 raw = json.load(f)
-                content = raw.get("content", raw)
+                content = raw  # keep raw so adapter sees name/role at top level
         elif args.demo:
             demo = DEMO_PERSONAL_SITE if product == "personal_site" else DEMO_PORTFOLIO
-            content = demo["content"]
+            content = demo
         else:
             content = {}
         html = render_html_template(tpl_name, content, output_path=output_path)
