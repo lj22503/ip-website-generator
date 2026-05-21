@@ -165,6 +165,7 @@ ip-website-generator/
 ### Skill 版本
 - [x] `skill/html_templates/developerfolio/template.html` — story 区块 body 已有，导航栏缺少链接 | ✅ 已修复 → 加条件链接 |
 - [x] `skill/cli.py` — import 路径 | ✅ 已确认正确（narrative.mbti_styles / narrative.generator / rendering.renderer）|
+- [x] GitHub Pages — 无 workflow | ✅ 已添加 → `.github/workflows/deploy-pages.yml` |
 
 ### SaaS 版本
 - [ ] `/api/generate` 响应字段名不一致
