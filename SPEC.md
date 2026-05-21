@@ -164,10 +164,7 @@ ip-website-generator/
 
 ### Skill 版本
 - [x] `skill/html_templates/developerfolio/template.html` — story 区块 body 已有，导航栏缺少链接 | ✅ 已修复 → 加条件链接 |
-- [ ] `skill/cli.py` — import 路径全部写错
-  - `from mbti_styles` → `from narrative.mbti_styles`
-  - `from narrative_generator` → `from narrative.generator`
-  - `from html_renderer` → `from rendering.renderer`
+- [x] `skill/cli.py` — import 路径 | ✅ 已确认正确（narrative.mbti_styles / narrative.generator / rendering.renderer）|
 
 ### SaaS 版本
 - [ ] `/api/generate` 响应字段名不一致
