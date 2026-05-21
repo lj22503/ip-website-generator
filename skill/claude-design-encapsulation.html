@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Design 封装模式深度拆解</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #141413;
+    --body: #3d3d3a;
+    --muted: #6c6a64;
+    --canvas: #faf9f5;
+    --surface: #efe9de;
+    --surface-dark: #181715;
+    --primary: #cc785c;
+    --primary-hover: #a9583e;
+    --accent-teal: #5db8a6;
+    --accent-amber: #e8a55a;
+    --hairline: #e6dfd8;
+    --radius-sm: 6px;
+    --radius-md: 8px;
+    --radius-lg: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--canvas);
+    color: var(--ink);
+    line-height: 1.6;
+    font-size: 16px;
+  }
+
+  nav {
+    position: sticky;
+    top: 0;
+    background: rgba(250, 249, 245, 0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--hairline);
+    padding: 0 32px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    z-index: 100;
+  }
+  nav .logo { font-weight: 700; font-size: 15px; }
+  nav .logo span { color: var(--primary); }
+  nav .nav-label { font-size: 13px; color: var(--muted); }
+  nav .nav-version { 
+    background: var(--surface);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--muted);
+  }
+
+  .hero {
+    padding: 80px 32px 64px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .hero .tag {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-size: 48px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    margin-bottom: 20px;
+  }
+  .hero .subtitle {
+    font-size: 20px;
+    color: var(--body);
+    line-height: 1.5;
+    max-width: 680px;
+  }
+  .hero .meta {
+    margin-top: 32px;
+    display: flex;
+    gap: 24px;
+    font-size: 13px;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .hero .meta span { display: flex; align-items: center; gap: 6px; }
+
+  .section {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 32px 64px;
+  }
+  .section-num {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+  .section h2 {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    margin-bottom: 32px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .section h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin: 32px 0 12px;
+  }
+  .section h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 20px 0 8px;
+    color: var(--body);
+  }
+  .section p {
+    color: var(--body);
+    margin-bottom: 16px;
+    max-width: 720px;
+  }
+  .section ul, .section ol {
+    margin: 12px 0 20px 24px;
+    color: var(--body);
+  }
+  .section li { margin-bottom: 8px; }
+
+  .callout {
+    background: var(--surface);
+    border-left: 3px solid var(--primary);
+    padding: 20px 24px;
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    margin: 24px 0;
+  }
+  .callout.dark {
+    background: var(--surface-dark);
+    color: var(--canvas);
+    border-left-color: var(--accent-teal);
+  }
+  .callout.dark p, .callout.dark li { color: rgba(250,249,245,0.75); }
+  .callout.teal { border-left-color: var(--accent-teal); }
+  .callout.amber { border-left-color: var(--accent-amber); }
+  .callout p { margin-bottom: 0; max-width: none; }
+
+  pre {
+    background: var(--surface-dark);
+    color: #f7f8f8;
+    padding: 24px;
+    border-radius: var(--radius-lg);
+    overflow-x: auto;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.7;
+    margin: 20px 0;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875em;
+    background: var(--surface);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  pre code { background: none; padding: 0; font-size: 13px; }
+
+  .diagram {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    margin: 24px 0;
+    overflow-x: auto;
+  }
+  .diagram pre {
+    background: none;
+    padding: 0;
+    margin: 0;
+    color: var(--ink);
+    font-size: 13px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 14px;
+  }
+  th {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--hairline);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--muted);
+  }
+  td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--hairline);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 24px 0;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--hairline);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+  }
+  .card h4 {
+    font-size: 15px;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--ink);
+  }
+  .card p {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  .phase-list {
+    list-style: none;
+    margin-left: 0;
+    counter-reset: phase;
+  }
+  .phase-list li {
+    position: relative;
+    padding-left: 48px;
+    margin-bottom: 24px;
+    counter-increment: phase;
+  }
+  .phase-list li::before {
+    content: counter(phase);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+  }
+
+  blockquote {
+    border-left: 3px solid var(--primary);
+    padding-left: 20px;
+    margin: 24px 0;
+    font-style: italic;
+    color: var(--body);
+  }
+
+  .hl { color: var(--primary); font-weight: 600; }
+  .hl-teal { color: var(--accent-teal); font-weight: 600; }
+  .hl-amber { color: var(--accent-amber); font-weight: 600; }
+
+  footer {
+    border-top: 1px solid var(--hairline);
+    padding: 32px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--muted);
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  @media (max-width: 640px) {
+    .hero h1 { font-size: 36px; }
+    .hero { padding: 48px 20px 40px; }
+    .section { padding: 0 20px 40px; }
+    pre { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">VoltAgent<span>.</span></div>
+  <div class="nav-label">awesome-claude-design 封装模式分析</div>
+  <div class="nav-version">v2026.04</div>
+</nav>
+
+<div class="hero">
+  <div class="tag">VoltAgent 体系</div>
+  <h1>Claude Design 封装模式<br>深度拆解报告</h1>
+  <p class="subtitle">将设计系统从"给人类阅读的文档"转变为"给 AI 执行的操作指令"——Claude Design 的核心创新，以及它如何重新定义 AI Coding Agent 的设计约束机制。</p>
+  <div class="meta">
+    <span>📅 2026.04.17 发布</span>
+    <span>🤖 Claude Opus 4.7 驱动</span>
+    <span>📦 68 个设计模板</span>
+  </div>
+</div>
+
+<!-- Section 1: Product Essence -->
+<div class="section">
+  <div class="section-num">I</div>
+  <h2>产品本质：一句话定义</h2>
+  
+  <p><strong>Claude Design</strong> 是 Anthropic 于 2026.04.17 发布的 AI 设计工具，驱动模型为 <span class="hl">Claude Opus 4.7</span>（视觉模型）。核心能力：用户用自然语言描述想法，即可生成设计稿、原型和幻灯片。</p>
+
+  <div class="callout dark">
+    <p><strong>核心创新：</strong>将 <code>DESIGN.md</code> 从纯粹的<strong>设计文档规范</strong>，升级为 <strong>AI 可执行的技能定义</strong>。这是设计系统第一次真正拥有了"可执行的形态"。</p>
+  </div>
+
+  <div class="diagram">
+<pre>
+┌──────────────────────────────────────────────────────────┐
+│                    Claude Design                         │
+│              Anthropic 2026.04.17 发布                    │
+│              驱动模型: Claude Opus 4.7                   │
+└──────────────────────────────────────────────────────────┘
+                          │
+         ┌────────────────┼────────────────┐
+         ▼                ▼                ▼
+    设计稿生成         原型设计         幻灯片/文档
+    (Mockups)       (Prototypes)    (Presentations)</pre>
+  </div>
+
+  <p>但真正重要的不是功能列表，而是<strong>它怎么做到的</strong>——这背后是一套完整的封装哲学。</p>
+</div>
+
+<!-- Section 2: Core Abstraction -->
+<div class="section">
+  <div class="section-num">II</div>
+  <h2>核心抽象：DESIGN.md 格式</h2>
+
+  <h3>2.1 九层文档结构</h3>
+  <p>DESIGN.md 不是普通的设计规范文档。它是专为 LLM 阅读理解优化的结构化技能定义：</p>
+
+  <table>
+    <tr><th>层级</th><th>内容</th><th>LLM 视角</th></tr>
+    <tr><td>1. Visual Theme & Atmosphere</td><td>视觉主题与氛围</td><td>整体基调</td></tr>
+    <tr><td>2. Color Palette & Roles</td><td>色彩方案与语义角色</td><td>语义绑定</td></tr>
+    <tr><td>3. Typography Rules</td><td>字体排版规范</td><td>刻度精确</td></tr>
+    <tr><td>4. Component Stylings</td><td>组件样式定义</td><td>原子单元</td></tr>
+    <tr><td>5. Layout Principles</td><td>页面布局原则</td><td>空间规则</td></tr>
+    <tr><td>6. Depth & Elevation</td><td>阴影/层次表现</td><td>纵深系统</td></tr>
+    <tr><td>7. Do's and Don'ts</td><td>设计禁则</td><td>硬性红线</td></tr>
+    <tr><td>8. Responsive Behavior</td><td>响应式适配逻辑</td><td>多端兼容</td></tr>
+    <tr><td>9. Agent Prompt Guide</td><td>AI 代理专用提示词</td><td>执行入口</td></tr>
+  </table>
+
+  <h3>2.2 五条关键设计原则</h3>
+
+  <div class="card-grid">
+    <div class="card">
+      <h4>AI 优先</h4>
+      <p>格式专为 LLM 阅读理解优化，非设计师视角——这是给机器执行的设计文档</p>
+    </div>
+    <div class="card">
+      <h4>语义绑定</h4>
+      <p>颜色值绑定功能角色，如：--primary: #0057FF /* 信任蓝 */</p>
+    </div>
+    <div class="card">
+      <h4>像素级细节</h4>
+      <p>字间距微调至极致，杀死 AI 乱配色的可能性</p>
+    </div>
+    <div class="card">
+      <h4>几何倍数网格</h4>
+      <p>强制使用 4px/8px 几何倍数间距系统</p>
+    </div>
+    <div class="card">
+      <h4>硬性审美红线</h4>
+      <p>设立类似"绝不许用纯白"的硬性规则，不可绕过</p>
+    </div>
+  </div>
+
+  <h3>2.3 颜色语义绑定示例</h3>
+  <pre><code>## 2. Color Palette & Roles
+- Primary: #0057FF (信任蓝 - 用于 CTA 按钮)
+- Secondary: #1A1A2E (深邃黑 - 用于正文)
+- Accent: #FF6B35 (活力橙 - 用于强调)
+- Background: #FAFBFC (极浅灰 - 用于底色)
+
+## 3. Typography Rules
+- 主字体: Inter, -apple-system, sans-serif
+- 标题: 700 weight, 1.2 line-height
+- 正文: 400 weight, 1.6 line-height
+- 字间距: -0.01em (视觉微调)</code></pre>
+
+  <div class="callout teal">
+    <p><strong>关键洞察：</strong>传统设计令牌是"值 + 描述"，DESIGN.md 的令牌是"值 + 语义 + 执行意图"。AI 不仅知道颜色是什么，还知道<em>用在什么地方</em>和<em>为什么用它</em>。</p>
+  </div>
+</div>
+
+<!-- Section 3: Workflow -->
+<div class="section">
+  <div class="section-num">III</div>
+  <h2>工作流程拆解</h2>
+
+  <div class="diagram">
+<pre>
+┌──────────────┐     ┌────────────────────┐     ┌──────────────────────┐
+│  用户选择     │     │   Claude Design     │     │      输出结果         │
+│  DESIGN.md   │────▶│   (Opus 4.7 驱动)   │────▶│  完整 UI 脚手架       │
+└──────────────┘     └────────────────────┘     └──────────────────────┘
+                             │
+          ┌──────────────────┼──────────────────┐
+          ▼                  ▼                  ▼
+     Colors/Type        Components           Preview Cards
+     (设计令牌)          (UI 组件)            (预览卡片)
+          │                  │                  │
+          ▼                  ▼                  ▼
+     CSS Tokens        React/Vue组件         可视化预览</pre>
+  </div>
+
+  <h3>输入 → 输出映射</h3>
+  <table>
+    <tr><th>DESIGN.md 输入</th><th>Claude Design 生成</th></tr>
+    <tr><td>Color Palette</td><td>CSS Variables + Tailwind Config</td></tr>
+    <tr><td>Typography Rules</td><td>Font Stack + Size/Weight 令牌</td></tr>
+    <tr><td>Component Stylings</td><td>Button/Input/Card 组件代码</td></tr>
+    <tr><td>Layout Principles</td><td>Grid/Flex 布局系统</td></tr>
+    <tr><td>Do's and Don'ts</td><td>Linting Rules + 约束提示</td></tr>
+    <tr><td>Agent Prompt Guide</td><td>供后续 AI Agent 调用的技能定义</td></tr>
+  </table>
+</div>
+
+<!-- Section 4: Comparison -->
+<div class="section">
+  <div class="section-num">IV</div>
+  <h2>awesome-claude-design vs awesome-design-md</h2>
+
+  <div class="diagram">
+<pre>
+┌─────────────────────────────────────────────┐
+│         awesome-design-md (父项目)            │
+│   55+ 设计系统，来自真实网站                   │
+│   Stripe / Vercel / Linear / Notion / Apple  │
+│   纯 Markdown 格式，Claude Code 直接可用     │
+└─────────────────────────────────────────────┘
+                        │ 筛选+专用化
+                        ▼
+┌─────────────────────────────────────────────┐
+│      awesome-claude-design (子项目)            │
+│   68 个专为 Claude Design 优化的模板           │
+│   经过 Claude Design 格式验证                  │
+│   可一键展开为完整 UI 脚手架                   │
+└─────────────────────────────────────────────┘</pre>
+  </div>
+
+  <table>
+    <tr><th>维度</th><th>awesome-design-md</th><th>awesome-claude-design</th></tr>
+    <tr><td>数量</td><td>55+</td><td>68</td></tr>
+    <tr><td>格式</td><td>通用 Markdown</td><td>Claude Design 专用</td></tr>
+    <tr><td>使用方式</td><td>复制到项目，AI 读取</td><td>上传至 Claude Design</td></tr>
+    <tr><td>配套产物</td><td>仅 DESIGN.md</td><td>DESIGN.md + UI Kit</td></tr>
+    <tr><td>验证状态</td><td>社区验证</td><td>工具兼容验证</td></tr>
+  </table>
+</div>
+
+<!-- Section 5: Diff from Normal Agent -->
+<div class="section">
+  <div class="section-num">V</div>
+  <h2>与普通 Coding Agent 的差异</h2>
+
+  <div class="callout amber">
+    <p><strong>核心差异：一句话</strong><br>普通 Agent 是"画家"——每次创作风格随机。<br>DESIGN.md + Agent 是"熟练工"——严格按设计规范执行，风格精确一致。</p>
+  </div>
+
+  <div class="diagram">
+<pre>
+┌─────────────────────────────────────────────────────────┐
+│              普通 Coding Agent (如 baseline)              │
+├─────────────────────────────────────────────────────────┤
+│  用户: "帮我做一个登录页面"                                 │
+│  AI:   自由发挥，每次风格可能不同                           │
+│  结果: 千篇一律的灰色界面 + 默认 Tailwind 样式类             │
+│  问题: 颜色/间距/字体全靠随机，品质不可控                    │
+└─────────────────────────────────────────────────────────┘
+                            │
+                            ▼  DESIGN.md 约束注入
+┌─────────────────────────────────────────────────────────┐
+│          DESIGN.md + Coding Agent (VoltAgent 模式)        │
+├─────────────────────────────────────────────────────────┤
+│  用户: "帮我做一个登录页面"                                 │
+│  AI:   读取 DESIGN.md → 遵循 Mint Fresh 风格               │
+│  结果: 精准的品牌色、4px 间距系统、Inter 字体                │
+│  优势: 像熟练工而非随机生成                                  │
+└─────────────────────────────────────────────────────────┘</pre>
+  </div>
+
+  <table>
+    <tr><th>能力维度</th><th>普通 Coding Agent</th><th>DESIGN.md + Agent</th></tr>
+    <tr><td>风格一致性</td><td>每次不同</td><td class="hl-teal">精确一致</td></tr>
+    <tr><td>颜色控制</td><td>随机或偏好</td><td class="hl-teal">语义绑定</td></tr>
+    <tr><td>间距系统</td><td>随意</td><td class="hl-teal">几何倍数强制</td></tr>
+    <tr><td>组件边界</td><td>模糊堆积</td><td class="hl-teal">明确规则</td></tr>
+    <tr><td>约束机制</td><td>无</td><td class="hl-teal">硬性审美红线</td></tr>
+  </table>
+</div>
+
+<!-- Section 6: Architecture -->
+<div class="section">
+  <div class="section-num">VI</div>
+  <h2>封装模式架构图</h2>
+
+  <div class="diagram">
+<pre>
+                    ┌─────────────────────────────┐
+                    │      DESIGN.md 技能定义      │
+                    │   (纯文本设计系统文档)         │
+                    └──────────────┬──────────────┘
+                                   │
+           ┌───────────────────────┼───────────────────────┐
+           │  README.md (系统身份)   │   SKILL.md (执行入口)  │
+           │  - 视觉主题            │   - 何时调用            │
+           │  - 色彩/字体/间距      │   - 先读哪些文件        │
+           │  - 组件规则           │   - 哪些不可协商         │
+           │  - 禁则               │   - Agent 专用提示       │
+           └───────────────────────┴───────────────────────┘
+                                   │
+                                   ▼
+        ┌──────────────────────────────────────────────────┐
+        │              设计资源文件夹                        │
+        │  ┌─────────┐  ┌──────────┐  ┌──────────┐         │
+        │  │  CSS    │  │ Assets/  │  │Components│         │
+        │  │ Tokens  │  │ Icons    │  │ 预置代码  │         │
+        │  └─────────┘  └──────────┘  └──────────┘         │
+        └──────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+        ┌──────────────────────────────────────────────────┐
+        │              输出层 (LLM 生成)                     │
+        │  Preview Cards │ Working UI Kit │ CSS Framework   │
+        └──────────────────────────────────────────────────┘</pre>
+  </div>
+
+  <p>这是一个典型的<strong>技能封装（Skill Encapsulation）</strong>模式：</p>
+  <ul>
+    <li><strong>DESIGN.md</strong> = 技能的定义层（What &amp; Why）</li>
+    <li><strong>SKILL.md</strong> = 技能的执行层（When &amp; How）</li>
+    <li><strong>设计资源</strong> = 技能的资产层（Assets &amp; Components）</li>
+    <li><strong>LLM 输出</strong> = 技能的执行结果（Generated Output）</li>
+  </ul>
+</div>
+
+<!-- Section 7: Reference Value -->
+<div class="section">
+  <div class="section-num">VII</div>
+  <h2>对 ip-website-generator 的参考价值</h2>
+
+  <h3>7.1 当前问题</h3>
+  <div class="diagram">
+<pre>
+用户请求 → Agent 自由生成 → 每次风格随机
+         ↑
+    缺少一致的设计约束层</pre>
+  </div>
+
+  <h3>7.2 引入 DESIGN.md 后的改进</h3>
+  <div class="diagram">
+<pre>
+┌─────────────────────────────────────────────────────────┐
+│              ip-website-generator + DESIGN.md           │
+├─────────────────────────────────────────────────────────┤
+│                                                         │
+│   Step 1: 用户选择「IP 风格包」                           │
+│           (如: 极客风 / 温暖风 / 简约风)                   │
+│                                                         │
+│   Step 2: 对应的 DESIGN.md 注入项目                       │
+│           (预设颜色/字体/间距/组件规则)                    │
+│                                                         │
+│   Step 3: Agent 按 DESIGN.md 约束生成                   │
+│           (风格一致，像专业设计而非随机)                   │
+│                                                         │
+└─────────────────────────────────────────────────────────┘</pre>
+  </div>
+
+  <h3>7.3 具体建议方向</h3>
+  <div class="card-grid">
+    <div class="card">
+      <h4>建立风格库</h4>
+      <p>参考 awesome-claude-design，发布预置 DESIGN.md 文件包</p>
+    </div>
+    <div class="card">
+      <h4>技能化封装</h4>
+      <p>将 DESIGN.md + 生成规则封装为 Hermes Skill</p>
+    </div>
+    <div class="card">
+      <h4>双重文件</h4>
+      <p>参照 Claude Design 双轨制 (README.md + SKILL.md)</p>
+    </div>
+    <div class="card">
+      <h4>约束下沉</h4>
+      <p>在生成 prompt 中嵌入硬性设计规则，强制不可绕过</p>
+    </div>
+  </div>
+
+  <h3>7.4 实施路径</h3>
+  <ol class="phase-list">
+    <li><strong>Phase 1:</strong> 整理 3-5 个示范性 DESIGN.md（个人 IP 风格包）</li>
+    <li><strong>Phase 2:</strong> 封装为 ip-website-generator 的 skill</li>
+    <li><strong>Phase 3:</strong> 在生成 prompt 中引用 DESIGN.md 约束</li>
+    <li><strong>Phase 4:</strong> 输出时附「风格预览」确认步骤</li>
+  </ol>
+</div>
+
+<!-- Section 8: Summary -->
+<div class="section">
+  <div class="section-num">VIII</div>
+  <h2>总结</h2>
+
+  <blockquote>
+    "将设计系统从'给人类阅读的文档'转变为'给 AI 执行的操作指令'"
+  </blockquote>
+
+  <table>
+    <tr><th>维度</th><th>传统方式</th><th>DESIGN.md 模式</th></tr>
+    <tr><td>格式</td><td>Figma/Sketch 文件</td><td class="hl-teal">纯 Markdown</td></tr>
+    <tr><td>读取者</td><td>设计师</td><td class="hl-teal">LLM</td></tr>
+    <tr><td>执行精度</td><td>依赖人</td><td class="hl-teal">依赖约束规则</td></tr>
+    <tr><td>迭代方式</td><td>手动调整</td><td class="hl-teal">Prompt 驱动</td></tr>
+    <tr><td>复用性</td><td>低（难以复制）</td><td class="hl-teal">高（复制即用）</td></tr>
+  </table>
+
+  <div class="callout teal">
+    <p><strong>awesome-claude-design 的核心价值：</strong></p>
+    <ul style="margin-top:8px">
+      <li>68 个经过 Claude Design 验证的 DESIGN.md 模板</li>
+      <li>证明了「设计系统可以像代码一样复制分发」</li>
+      <li>开创了「design-system-as-a-skill」的 AI 编程范式</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <p>报告生成时间: 2026-05-17 &nbsp;|&nbsp; 数据来源: GitHub/VoltAgent/awesome-claude-design</p>
+</footer>
+
+</body>
+</html>
