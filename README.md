@@ -171,4 +171,4 @@ OPENAI_API_KEY=your_minimax_key_here
 | 2026-05 | README 声称「10套设计系统」 | ✅ 已修正 → 54套 |
 | 2026-05 | README 声称「OpenAI」 | ✅ 已修正 → MiniMax |
 | 2026-05 | cli.py import 路径错误 | ✅ 已修复 |
-| 2026-05 | data_adapter 是死代码 | ❌ 误解：adapter 已接入 renderer |
+"| 2026-05 | developerfolio 导航栏缺少 story 链接 | ✅ 已修复 → 加条件链接 |\n| 2026-05 | data_adapter 是死代码 | ❌ 误解：adapter 已接入 renderer |"

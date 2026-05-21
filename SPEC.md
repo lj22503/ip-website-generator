@@ -163,6 +163,7 @@ ip-website-generator/
 ## 待修复 🔴
 
 ### Skill 版本
+- [x] `skill/html_templates/developerfolio/template.html` — story 区块 body 已有，导航栏缺少链接 | ✅ 已修复 → 加条件链接 |
 - [ ] `skill/cli.py` — import 路径全部写错
   - `from mbti_styles` → `from narrative.mbti_styles`
   - `from narrative_generator` → `from narrative.generator`
