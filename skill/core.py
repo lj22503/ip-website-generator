@@ -234,7 +234,14 @@ def generate(args):
             else:
                 demo = DEMO_PORTFOLIO
                 product = "portfolio"
-            content = demo["content"]
+            # Load user content if provided, otherwise use demo
+            if args.content:
+                with open(args.content) as f:
+                    raw = json.load(f)
+                    # Support both flat JSON and {"content": {...}} wrapped JSON
+                    content = raw.get("content", raw)
+            else:
+                content = demo["content"]
             print(f"[Surface模式] {surface} | {design} | {product}")
         else:
             print(f"⚠️ 未知 surface: {surface}")
@@ -248,7 +255,8 @@ def generate(args):
         # Load content from JSON file if provided
         if args.content:
             with open(args.content) as f:
-                content = json.load(f)
+                raw = json.load(f)
+                content = raw.get("content", raw)
         else:
             content = {}
         selected_modules = args.modules.split(",") if args.modules else []
