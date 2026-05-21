@@ -544,11 +544,12 @@ p, li {{
     border: 1px solid var(--border);
     border-radius: var(--radius-card);
     padding: 32px;
-    transition: box-shadow 0.2s, border-color 0.2s;
+    transition: box-shadow 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
 }}
 .card:hover {{
-    box-shadow: var(--shadow-hover);
-    border-color: var(--border-subtle);
+    box-shadow: {f'0 12px 40px rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08)' if not is_dark else '0 12px 40px rgba(0,0,0,0.4), 0 4px 12px rgba(0,0,0,0.3)'};
+    border-color: var(--accent);
+    transform: translateY(-2px);
 }}
 
 /* ---- Buttons ---- */
@@ -563,17 +564,20 @@ p, li {{
     font-weight: 500;
     cursor: pointer;
     border: none;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
     text-decoration: none;
 }}
 
 .btn-primary {{
     background: var(--accent);
-    color: {'#ffffff' if is_dark else '#ffffff'};
+    color: #ffffff;
+    box-shadow: {f'0 4px 14px {accent}40' if not is_dark else 'none'};
 }}
 .btn-primary:hover {{
     background: var(--accent-hover);
     color: #ffffff;
+    box-shadow: {f'0 6px 20px {accent}60' if not is_dark else 'none'};
+    transform: translateY(-1px);
 }}
 
 .btn-secondary {{
@@ -584,6 +588,7 @@ p, li {{
 .btn-secondary:hover {{
     border-color: var(--accent);
     color: var(--accent);
+    transform: translateY(-1px);
 }}
 
 /* ---- Badges / Pills ---- */
@@ -593,8 +598,9 @@ p, li {{
     border-radius: 9999px;
     font-size: 12px;
     font-weight: 500;
-    background: {'rgba(255,255,255,0.08)' if is_dark else 'rgba(0,0,0,0.06)'};
-    color: var(--text-secondary);
+    background: {f'{accent}18' if not is_dark else f'{accent}25'};
+    color: var(--accent);
+    border: 1px solid {f'{accent}30'};
 }}
 
 /* ---- Grid ---- */
@@ -608,6 +614,48 @@ p, li {{
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 24px;
+}}
+
+/* ---- Hero Section ---- */
+.hero {{
+    position: relative;
+    overflow: hidden;
+}}
+.hero::after {{
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, {f'{accent}12' if not is_dark else f'{accent}08'} 0%, transparent 70%);
+    pointer-events: none;
+}}
+.hero-story::after {{
+    content: '';
+    position: absolute;
+    top: -30%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, {f'{accent}10' if not is_dark else f'{accent}06'} 0%, transparent 70%);
+    pointer-events: none;
+}}
+
+/* ---- Section Title ---- */
+.section-title {{
+    position: relative;
+    display: inline-block;
+    margin-bottom: 40px;
+}}
+.section-title::after {{
+    content: '';
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    border-radius: 2px;
+    margin-top: 12px;
 }}
 
 /* ---- Dividers ---- */
@@ -685,6 +733,22 @@ p, li {{
     display: flex;
     flex-direction: column;
     gap: 10px;
+    position: relative;
+    overflow: hidden;
+}}
+.project-card::before {{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-hover));
+    opacity: 0;
+    transition: opacity 0.25s;
+}}
+.project-card:hover::before {{
+    opacity: 1;
 }}
 
 .project-header {{
