@@ -2,92 +2,100 @@
 
 把一个人的经历、洞见、专业能力，炼成有灵魂的个人网站。
 
-## 源码仓库
+> **GitHub:** `github.com/lj22503/ip-website-generator`
+> **源码目录:** `/home/aiecho/ip-website-generator`
+> **workspace 副本:** `workspace/projects/diaolong-products/ip-website-generator`（packages 三件套，Vercel 部署物，不得作为开发基准）
 
-**`/home/aiecho/ip-website-generator`**（GitHub: `lj22503/ip-website-generator`）
+---
 
-> 注意：workspace 下有一份副本（`.../diaolong-products/ip-website-generator`），为输出物，非源码，不得作为开发基准。
+## 产品定位
+
+**做什么：** 一个人把他的叙事材料（经历、价值观、方法论、作品）提交上来，生成一个属于他自己的个人网站 HTML。
+
+**使用场景：**
+
+| 场景 | Surface | 模板风格 |
+|------|---------|---------|
+| 思想领袖 / 内容创作者 | `story` | 个人叙事站 |
+| 设计师 / 开发者作品展示 | `portfolio` | 作品集 |
+| 求职者数字简历 | `resume` | 数字简历 |
+| 产品 / 工具推广 | `landing` | 产品落地页 |
+
+**设计系统：** 54 套真实设计系统（Linear、Notion、Vercel、Stripe、Airbnb……），换皮肤不换内容。
+
+---
+
+## 工作流程
+
+```
+用户材料（简历/访谈/文档）
+    ↓ LLM 提取字段
+内容 JSON（统一格式）
+    ↓ 根据 Surface 选择模板
+数据适配层（adapter）
+    ↓ 转换为模板专属 schema
+Jinja2 渲染
+    ↓
+HTML 页面（可下载）
+```
+
+**内容输入模块（7个）：**
+
+| 模块 | 说明 |
+|------|------|
+| `hero_story` | 一句话 headline + 副标题 |
+| `story` | 三段式叙事：做过什么 / 遭遇过什么 / 学到什么 |
+| `skills` | 技能分类（categories[].items[]） |
+| `projects` | 项目作品（title/year/background/outcome/tags） |
+| `experience` | 职业经历（可选） |
+| `about` | 关于我 / 头像 / 简介 |
+| `contact` | 联系方式 |
 
 ---
 
 ## 两条生成路径
 
-### 路径A — CSS 换肤（默认）
+### 路径 A — CSS 换肤（推荐，用于 story/portfolio/resume surface）
 
 ```
 content JSON → render_page() → 11个模块渲染函数 + css_builder(54套CSS)
 ```
 
 ```bash
-python skill/core.py --design notion --demo --output /tmp/site.html
+python skill/core.py --design claude --product personal_site --demo --output /tmp/site.html
 ```
 
-### 路径B — 外部完整模板（--template 参数）
+### 路径 B — 外部完整模板（--template 参数）
 
 ```
-content JSON → data_adapter.adapt() → jinja2 渲染 → 完整HTML页面
+content JSON → data_adapter.adapt() → Jinja2 渲染 → 完整HTML页面
 ```
 
 ```bash
-python skill/core.py --template developerfolio --content /tmp/lijing_content.json --output /tmp/out.html
+python skill/core.py --template developerfolio --content /tmp/content.json --output /tmp/out.html
 ```
 
 三套模板：`developerfolio`（深色科技）· `alfolio`（学术侧栏）· `rahulbeniwal`（大字体作品集）
 
 ---
 
-## 当前已知问题（必读）
+## 快速开始
 
-### 🔴 致命 — data_adapter 写了但从未被调用
+```bash
+cd /home/aiecho/ip-website-generator/skill
 
-`s SKILL.md` 文件中记录的 adapter（`skill/modules/data_adapter.py`，450行，三套模板适配函数）是**死代码**。`render_html_template()` 在 `--template` 模式下直接把 raw JSON 扔给 Jinja2，adapter 从未被调用。
+# 列出54套设计系统
+python core.py --list-designs
 
-**后果：**
-- `name` / `role` 在 JSON 根节点，模板拿到的是 `content` dict，`data.name` 永远为空
-- `projects: {projects: [...]}` 嵌套结构，模板期望 flat 数组，项目卡片消失
-- `story.experiences` 是 `\n\n` 分段的 plain string，模板期望 `experiences_paragraphs[]` 数组，段落全挤在一起
+# 路径A：CSS换肤（内容模块渲染，可用）
+python core.py --design claude --product personal_site --demo --output /tmp/demo.html
 
-**修复方案：** 在 `rendering/renderer.py` 的 `render_html_template()` 里调用 `adapt(content, tpl_name)`。
+# 路径B：三套完整模板（Jinja2渲染，适配层已接入）
+python core.py --template developerfolio --content /tmp/lijing_content.json --output /tmp/out.html
 
-### 🔴 致命 — 两套代码完全重复，各走各的
-
-本仓库（skill/ + saas/ 双轨）与 `workspace/projects/diaolong-products/ip-website-generator`（packages/ + frontend/ 三件套）是同一个产品的两个不同演化分支，代码无法合并，必须二选一保留。
-
-**推荐保留本仓库**（skill/ 方向更新）。
-
-### 🟡 重大 — alfolio / rahulbeniwal 的 story 内容完全丢失
-
-三套模板中只有 `developerfolio` 正确渲染了 `story.experiences_paragraphs` 等字段。`alfolio` 和 `rahulbeniwal` 的模板 body 没有渲染 story 三段（经历/挑战/洞察），内容被丢弃。
-
-### 🟡 重大 — README 声称「10套设计系统」，实际有54套
-
-文档严重落后于代码。`rendering/css_builder.py` 实际有 54 套完整 CSS 变量，README 只列了10套。
-
-### 🟡 重大 — README 声称「OpenAI API」，实际用的是 MiniMax
-
-LLM 接入的是 MiniMax（非 OpenAI），README 未更新。
-
-### 🟡 重大 — skill/cli.py import 路径全部写错
-
-```python
-# 当前（错）
-from narrative_generator import ...
-from mbti_styles import ...
-from html_renderer import ...
-
-# 应该
-from narrative.generator import ...
-from narrative.mbti_styles import ...
-from rendering.renderer import ...
+# 交互式 CLI
+python cli.py
 ```
-
-### 🟢 中等 — GitHub Pages 未启用
-
-仓库无 GitHub Pages 在线预览，每次需要本地打开 HTML 文件。
-
-### 🟢 中等 — SPEC.md 与代码实际不符
-
-SPEC.md 列的「已完成」状态存在 bug（如 adapter 相关），某些「待修复」实际上已部分修复。
 
 ---
 
@@ -95,42 +103,39 @@ SPEC.md 列的「已完成」状态存在 bug（如 adapter 相关），某些�
 
 ```
 ip-website-generator/
-├── skill/                              # Skill 版本（本地 Python CLI）
+├── skill/                              # Skill 版本（主开发目录）
 │   ├── core.py                         # 主入口
-│   ├── cli.py                          # 交互 CLI（import路径有bug）
-│   ├── surfaces.py                     # Surface 抽象层
+│   ├── cli.py                          # 交互 CLI
+│   ├── surfaces.py                     # Surface 抽象层（4种用途）
 │   ├── template_registry.py            # 44个MIT模板资产注册表
 │   ├── rendering/
 │   │   ├── renderer.py                 # render_page() + render_html_template()
 │   │   └── css_builder.py              # 54套设计系统 CSS 变量（920行）
 │   ├── modules/
-│   │   └── data_adapter.py             # ⚠️ 写了但从未被调用
+│   │   └── data_adapter.py             # 数据适配层（450行，已接入）
 │   ├── html_templates/                 # 三套 Jinja2 完整模板
 │   │   ├── developerfolio/template.html
 │   │   ├── alfolio/template.html
 │   │   └── rahulbeniwal/template.html
 │   ├── narrative/
-│   │   ├── generator.py               # 叙事生成器
-│   │   └── mbti_styles.py             # MBTI → 叙事风格
+│   │   ├── generator.py               # 叙事生成器（LLM驱动）
+│   │   └── mbti_styles.py            # MBTI → 叙事风格映射
 │   ├── design_systems/
-│   │   ├── registry.py                # 54套元数据
+│   │   ├── registry.py                # 54套元数据 + MBTI推荐
 │   │   └── loader.py
-│   └── examples/                       # 示例 HTML（Hermes 本人内容）
+│   └── examples/                       # 示例 HTML
 │
 └── saas/                              # SaaS 版本（Next.js + FastAPI）
     ├── main.py
     ├── api/routes.py
-    ├── nextjs/                        # Next.js App Router 前端
-    │   ├── app/page.tsx
-    │   └── app/api/generate/route.ts
-    └── public/examples/
+    └── nextjs/                        # Next.js App Router 前端
 ```
 
 ---
 
 ## 设计系统
 
-`skill/rendering/css_builder.py` 实际有 **54 套**完整 CSS 变量。README 中的列表（10套）已过时。
+`skill/rendering/css_builder.py` 有 **54 套**完整 CSS 变量，对应 popular-web-designs skill 中的真实设计系统。
 
 ---
 
@@ -139,7 +144,7 @@ ip-website-generator/
 | 组件 | 技术 |
 |------|------|
 | Skill 生成引擎 | Python 3.10+ |
-| LLM | MiniMax（`OPENAI_API_KEY` 环境变量实际传 MiniMax key） |
+| LLM | MiniMax（`OPENAI_API_KEY` 环境变量传 MiniMax key） |
 | SaaS 前端 | Next.js 14 + TypeScript |
 | SaaS 后端 | FastAPI + Vercel Python Runtime |
 | 模板引擎 | Jinja2 |
@@ -156,17 +161,14 @@ OPENAI_API_KEY=your_minimax_key_here
 
 ---
 
-## 快速开始
+## 历史问题修复记录
 
-```bash
-cd /home/aiecho/ip-website-generator/skill
-
-# 列出54套设计系统
-python core.py --list-designs
-
-# 路径A：CSS换肤（可用）
-python core.py --design claude --product personal_site --demo --output /tmp/demo.html
-
-# 路径B：三套完整模板（adapter未接入，有bug）
-python core.py --template developerfolio --content /tmp/lijing_content.json --output /tmp/out.html
-```
+| 日期 | 问题 | 状态 |
+|------|------|------|
+| 2026-05 | `cat.items` Jinja2 dict.items() 冲突 | ✅ 已修复 → `skill_list` |
+| 2026-05 | alfolio/rahulbeniwal 无 story 渲染区块 | ✅ 已修复 → 独立 story section |
+| 2026-05 | adapter 中 `about` 存在时 story 被吞掉 | ✅ 已修复 → `elif` → `if` |
+| 2026-05 | README 声称「10套设计系统」 | ✅ 已修正 → 54套 |
+| 2026-05 | README 声称「OpenAI」 | ✅ 已修正 → MiniMax |
+| 2026-05 | cli.py import 路径错误 | ✅ 已修复 |
+| 2026-05 | data_adapter 是死代码 | ❌ 误解：adapter 已接入 renderer |

@@ -198,19 +198,8 @@ def to_alfolio(content: dict) -> dict:
             "paragraphs": paragraphs if paragraphs else [bio],
             "subtitle": about.get("subtitle", ""),
         }
-    elif data.get("story"):
-        story = data["story"]
-        parts = []
-        if story.get("experiences"):
-            parts.append(story["experiences"])
-        if story.get("challenges"):
-            parts.append(story["challenges"])
-        if story.get("insights"):
-            parts.append(story["insights"])
-        if parts:
-            result["about"] = {"paragraphs": parts, "subtitle": ""}
 
-    # Also surface story as top-level fields for templates that use them
+    # Always surface story fields (even when about uses story as fallback)
     def to_paragraphs(text):
         if not text:
             return []
@@ -251,16 +240,19 @@ def to_alfolio(content: dict) -> dict:
             for p in projs
         ]
 
-    # Skills
+    # Skills — use "skill_list" to avoid Jinja2 dict.items() conflict
     if data.get("skills"):
         skills = data["skills"]
         if isinstance(skills, dict) and "categories" in skills:
-            result["skills"] = skills["categories"]
+            result["skills"] = [
+                {"name": c.get("name", ""), "skill_list": c.get("items", [])}
+                for c in skills["categories"]
+            ]
         elif isinstance(skills, list):
-            result["skills"] = [{"name": "技能", "items": skills}]
+            result["skills"] = [{"name": "技能", "skill_list": skills}]
         elif isinstance(skills, dict):
             result["skills"] = [
-                {"name": k, "items": v}
+                {"name": k, "skill_list": v}
                 for k, v in skills.items()
                 if isinstance(v, list)
             ]
@@ -398,16 +390,19 @@ def to_rahulbeniwal(content: dict) -> dict:
     if data.get("mini_projects"):
         result["mini_projects"] = data["mini_projects"]
 
-    # Skills
+    # Skills — use "skill_list" to avoid Jinja2 dict.items() conflict
     if data.get("skills"):
         skills = data["skills"]
         if isinstance(skills, dict) and "categories" in skills:
-            result["skills"] = skills["categories"]
+            result["skills"] = [
+                {"name": c.get("name", ""), "skill_list": c.get("items", [])}
+                for c in skills["categories"]
+            ]
         elif isinstance(skills, list):
-            result["skills"] = [{"name": "技能", "items": skills}]
+            result["skills"] = [{"name": "技能", "skill_list": skills}]
         elif isinstance(skills, dict):
             result["skills"] = [
-                {"name": k, "items": v}
+                {"name": k, "skill_list": v}
                 for k, v in skills.items()
                 if isinstance(v, list)
             ]

@@ -375,6 +375,29 @@ body {
   --text-muted: #606078;
   --border: rgba(255,255,255,0.07);
 }
+
+/* Story — 叙事三段式 */
+.story-phase {
+  margin-bottom: 32px;
+  padding: 20px 24px;
+  background: rgba(255,255,255,0.04);
+  border-left: 3px solid var(--accent, #7c3aed);
+  border-radius: 0 8px 8px 0;
+}
+.story-phase-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent, #7c3aed);
+  margin: 0 0 12px 0;
+}
+.story-phase-content p {
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin: 0 0 10px 0;
+}
+.story-phase-content p:last-child { margin-bottom: 0; }
 </style>
 </head>
 <body>
@@ -394,6 +417,7 @@ body {
 
   <nav class="sidebar-nav">
     <a href="#about"><i data-lucide="user" style="width:15px;height:15px"></i> 关于</a>
+    {% if data.story.experiences or data.story.challenges or data.story.insights %}<a href="#story"><i data-lucide="book-open" style="width:15px;height:15px"></i> 故事</a>{% endif %}
     {% if data.news %}<a href="#news"><i data-lucide="newspaper" style="width:15px;height:15px"></i> 最新动态</a>{% endif %}
     {% if data.publications %}<a href="#publications"><i data-lucide="book-open" style="width:15px;height:15px"></i> 发表成果</a>{% endif %}
     {% if data.projects %}<a href="#projects"><i data-lucide="folder-archive" style="width:15px;height:15px"></i> 项目作品</a>{% endif %}
@@ -425,6 +449,41 @@ body {
     {% endfor %}
   </div>
 </section>
+{% endif %}
+
+<!-- STORY — 叙事三段式（experiences / challenges / insights） -->
+{% if data.story %}
+{% set s = data.story %}
+{% if s.experiences or s.challenges or s.insights %}
+<section class="content-section" id="story">
+  <div class="section-divider"></div>
+  <h2 class="section-heading">我的故事</h2>
+  {% if s.experiences_paragraphs %}
+  <div class="story-phase">
+    <h3 class="story-phase-title">做过什么</h3>
+    <div class="story-phase-content">
+      {% for para in s.experiences_paragraphs %}<p>{{ para }}</p>{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% if s.challenges_paragraphs %}
+  <div class="story-phase">
+    <h3 class="story-phase-title">遭遇过什么</h3>
+    <div class="story-phase-content">
+      {% for para in s.challenges_paragraphs %}<p>{{ para }}</p>{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% if s.insights_paragraphs %}
+  <div class="story-phase">
+    <h3 class="story-phase-title">学到什么</h3>
+    <div class="story-phase-content">
+      {% for para in s.insights_paragraphs %}<p>{{ para }}</p>{% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endif %}
 {% endif %}
 
 <!-- NEWS -->
