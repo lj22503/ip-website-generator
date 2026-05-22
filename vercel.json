@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "buildCommand": "cd saas/nextjs && npm run build",
+  "installCommand": "cd saas/nextjs && npm install",
+  "framework": null
+}
