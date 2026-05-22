@@ -82,38 +82,34 @@ ip-website-generator/
 │   │
 │   └── design_md_generator.py    # DESIGN.md 生成工具
 │
-└── saas/                          # SaaS 版本（Next.js + FastAPI）
-    ├── main.py
-    ├── api/routes.py
-    ├── css_builder.py
-    ├── html_renderer.py
-    ├── renderer.py
-    ├── cli.py
+└── saas/                          # SaaS 版本（Next.js 全栈，2026-05-22 重构）
+    ├── vercel.json                # Vercel 构建配置（根目录部署）
+    ├── main.py                    # FastAPI 入口（已废弃，保留参考）
+    ├── api/routes.py              # FastAPI 路由（已废弃）
+    ├── css_builder.py             # Python CSS 构建器（已端口，保留参考）
+    ├── html_renderer.py           # Python HTML 渲染器（已端口，保留参考）
+    ├── renderer.py                # Python 渲染引擎（已端口，保留参考）
     │
-    ├── nextjs/
+    ├── nextjs/                    # Next.js 14 前端（纯 TypeScript，无 Python 依赖）
     │   ├── package.json
     │   ├── tsconfig.json
     │   ├── app/
     │   │   ├── layout.tsx
-    │   │   ├── page.tsx
+    │   │   ├── page.tsx           # 3步向导 UI
     │   │   ├── page.module.css
     │   │   ├── globals.css
     │   │   └── api/
-    │   │       ├── designs/route.ts
-    │   │       └── generate/route.ts
-    │   ├── lib/
-    │   │   ├── css-builder.ts
-    │   │   ├── mbti-styles.ts
-    │   │   └── renderer.ts
-    │   └── types/index.ts
+    │   │       ├── designs/route.ts  # GET /api/designs
+    │   │       └── generate/route.ts # POST /api/generate → renderPage()
+    │   └── lib/
+    │       ├── css-builder.ts     # 10 套设计系统 CSS（从 css_builder.py 端口）
+    │       └── html-renderer.ts   # 11 个模块渲染器（从 html_renderer.py 端口）
     │
     ├── public/
     │   ├── examples/
     │   └── screenshots/
     │
     └── rendering_modules/
-        ├── hero_soul.py
-        └── soul_module.py
 ```
 
 ---
@@ -154,9 +150,15 @@ ip-website-generator/
 - Demo 模式可正常运行，输出 20,775 bytes 完整 HTML
 
 ### SaaS 版本
-- `nextjs/app/page.tsx` — 3步向导 UI
-- `nextjs/app/api/generate/route.ts` — POST `/api/generate` 生成 HTML
-- `nextjs/app/api/designs/route.ts` — GET `/api/designs` 返回设计系统列表
+- [x] `nextjs/app/page.tsx` — 3步向导 UI
+- [x] `nextjs/app/api/generate/route.ts` — POST `/api/generate` 生成 HTML
+- [x] `nextjs/app/api/designs/route.ts` — GET `/api/designs` 返回设计系统列表
+- [x] `nextjs/lib/html-renderer.ts` — 11 个模块渲染器（TypeScript 端口完成）
+- [x] `nextjs/lib/css-builder.ts` — 10 套设计系统 CSS（TypeScript 端口完成）
+- [x] `nextjs/` — 纯 TypeScript，移除 Python 依赖，Vercel Serverless 兼容
+- [x] `vercel.json` — 根目录部署配置，指向 `saas/nextjs/`
+- [x] GitHub → Vercel 自动部署链路（push master 触发）
+- [ ] Vercel 项目绑定 GitHub 分支（需 Vercel Dashboard 操作）
 
 ---
 
@@ -168,8 +170,8 @@ ip-website-generator/
 | 2026-05 | registry 声称54套，实际只有10套CSS | ✅ 已修复 → 29套CSS注入 + README同步 |
 
 ### SaaS 版本
-- [ ] `/api/generate` 响应字段名不一致
-- [ ] `saas/nextjs/lib/css-builder.ts` — 仅 10 套设计系统，缺少 44 套
+- [x] `/api/generate` 响应字段名一致 ✅ 2026-05-22 → `renderPage()` 返回 `html_base64`
+- [x] `saas/nextjs/lib/css-builder.ts` 10 套设计系统 ✅ 2026-05-22 端口完成（10套，完整实现）
 
 ---
 
@@ -213,7 +215,9 @@ ip-website-generator/
 | `21a991d` | Update: SPEC.md full status + README.md |
 | `25669ad` | feat: add DESIGN.md generator with awesome-design-md format migration |
 | `90ea6e0` | feat: MiniMax LLM integration + reasoning trace filter |
-| `HEAD` | refactor: add Surface/Template abstraction layer + 44 MIT templates |
+| `23d549a` | fix: add CSS specs for 19 missing design systems, update count 10→29 |
+| `308e7dc` | feat: add GitHub Pages deploy workflow |
+| `7cef693` | feat(saas): port Python renderer to TypeScript, full Vercel deployment |
 
 **未提交文件**：
 - `skill/claude-design-encapsulation.html`

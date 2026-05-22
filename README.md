@@ -142,13 +142,12 @@ ip-website-generator/
 ## 技术栈
 
 | 组件 | 技术 |
-|------|------|
+|------|------|------|
 | Skill 生成引擎 | Python 3.10+ |
 | LLM | MiniMax（`OPENAI_API_KEY` 环境变量传 MiniMax key） |
-| SaaS 前端 | Next.js 14 + TypeScript |
-| SaaS 后端 | FastAPI + Vercel Python Runtime |
-| 模板引擎 | Jinja2 |
-| 设计系统 | 29 popular design systems（完整 CSS 变量） |
+| SaaS 前端 | Next.js 14 + TypeScript（`saas/nextjs/`） |
+| SaaS 渲染引擎 | TypeScript（`saas/nextjs/lib/html-renderer.ts`），纯字符串拼接，无外部依赖 |
+| 部署 | Vercel（GitHub push → 自动部署） |
 
 ---
 
@@ -161,7 +160,26 @@ OPENAI_API_KEY=your_minimax_key_here
 
 ---
 
-## 历史问题修复记录
+## SaaS 版本部署（Vercel）
+
+```bash
+# 推送到 GitHub master 分支即自动触发 Vercel 部署
+git push origin master
+```
+
+Vercel 构建配置：`vercel.json`（项目根目录），指向 `saas/nextjs/`。
+
+本地开发：
+```bash
+cd saas/nextjs && npm install && npm run dev
+```
+
+本地测试 API：
+```bash
+curl -X POST http://localhost:3000/api/generate \
+  -H 'Content-Type: application/json' \
+  -d '{"design":"notion","content":{"name":"姓名","role":"角色","bio":"简介","short_story":"","full_story":"","contact":{}},"selected_modules":["hero_featured","story","contact"]}'
+```
 
 | 日期 | 问题 | 状态 |
 |------|------|------|
@@ -171,4 +189,7 @@ OPENAI_API_KEY=your_minimax_key_here
 | 2026-05 | README 声称「10套设计系统」 | ✅ 已修正 → 29套 |
 | 2026-05 | README 声称「OpenAI」 | ✅ 已修正 → MiniMax |
 | 2026-05 | cli.py import 路径错误 | ✅ 已修复 |
-"| 2026-05 | developerfolio 导航栏缺少 story 链接 | ✅ 已修复 → 加条件链接 |\n| 2026-05 | GitHub Pages 未启用 | ✅ 已修复 → GitHub Actions workflow 自动部署 demo |\n| 2026-05 | registry 声称54套，实际10套CSS | ✅ 已修复 → 29套CSS全部注入 |
+| 2026-05 | developerfolio 导航栏缺少 story 链接 | ✅ 已修复 → 加条件链接 |
+| 2026-05 | GitHub Pages 未启用 | ✅ 已修复 → GitHub Actions workflow 自动部署 demo |
+| 2026-05 | registry 声称54套，实际10套CSS | ✅ 已修复 → 29套CSS全部注入 |
+
