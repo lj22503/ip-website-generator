@@ -1,20 +1,18 @@
 // API Route: POST /api/generate
-// Generates a personal IP website
+// Generates a personal IP website using the full-featured html-renderer
 
 import { NextRequest, NextResponse } from 'next/server';
-import { renderWebsite } from '@/lib/renderer';
+import { renderPage } from '@/lib/html-renderer';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    
-    const { 
+
+    const {
       product = 'personal_site',
       design = 'notion',
       content,
-      selected_modules = ['hero', 'story', 'highlights', 'contact'],
-      mbti,
-      mbti_style 
+      selected_modules = ['hero_featured', 'story', 'contact'],
     } = body;
 
     // Validate required fields
@@ -25,30 +23,90 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { name, role, full_story, short_story, bio } = content;
-    
-    if (!name || !role || !full_story || !short_story || !bio) {
+    const { name, role, short_story } = content;
+
+    if (!name || !role) {
       return NextResponse.json(
-        { error: 'Missing required content fields' },
+        { error: 'Missing required content fields: name and role are required' },
         { status: 400 }
       );
     }
 
-    // Use provided MBTI or default
-    const finalMbti = mbti || 'INFP';
+    // Normalize content to what renderPage expects
+    // Map from flat content structure to module-based structure
+    const pageContent: Record<string, any> = {};
 
-    // Render the website HTML
-    const html = renderWebsite({
-      name,
-      role,
-      full_story,
-      short_story,
-      bio,
-      mbti: finalMbti,
-      design,
-      highlights: content.highlights || [],
-      contact: content.contact || {},
+    // Hero module
+    if (short_story || role) {
+      pageContent['hero_featured'] = {
+        title: name,
+        subtitle: role,
+        featured_projects: [],
+      };
+    }
+
+    // Story module — short_story goes into the story section
+    if (content.full_story || short_story) {
+      pageContent['story'] = {
+        experiences: content.full_story || short_story || '',
+        challenges: '',
+        insights: '',
+      };
+    }
+
+    // About module
+    if (content.bio) {
+      pageContent['about'] = {
+        headline: name,
+        bio: content.bio,
+        photo: content.photo || '',
+      };
+    }
+
+    // Contact module
+    if (content.contact) {
+      pageContent['contact'] = {
+        email: content.contact.email || '',
+        links: [],
+      };
+    }
+
+    // Awards module
+    if (content.awards) {
+      pageContent['awards'] = { awards: content.awards };
+    }
+
+    // Projects module
+    if (content.projects) {
+      pageContent['projects'] = { projects: content.projects };
+    }
+
+    // Social module
+    if (content.social) {
+      pageContent['social'] = { links: content.social };
+    }
+
+    // Newsletter module
+    if (content.newsletter) {
+      pageContent['newsletter'] = content.newsletter;
+    }
+
+    // Skills module
+    if (content.skills) {
+      pageContent['skills'] = { categories: content.skills };
+    }
+
+    // Blog module
+    if (content.blog) {
+      pageContent['blog'] = { posts: content.blog };
+    }
+
+    // Render the website HTML using the full-featured renderer
+    const html = renderPage({
+      designSystem: design,
+      content: pageContent,
       selectedModules: selected_modules,
+      productType: product,
     });
 
     // Generate a unique ID for this generation

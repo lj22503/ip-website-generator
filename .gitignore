@@ -38,3 +38,7 @@ package-lock.json
 # Local config
 .env
 .env.local
+
+# Next.js build
+.next/
+.vercel/
