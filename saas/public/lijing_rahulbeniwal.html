@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>黎静 — AI PaaS 商业化产品专家</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ================================================
+   rahulbeniwal Template — Project-Forward Portfolio
+   Inspired by: Rahulbeniwal/portfolio (Astro)
+   ================================================ */
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root {
+  --bg: #08080c;
+  --bg-surface: #101018;
+  --accent: #e8ff58;
+  --accent-dim: rgba(232,255,88,0.12);
+  --text: #ededf4;
+  --text-dim: #7878a0;
+  --border: rgba(255,255,255,0.07);
+  --radius: 16px;
+  --transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --container: 1200px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Space Grotesk', 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* ── LAYOUT ─────────────────────────────────── */
+.container {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+/* ── NAV ────────────────────────────────────── */
+.nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  background: rgba(8,8,12,0.75);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 1rem;
+  font-weight: 800;
+  color: var(--text);
+  text-decoration: none;
+  letter-spacing: -0.02em;
+}
+.nav-links {
+  display: flex;
+  gap: 6px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 40px;
+  transition: var(--transition);
+}
+.nav-links a:hover { color: var(--text); }
+@media (max-width: 768px) { .nav-links { display: none; } }
+
+/* ── HERO ───────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 0 80px;
+  position: relative;
+}
+.hero-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--accent);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-label::before {
+  content: '';
+  display: inline-block;
+  width: 32px; height: 1px;
+  background: var(--accent);
+}
+.hero-name {
+  font-size: clamp(3.5rem, 9vw, 7.5rem);
+  font-weight: 800;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  margin-bottom: 28px;
+  color: var(--text);
+}
+.hero-tagline {
+  font-size: clamp(1rem, 2.5vw, 1.4rem);
+  font-weight: 400;
+  color: var(--text-dim);
+  max-width: 560px;
+  line-height: 1.6;
+  margin-bottom: 40px;
+}
+.hero-meta {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.hero-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.hero-meta-label {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  font-weight: 600;
+}
+.hero-meta-value {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.hero-scroll {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: bounce 2.5s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ── SECTIONS ───────────────────────────────── */
+.section { padding: 100px 0; }
+.section + .section { border-top: 1px solid var(--border); }
+.section-header { margin-bottom: 56px; }
+.section-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.section-title {
+  font-size: clamp(2rem, 4vw, 3rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--text);
+}
+
+/* ── ABOUT / BIO ────────────────────────────── */
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 60px;
+  align-items: start;
+}
+.about-image {
+  aspect-ratio: 3/4;
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+}
+.about-image img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.about-image::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 60%, rgba(8,8,12,0.8));
+}
+.about-text {
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--text-dim);
+  padding-top: 8px;
+}
+.about-text p + p { margin-top: 18px; }
+@media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; } }
+
+/* ── PROJECTS (BIG CARDS) ──────────────────── */
+.projects-list { display: flex; flex-direction: column; gap: 3px; }
+.project-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: var(--transition);
+  background: var(--bg-surface);
+  min-height: 320px;
+}
+.project-item:hover {
+  border-color: var(--accent);
+  transform: scale(1.005);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+.project-visual {
+  background: linear-gradient(135deg, rgba(232,255,88,0.06), rgba(232,255,88,0.02));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  position: relative;
+  overflow: hidden;
+}
+.project-visual::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, rgba(232,255,88,0.08) 0%, transparent 70%);
+}
+.project-visual-icon { font-size: 4rem; opacity: 0.7; }
+.project-info { padding: 40px; display: flex; flex-direction: column; justify-content: center; gap: 16px; }
+.project-number {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+}
+.project-name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.2;
+}
+.project-summary {
+  font-size: 0.88rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+}
+.project-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.project-tag {
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 40px;
+  background: var(--accent-dim);
+  color: var(--accent);
+  letter-spacing: 0.5px;
+}
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  transition: var(--transition);
+  margin-top: 8px;
+}
+.project-link:hover { gap: 14px; color: var(--accent); }
+
+/* alternate layout for every other project */
+.project-item:nth-child(even) .project-visual { order: 2; }
+.project-item:nth-child(even) .project-info { order: 1; }
+
+@media (max-width: 768px) {
+  .project-item { grid-template-columns: 1fr; }
+  .project-item:nth-child(even) .project-visual { order: 0; }
+}
+
+/* ── ADDITIONAL PROJECTS (GRID) ─────────────── */
+.mini-projects {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+}
+.mini-project {
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 22px;
+  transition: var(--transition);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.mini-project:hover { border-color: rgba(232,255,88,0.3); transform: translateY(-2px); }
+.mini-project-name { font-size: 0.88rem; font-weight: 700; color: var(--text); }
+.mini-project-desc { font-size: 0.75rem; color: var(--text-dim); margin-top: 4px; line-height: 1.5; }
+.mini-project-arrow { color: var(--text-dim); transition: var(--transition); flex-shrink: 0; }
+.mini-project:hover .mini-project-arrow { color: var(--accent); transform: translate(2px,-2px); }
+
+/* ── SKILLS ─────────────────────────────────── */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 2px;
+}
+.skill-category {
+  padding: 24px 20px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+.skill-category:hover { border-color: rgba(232,255,88,0.3); }
+.skill-cat-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.skill-items { display: flex; flex-wrap: wrap; gap: 6px; }
+.skill-item {
+  font-size: 0.78rem;
+  padding: 4px 10px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-dim);
+}
+
+/* ── OPEN SOURCE ────────────────────────────── */
+.os-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+.os-item {
+  padding: 24px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  transition: var(--transition);
+}
+.os-item:hover { border-color: rgba(232,255,88,0.3); transform: translateY(-2px); }
+.os-name { font-size: 0.92rem; font-weight: 800; color: var(--text); margin-bottom: 6px; }
+.os-desc { font-size: 0.78rem; color: var(--text-dim); line-height: 1.6; margin-bottom: 12px; }
+.os-lang {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: var(--accent-dim);
+  padding: 2px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-right: 8px;
+}
+.os-stars { font-size: 0.68rem; color: var(--text-dim); }
+
+/* ── EXPERIENCE ─────────────────────────────── */
+.exp-list { display: flex; flex-direction: column; gap: 2px; }
+.exp-item {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 40px;
+  padding: 32px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+}
+.exp-item:last-child { border-bottom: none; }
+.exp-date { font-size: 0.78rem; color: var(--accent); font-weight: 700; font-family: monospace; padding-top: 3px; }
+.exp-role { font-size: 1.05rem; font-weight: 800; color: var(--text); margin-bottom: 4px; }
+.exp-company { font-size: 0.85rem; color: var(--text-dim); font-weight: 600; margin-bottom: 10px; }
+.exp-desc { font-size: 0.85rem; color: var(--text-dim); line-height: 1.7; }
+@media (max-width: 600px) { .exp-item { grid-template-columns: 1fr; gap: 8px; } }
+
+/* ── CONTACT ────────────────────────────────── */
+.contact-grid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+.contact-heading {
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 20px;
+  color: var(--text);
+}
+.contact-sub {
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  line-height: 1.7;
+  margin-bottom: 32px;
+}
+.contact-links { display: flex; flex-direction: column; gap: 12px; }
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.contact-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: var(--accent-dim);
+}
+.contact-link-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.contact-info { display: flex; flex-direction: column; gap: 16px; }
+.contact-info-item { display: flex; flex-direction: column; gap: 2px; }
+.contact-info-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 2px; color: var(--text-dim); font-weight: 700; }
+.contact-info-value { font-size: 0.88rem; color: var(--text); font-weight: 600; }
+@media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; } }
+
+/* ── FOOTER ────────────────────────────────── */
+.footer {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-text { font-size: 0.78rem; color: var(--text-dim); }
+.footer-socials { display: flex; gap: 10px; }
+.footer-social {
+  width: 36px; height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-dim);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.footer-social:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── UTILITIES ─────────────────────────────── */
+.accent { color: var(--accent); }
+[data-theme="light"] {
+  --bg: #fafaf8;
+  --bg-surface: #f2f2f0;
+  --text: #1a1a1e;
+  --text-dim: #6a6a7a;
+  --border: rgba(0,0,0,0.08);
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#" class="nav-logo">黎静</a>
+  <ul class="nav-links">
+    <li><a href="#about">关于</a></li>
+    <li><a href="#projects">项目</a></li>
+    <li><a href="#skills">技能</a></li>
+    
+    <li><a href="#contact">联系</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HERO ════════════════════════════════════════ -->
+<section class="hero">
+  <div class="container" style="padding-top:120px">
+    <div class="hero-label">AI PaaS 商业化产品专家</div>
+    <h1 class="hero-name">黎静</h1>
+    <p class="hero-tagline">10年金融科技产品经验 · AI Agent工作流 · 商业化SaaS平台</p>
+
+    
+  </div>
+  <div class="hero-scroll">
+    <i data-lucide="arrow-down" style="width:16px;height:16px"></i>
+    scroll
+  </div>
+</section>
+
+<!-- ═══ ABOUT ═══════════════════════════════════════ -->
+
+<section class="section" id="about">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">About</div>
+      <h2 class="section-title">About Me</h2>
+    </div>
+    <div class="about-grid">
+      
+      <div class="about-text">
+        
+          
+          <p>10年金融科技产品经验，近3年专注AI能力产品化。从Prompt Engineering到Agent工作流，从单点工具到Skill矩阵，独立设计并落地了多个AI驱动的商业化产品。
+
+主导了 Mangofolio 理财师AI工作台，6个AI Skill矩阵覆盖获客→触达→服务→复盘全流程。设计了投资工作流系统，实现每日/周/月/季四级自动化市场扫描。</p>
+          
+          <p>最大的挑战不是做产品，是把AI技术真正转化为可规模化的商业能力。
+
+从0到1搭建AI产品体系时，最难的不是技术实现，而是找到那个「AI可解、商业可行」的交叉点——既能证明AI价值，又能让用户愿意付费。
+
+金融行业的监管和合规要求，让每一个数据接入和功能设计都需要在创新和风险之间找到平衡。</p>
+          
+          <p>我学会了一件事：AI产品化的核心不是模型有多强，而是把AI能力封装成用户真正会用的东西。
+
+好的AI产品不是替代人工，而是让人做更有价值的判断。让AI处理重复性信息收集和分析，让人专注在需要经验和直觉的决策上——这才是AI在金融场景里真正的价值。
+
+10年经验教会我：产品感 > 技术栈，解决问题 > 堆功能。</p>
+          
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ PROJECTS ═════════════════════════════════════ -->
+
+<section class="section" id="projects">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Work</div>
+      <h2 class="section-title">项目作品</h2>
+    </div>
+    <div class="projects-list">
+      
+      <div class="project-item">
+        <div class="project-visual">
+          <span class="project-visual-icon">
+            <i data-lucide="layers" style="width:72px;height:72px;color:var(--accent)"></i>
+          </span>
+        </div>
+        <div class="project-info">
+          <span class="project-number">1 / 4</span>
+          <div class="project-name">Mangofolio — 理财师AI工作台</div>
+          <div class="project-summary">为持牌理财师/个人投顾提供AI驱动的工作台，解决获客难、经营累、转化低、留存差四大痛点。</div>
+          <div class="project-summary" style="color:var(--accent)">6个AI Skill矩阵，5.9万+使用人次，赋能理财师挖掘外部资产20亿+，资产诊断转化率36%。</div>
+          
+          <div class="project-tags">
+            <span class="project-tag">B端SaaS</span><span class="project-tag">AI Agent</span><span class="project-tag">商业化</span><span class="project-tag">RAG</span>
+          </div>
+          
+          
+        </div>
+      </div>
+      
+      <div class="project-item">
+        <div class="project-visual">
+          <span class="project-visual-icon">
+            <i data-lucide="layers" style="width:72px;height:72px;color:var(--accent)"></i>
+          </span>
+        </div>
+        <div class="project-info">
+          <span class="project-number">2 / 4</span>
+          <div class="project-name">投资工作流系统</div>
+          <div class="project-summary">自动化AI市场扫描系统，替代人工信息收集，每日/周/月/季自动生成结构化报告。</div>
+          <div class="project-summary" style="color:var(--accent)">每日/周/月/季四级自动化工作流，信源分级验证（S/A/B/C），飞书知识库自动更新。</div>
+          
+          <div class="project-tags">
+            <span class="project-tag">自动化</span><span class="project-tag">AI分析</span><span class="project-tag">投资框架</span><span class="project-tag">数据驱动</span>
+          </div>
+          
+          
+        </div>
+      </div>
+      
+      <div class="project-item">
+        <div class="project-visual">
+          <span class="project-visual-icon">
+            <i data-lucide="layers" style="width:72px;height:72px;color:var(--accent)"></i>
+          </span>
+        </div>
+        <div class="project-info">
+          <span class="project-number">3 / 4</span>
+          <div class="project-name">深度研究工作流</div>
+          <div class="project-summary">基于迭代式研究理念（Search→Read→Reason→Answer），将用户问题转化为结构化分析和可执行方案。</div>
+          <div class="project-summary" style="color:var(--accent)">~2000行Python代码，案例测试质量优秀（8.1-8.5分），完整闭环可追溯。</div>
+          
+          <div class="project-tags">
+            <span class="project-tag">迭代式研究</span><span class="project-tag">问题树</span><span class="project-tag">Skill设计</span><span class="project-tag">Python</span>
+          </div>
+          
+          
+        </div>
+      </div>
+      
+      <div class="project-item">
+        <div class="project-visual">
+          <span class="project-visual-icon">
+            <i data-lucide="layers" style="width:72px;height:72px;color:var(--accent)"></i>
+          </span>
+        </div>
+        <div class="project-info">
+          <span class="project-number">4 / 4</span>
+          <div class="project-name">基金信号监控系统</div>
+          <div class="project-summary">自动化基金信号检测，实时监控持仓基金的关键变化（季报/经理/规模/业绩/风格），及时推送通知。</div>
+          <div class="project-summary" style="color:var(--accent)">五大信号检测，买卖信号触发，飞书群聊自动通知，P0级功能自动运行。</div>
+          
+          <div class="project-tags">
+            <span class="project-tag">信号检测</span><span class="project-tag">量化</span><span class="project-tag">自动化</span><span class="project-tag">金融</span>
+          </div>
+          
+          
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ MINI PROJECTS ═══════════════════════════════ -->
+
+
+<!-- ═══ SKILLS ══════════════════════════════════════ -->
+
+<section class="section" id="skills">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Expertise</div>
+      <h2 class="section-title">技能</h2>
+    </div>
+    <div class="skills-grid">
+      
+      <div class="skill-category">
+        <div class="skill-cat-label">AI 产品能力</div>
+        <div class="skill-items">
+          
+        </div>
+      </div>
+      
+      <div class="skill-category">
+        <div class="skill-cat-label">技术实现</div>
+        <div class="skill-items">
+          
+        </div>
+      </div>
+      
+      <div class="skill-category">
+        <div class="skill-cat-label">产品方法论</div>
+        <div class="skill-items">
+          
+        </div>
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ OPEN SOURCE ═════════════════════════════════ -->
+
+
+<!-- ═══ EXPERIENCE ══════════════════════════════════ -->
+
+
+<!-- ═══ CONTACT ══════════════════════════════════════ -->
+<section class="section" id="contact">
+  <div class="container">
+    <div class="section-header">
+      <div class="section-label">Contact</div>
+      <h2 class="section-title">联系我</h2>
+    </div>
+    <div class="contact-grid">
+      <div>
+        <h3 class="contact-heading">Let's work together.</h3>
+        <p class="contact-sub">我通常在24小时内回复合作邀请。</p>
+        <div class="contact-links">
+          
+          
+          
+        </div>
+      </div>
+      <div class="contact-info">
+        <div class="contact-info-item"><span class="contact-info-label">姓名</span><span class="contact-info-value">黎静</span></div>
+        <div class="contact-info-item"><span class="contact-info-label">角色</span><span class="contact-info-value">AI PaaS 商业化产品专家</span></div>
+        
+        
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container" style="display:flex;justify-content:space-between;align-items:center;width:100%">
+    <span class="footer-text">© 黎静 2026</span>
+    <div class="footer-socials">
+      
+      
+      
+    </div>
+  </div>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>
