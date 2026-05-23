@@ -3,11 +3,18 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import React from 'react';
 import styles from './page.module.css';
-import * as pdfjsLib from 'pdfjs-dist';
 import mammoth from 'mammoth';
 
-// Configure pdf.js worker
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
+let pdfjsModule: typeof import('pdfjs-dist') | null = null;
+
+async function getPdfjsModule() {
+  if (pdfjsModule) return pdfjsModule;
+
+  const module = await import('pdfjs-dist');
+  module.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${module.version}/pdf.worker.min.js`;
+  pdfjsModule = module;
+  return module;
+}
 
 interface Dimension {
   icon: string;
@@ -206,6 +213,7 @@ export default function GeneratePage() {
         let text = '';
 
         if (ext === 'pdf') {
+          const pdfjsLib = await getPdfjsModule();
           const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
           const pageTexts: string[] = [];
           for (let i = 1; i <= pdf.numPages; i++) {

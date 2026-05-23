@@ -6,6 +6,11 @@
 > **源码目录:** `/home/aiecho/ip-website-generator`
 > **workspace 副本:** `workspace/projects/diaolong-products/ip-website-generator`（packages 三件套，Vercel 部署物，不得作为开发基准）
 
+## 最近修复
+
+- `saas/nextjs/app/generate/page.tsx` 现在改为在客户端按需加载 `pdfjs-dist`，避免在 Next.js 构建/预渲染阶段触发 `DOMMatrix is not defined`。
+- 已完成一次生产构建验证：`npm run build` 通过，`/generate` 与首页都可正常生成。
+
 ---
 
 ## 产品定位

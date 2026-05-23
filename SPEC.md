@@ -8,6 +8,10 @@
 - `skill/` — Hermes Skill 安装版（本地运行，CLI 交互）
 - `saas/` — Vercel 部署版（Web UI，浏览器直接使用）
 
+**最新修复**：
+- `saas/nextjs/app/generate/page.tsx` 改为按需加载 `pdfjs-dist`，解决 Next.js 构建阶段的浏览器 API 依赖问题。
+- 生产构建已验证通过：`npm run build` 成功，`/generate` 与主页可正常渲染。
+
 **Vercel 部署地址**：`https://ip-website-generator-saas.vercel.app`
 
 ---
