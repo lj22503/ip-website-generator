@@ -464,6 +464,13 @@ function renderFooter(data?: any, dark = false): string {
 // ============================================================
 
 const MODULE_STYLES = `
+body {
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+    margin: 0;
+}
+
 /* ---- Nav ---- */
 .site-nav {
     background: var(--bg);

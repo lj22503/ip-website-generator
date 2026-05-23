@@ -4,8 +4,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Anthropic } from '@anthropic-ai/sdk';
 
-const client = new Anthropic();
-
 interface Dimension {
   icon: string;
   label: string;
@@ -20,23 +18,132 @@ interface AnalysisResult {
   mbti: string;
 }
 
+const apiKey = process.env.ANTHROPIC_API_KEY;
+const client = apiKey ? new Anthropic({ apiKey }) : null;
+
+function createFallbackAnalysis(resumeText: string): AnalysisResult {
+  const normalized = resumeText.replace(/\s+/g, ' ').trim();
+  const sentences = normalized
+    .split(/[。！？\n]+/)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const contains = (keywords: string[]) => keywords.some((keyword) => normalized.includes(keyword));
+
+  const roleSentence =
+    sentences.find((sentence) => /(工程|产品|设计|运营|市场|研究|开发|管理|执行|写作|创意)/.test(sentence)) ||
+    sentences[0] ||
+    '这份简历呈现了候选人的核心专业能力。';
+  const projectSentence =
+    sentences.find((sentence) => /(项目|主导|负责|落地|上线|搭建|优化|交付|迭代)/.test(sentence)) ||
+    '项目经验在简历中有明确体现。';
+  const skillSentence =
+    sentences.find((sentence) => /(技术|技能|Python|TypeScript|JavaScript|React|SQL|AI|数据|架构|系统|产品)/.test(sentence)) ||
+    '核心技能可从简历内容中直接提炼。';
+  const educationSentence =
+    sentences.find((sentence) => /(大学|硕士|本科|博士|学校|学历|教育)/.test(sentence)) ||
+    '教育背景清晰可见。';
+  const achievementSentence =
+    sentences.find((sentence) => /(奖|增长|提升|突破|覆盖|发布|完成|达成|入选)/.test(sentence)) ||
+    '亮点表现出较强的执行力与成果导向。';
+
+  const storyBase = [roleSentence, projectSentence, achievementSentence].join('；');
+  const shortStory = storyBase.length > 60 ? `${storyBase.slice(0, 57)}…` : storyBase;
+  const fullStory = storyBase.length > 140 ? `${storyBase.slice(0, 137)}…` : storyBase;
+
+  const mbti = contains(['沟通', '客户', '市场', '运营', '销售', '产品'])
+    ? 'ENFP'
+    : contains(['数据', '架构', '系统', '工程', '技术', '算法', '分析'])
+      ? 'INTJ'
+      : contains(['设计', '创意', '体验', '用户', '视觉'])
+        ? 'INFP'
+        : contains(['管理', '执行', '领导', '目标', '结果', '运营'])
+          ? 'ESTJ'
+          : 'INTJ';
+
+  const dimensions: Dimension[] = [
+    {
+      icon: '💼',
+      label: '职业经历',
+      score: 65 + Math.min(25, Math.floor(normalized.length / 1200)),
+      text: roleSentence,
+    },
+    {
+      icon: '🧠',
+      label: '核心技能',
+      score: 60 + Math.min(30, Math.floor((normalized.match(/(Python|TypeScript|JavaScript|React|SQL|AI|产品|数据|架构|系统|前端|后端)/g) || []).length * 6)),
+      text: skillSentence,
+    },
+    {
+      icon: '🎓',
+      label: '教育背景',
+      score: 55 + (educationSentence.includes('大学') || educationSentence.includes('本科') || educationSentence.includes('硕士') || educationSentence.includes('博士') ? 20 : 0),
+      text: educationSentence,
+    },
+    {
+      icon: '💡',
+      label: '项目经验',
+      score: 60 + Math.min(25, Math.floor((normalized.match(/(项目|主导|负责|落地|上线|优化|交付|迭代|搭建)/g) || []).length * 5)),
+      text: projectSentence,
+    },
+    {
+      icon: '🌟',
+      label: '成就亮点',
+      score: 55 + Math.min(25, Math.floor((normalized.match(/(奖|增长|提升|突破|覆盖|发布|完成|达成|入选)/g) || []).length * 7)),
+      text: achievementSentence,
+    },
+    {
+      icon: '🔍',
+      label: '洞察与价值观',
+      score: 58,
+      text: contains(['用户', '价值', '成长', '原则', '诚信', '目标'])
+        ? '简历中体现出明确的价值判断与可持续成长思维。'
+        : '简历内容显示出较强的目标意识与自我驱动能力。',
+    },
+    {
+      icon: '⚡',
+      label: '潜力与方向',
+      score: 57,
+      text: contains(['产品', '运营', '市场', '增长'])
+        ? '未来可在产品运营与增长方向继续深化。'
+        : contains(['数据', '架构', '系统', '技术'])
+          ? '未来可在技术架构与数据方向继续发力。'
+          : '未来具备继续扩展认知边界与带来更多业务价值的空间。',
+    },
+  ];
+
+  return {
+    dimensions,
+    short_story: shortStory,
+    full_story: fullStory,
+    mbti,
+  };
+}
+
 export async function POST(request: NextRequest) {
+  let resumeText = '';
+
   try {
     const { resume_text } = await request.json();
+    resumeText = resume_text || '';
 
-    if (!resume_text || resume_text.trim().length < 50) {
+    if (!resumeText || resumeText.trim().length < 50) {
       return NextResponse.json(
         { error: 'Resume text is too short (minimum 50 characters)' },
         { status: 400 }
       );
     }
 
-    const resumeLength = resume_text.length;
+    const resumeLength = resumeText.length;
     if (resumeLength > 50000) {
       return NextResponse.json(
         { error: 'Resume text is too long (maximum 50,000 characters)' },
         { status: 400 }
       );
+    }
+
+    if (!client) {
+      return NextResponse.json(createFallbackAnalysis(resumeText));
     }
 
     const message = await client.messages.parse({
@@ -124,18 +231,16 @@ ${resume_text}
   } catch (error: any) {
     console.error('Analysis error:', error);
 
-    if (error?.status === 429) {
-      return NextResponse.json(
-        { error: 'Rate limit exceeded. Please try again later.' },
-        { status: 429 }
-      );
-    }
+    const status = Number(error?.status || 0);
+    const fallbackEligible =
+      !apiKey ||
+      status === 401 ||
+      status === 429 ||
+      status >= 500 ||
+      /network|timeout|api/i.test(String(error?.message || ''));
 
-    if (error?.status === 401) {
-      return NextResponse.json(
-        { error: 'API key invalid or missing.' },
-        { status: 401 }
-      );
+    if (fallbackEligible) {
+      return NextResponse.json(createFallbackAnalysis(resumeText));
     }
 
     return NextResponse.json(

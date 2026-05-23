@@ -65,6 +65,7 @@ export default function GeneratePage() {
   const [generatedHtml, setGeneratedHtml] = useState('');
   const [toastMsg, setToastMsg] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const sectionRefs = [
     useRef<HTMLElement>(null),
@@ -302,7 +303,7 @@ export default function GeneratePage() {
 
           <div
             className={styles.uploadZone}
-            onClick={() => document.getElementById('fileInput')?.click()}
+            onClick={() => fileInputRef.current?.click()}
           >
             <div className={styles.uploadIcon}>{isExtracting ? '⏳' : '↗'}</div>
             <div className={styles.uploadTitle}>
@@ -316,6 +317,14 @@ export default function GeneratePage() {
             </div>
           </div>
 
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".pdf,.docx,.doc"
+            style={{ display: 'none' }}
+            onChange={handleFileChange}
+          />
+
           {fileName && (
             <div className={styles.fileCard}>
               <div className={styles.fileIconBadge}>
@@ -324,7 +333,15 @@ export default function GeneratePage() {
               <div>
                 <div className={styles.fileName}>{fileName}</div>
               </div>
-              <button className={styles.fileRemove} onClick={() => setFileName('')}>×</button>
+              <button
+                className={styles.fileRemove}
+                onClick={() => {
+                  setFileName('');
+                  setResumeText('');
+                }}
+              >
+                ×
+              </button>
             </div>
           )}
 
