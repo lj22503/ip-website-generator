@@ -330,6 +330,27 @@
     .browser-content { height: 520px; overflow: hidden; }
     .browser-content iframe { width: 100%; height: 100%; border: none; display: block; }
 
+    .design-switcher {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .switch-btn {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        color: var(--text-secondary);
+        padding: 8px 20px;
+        border-radius: 20px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .switch-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+    .switch-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+
     /* Meta */
     .example-meta {
         display: grid;
@@ -533,7 +554,7 @@
             <a href="#example">示例</a>
             <a href="#features">特点</a>
             <a href="#how">使用方法</a>
-            <a href="#how" class="nav-cta">开始生成 →</a>
+            <a href="/generate" class="nav-cta">开始生成 →</a>
         </div>
     </div>
 </nav>
@@ -611,8 +632,14 @@
                 <div class="browser-url">hermes.mangofolio.com</div>
             </div>
             <div class="browser-content">
-                <iframe src="./examples/hermes_personal_site.html" title="Hermes Agent Personal Site"></iframe>
+                <iframe id="example-frame" src="./examples/hermes_personal_site.html" title="Hermes Agent Personal Site"></iframe>
             </div>
+        </div>
+
+        <div class="design-switcher">
+            <button class="switch-btn active" data-src="./examples/hermes_personal_site.html" data-label="Claude温暖赭橙">Claude</button>
+            <button class="switch-btn" data-src="./examples/hermes_portfolio_linear.html" data-label="Linear简洁">Linear</button>
+            <button class="switch-btn" data-src="./examples/hermes_career_stripe.html" data-label="Stripe专业">Stripe</button>
         </div>
 
         <div class="example-meta">
@@ -715,7 +742,7 @@
         <h2>准备好讲<br>你的故事了吗</h2>
         <p>免费生成，下载HTML文件<br>永久属于你，不依赖任何平台</p>
         <div class="cta-actions">
-            <a href="#example" class="btn btn-primary">先看效果</a>
+            <a href="/generate" class="btn btn-primary">先看效果</a>
         </div>
     </div>
 </section>
@@ -727,6 +754,18 @@
         <p>2026</p>
     </div>
 </footer>
+
+<script>
+document.querySelectorAll('.switch-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.switch-btn').forEach(function(b) { b.classList.remove('active'); });
+        this.classList.add('active');
+        var frame = document.getElementById('example-frame');
+        if (frame) { frame.src = this.getAttribute('data-src'); }
+        document.querySelector('.browser-url').textContent = this.getAttribute('data-label');
+    });
+});
+</script>
 
 </body>
 </html>
