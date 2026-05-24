@@ -11,14 +11,26 @@ interface Dimension {
   text: string;
 }
 
+interface ProfileData {
+  name: string;
+  role: string;
+  company: string;
+  skills: string[];
+  education: string[];
+  projects: string[];
+  achievements: string[];
+  values: string[];
+  direction: string[];
+  summary: string;
+}
+
 interface GenerateRequest {
   dimensions: Dimension[];
   short_story: string;
   full_story: string;
   mbti: string;
   style: string;
-  name?: string;
-  role?: string;
+  profile?: ProfileData;
   contact_email?: string;
   social_links?: Array<{ platform: string; url: string }>;
 }
@@ -26,7 +38,7 @@ interface GenerateRequest {
 export async function POST(request: NextRequest) {
   try {
     const body: GenerateRequest = await request.json();
-    const { dimensions, short_story, full_story, mbti, style, name, role, contact_email, social_links } = body;
+    const { dimensions, short_story, full_story, mbti, style, profile, contact_email, social_links } = body;
 
     if (!dimensions && !short_story && !full_story) {
       return NextResponse.json(
@@ -36,49 +48,71 @@ export async function POST(request: NextRequest) {
     }
 
     const design = style || 'notion';
-
-    // Build name from first dimension text (职业经历) or use provided name
-    const careerDim = dimensions?.find(d => d.label.includes('职业'));
-    const nameFromText = name || short_story?.split(/[|\n]/)[0]?.trim() || careerDim?.text?.split(/[，。\n]/)[0]?.split(' ')[0] || '我';
-    const nameVal = name || nameFromText;
-
-    // Build role from career dimension
-    const roleVal = role || (careerDim?.text?.match(/\b(工程师|经理|总监|创始人|设计师|产品|运营|市场|销售|研发|技术|前端|后端|全栈)\b/)?.[0]) || '创作者';
-
-    // Build skills from core skills dimension
-    const skillsDim = dimensions?.find(d => d.label.includes('技能') || d.label.includes('核心'));
-    const skillsText = skillsDim?.text || '';
-
-    // Build projects/highlights from project dimension
-    const projectDim = dimensions?.find(d => d.label.includes('项目') || d.label.includes('成就'));
-
-    // Build page modules content
-    const pageContent: Record<string, any> = {};
-
-    // Hero — use short_story or career intro
-    pageContent['hero_featured'] = {
-      title: nameVal,
-      subtitle: roleVal,
-      featured_projects: [],
+    const profileData = profile || {
+      name: '我',
+      role: '创作者',
+      company: '',
+      skills: [],
+      education: [],
+      projects: [],
+      achievements: [],
+      values: [],
+      direction: [],
+      summary: short_story || full_story || '',
     };
 
-    // Story — use full_story
-    if (full_story) {
-      pageContent['story'] = {
-        experiences: full_story,
-        challenges: dimensions?.find(d => d.label.includes('洞察') || d.label.includes('特质'))?.text || '',
-        insights: dimensions?.find(d => d.label.includes('潜力'))?.text || '',
-      };
-    }
-
-    // About — derive from several dimensions
+    const careerDim = dimensions?.find(d => d.label.includes('职业'));
+    const skillsDim = dimensions?.find(d => d.label.includes('技能') || d.label.includes('核心'));
     const eduDim = dimensions?.find(d => d.label.includes('教育'));
     const highlightDim = dimensions?.find(d => d.label.includes('成就') || d.label.includes('亮点'));
+    const projectDim = dimensions?.find(d => d.label.includes('项目') || d.label.includes('成就'));
+    const insightDim = dimensions?.find(d => d.label.includes('洞察') || d.label.includes('特质'));
+    const potentialDim = dimensions?.find(d => d.label.includes('潜力'));
 
-    let bioParts: string[] = [];
-    if (skillsDim?.text) bioParts.push(skillsDim.text);
-    if (eduDim?.text) bioParts.push(eduDim.text);
-    if (highlightDim?.text) bioParts.push(highlightDim.text);
+    const nameVal = profileData.name || careerDim?.text?.split(/[，。\n]/)[0]?.trim() || '我';
+    const roleVal = profileData.role || careerDim?.text?.match(/\b(工程师|经理|总监|创始人|设计师|产品|运营|市场|销售|研发|技术|前端|后端|全栈)\b/)?.[0] || '创作者';
+
+    const skillsText = profileData.skills.length > 0
+      ? profileData.skills.join('、')
+      : skillsDim?.text || '';
+
+    const projectTitles = profileData.projects.length > 0
+      ? profileData.projects
+      : (projectDim?.text || '')
+          .split(/[，、\n]/)
+          .map((item: string) => item.trim())
+          .filter(Boolean)
+          .slice(0, 5);
+
+    const awardTitles = profileData.achievements.length > 0
+      ? profileData.achievements
+      : (highlightDim?.text || '')
+          .split(/[，。\n]/)
+          .map((item: string) => item.trim())
+          .filter(Boolean)
+          .slice(0, 3);
+
+    const bioParts = [
+      skillsText,
+      eduDim?.text || profileData.education.join('；'),
+      highlightDim?.text || profileData.achievements.join('；'),
+    ].filter(Boolean);
+
+    const pageContent: Record<string, any> = {};
+
+    pageContent['hero_featured'] = {
+      title: nameVal,
+      subtitle: [roleVal, profileData.company].filter(Boolean).join(' · '),
+      featured_projects: projectTitles.slice(0, 5),
+    };
+
+    if (full_story || profileData.summary) {
+      pageContent['story'] = {
+        experiences: full_story || profileData.summary,
+        challenges: insightDim?.text || profileData.values.join('、') || '',
+        insights: potentialDim?.text || profileData.direction.join('、') || '',
+      };
+    }
 
     pageContent['about'] = {
       headline: nameVal,
@@ -86,10 +120,9 @@ export async function POST(request: NextRequest) {
       photo: '',
     };
 
-    // Skills — from skills dimension text
     if (skillsText) {
       const skillTags = skillsText
-        .split(/[,，、\n]/)
+        .split(/[，、,\n]/)
         .map((s: string) => s.trim())
         .filter((s: string) => s.length > 0 && s.length < 20)
         .slice(0, 15);
@@ -102,37 +135,30 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    // Awards — from highlight dimension
-    if (highlightDim?.text) {
+    if (awardTitles.length > 0) {
       pageContent['awards'] = {
-        awards: [
-          { title: highlightDim.text.split(/[，。]/)[0], year: '', issuer: '' },
-        ],
+        awards: awardTitles.map((title: string) => ({
+          title,
+          year: '',
+          issuer: profileData.company || '',
+        })),
       };
     }
 
-    // Projects — from project dimension
-    if (projectDim?.text) {
-      const projects = projectDim.text
-        .split(/[,，、\n]/)
-        .filter((s: string) => s.trim().length > 5)
-        .slice(0, 5)
-        .map((title: string) => ({
-          title: title.trim(),
+    if (projectTitles.length > 0) {
+      pageContent['projects'] = {
+        projects: projectTitles.map((title: string) => ({
+          title,
           year: '',
           role: roleVal,
           background: '',
           outcome: '',
-          tags: [],
+          tags: profileData.skills.slice(0, 4),
           url: '',
-        }));
-
-      if (projects.length > 0) {
-        pageContent['projects'] = { projects };
-      }
+        })),
+      };
     }
 
-    // Contact
     if (contact_email || social_links) {
       pageContent['contact'] = {
         email: contact_email || '',
@@ -140,7 +166,6 @@ export async function POST(request: NextRequest) {
       };
     }
 
-    // Social
     if (social_links && social_links.length > 0) {
       pageContent['social'] = { links: social_links };
     }

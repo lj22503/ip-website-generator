@@ -22,34 +22,46 @@ const apiKey = process.env.ANTHROPIC_API_KEY;
 const client = apiKey ? new Anthropic({ apiKey }) : null;
 
 function createFallbackAnalysis(resumeText: string): AnalysisResult {
-  const normalized = resumeText.replace(/\s+/g, ' ').trim();
-  const sentences = normalized
-    .split(/[。！？\n]+/)
-    .map((s) => s.trim())
+  const raw = resumeText.replace(/\u0000/g, '').replace(/\r/g, '').trim();
+  const normalized = raw.replace(/\s+/g, ' ').trim();
+  const lines = raw
+    .split(/\n+/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const sentences = raw
+    .split(/[。！？!?\n]+/)
+    .map((sentence) => sentence.trim())
     .filter(Boolean);
 
   const contains = (keywords: string[]) => keywords.some((keyword) => normalized.includes(keyword));
+  const findSentence = (keywords: string[]) => sentences.find((sentence) => keywords.some((keyword) => sentence.includes(keyword))) || '';
 
-  const roleSentence =
-    sentences.find((sentence) => /(工程|产品|设计|运营|市场|研究|开发|管理|执行|写作|创意)/.test(sentence)) ||
-    sentences[0] ||
-    '这份简历呈现了候选人的核心专业能力。';
-  const projectSentence =
-    sentences.find((sentence) => /(项目|主导|负责|落地|上线|搭建|优化|交付|迭代)/.test(sentence)) ||
-    '项目经验在简历中有明确体现。';
-  const skillSentence =
-    sentences.find((sentence) => /(技术|技能|Python|TypeScript|JavaScript|React|SQL|AI|数据|架构|系统|产品)/.test(sentence)) ||
-    '核心技能可从简历内容中直接提炼。';
-  const educationSentence =
-    sentences.find((sentence) => /(大学|硕士|本科|博士|学校|学历|教育)/.test(sentence)) ||
+  const firstLine = lines[0] || '';
+  const name = firstLine.match(/^[A-Za-z\u4e00-\u9fa5·\s]{2,20}$/)?.[0]?.trim() || '候选人';
+  const role =
+    findSentence(['高级前端工程师', '前端工程师', '全栈工程师', '产品经理', '产品设计师', '设计师', '运营经理', '市场经理', '数据分析师', '研发工程师', '技术负责人', '创始人']) ||
+    (contains(['前端', 'React', 'Next.js', 'TypeScript']) ? '前端工程师' : '创作者');
+  const company =
+    lines.find((line) => /(科技|集团|公司|实验室|平台|工作室|有限公司|有限责任公司)/.test(line)) ||
+    '';
+  const education =
+    findSentence(['本科', '硕士', '博士', '大学', '学校', '学历', '教育']) ||
+    lines.find((line) => /(本科|硕士|博士|大学|学校|学历|教育)/.test(line)) ||
     '教育背景清晰可见。';
+  const skillSentence =
+    findSentence(['TypeScript', 'JavaScript', 'React', 'Next.js', 'Node.js', 'Python', 'SQL', 'AI', '产品', '数据分析', '架构', 'UX', 'UI', 'Figma']) ||
+    '核心技能可从简历内容中直接提炼。';
+  const projectSentence =
+    findSentence(['项目', '主导', '负责', '落地', '上线', '搭建', '优化', '交付', '迭代', '重构']) ||
+    '项目经验在简历中有明确体现。';
   const achievementSentence =
-    sentences.find((sentence) => /(奖|增长|提升|突破|覆盖|发布|完成|达成|入选)/.test(sentence)) ||
+    findSentence(['增长', '提升', '降低', '覆盖', '发布', '完成', '达成', '获', '荣获', '入选', '斩获', '突破']) ||
     '亮点表现出较强的执行力与成果导向。';
 
-  const storyBase = [roleSentence, projectSentence, achievementSentence].join('；');
-  const shortStory = storyBase.length > 60 ? `${storyBase.slice(0, 57)}…` : storyBase;
-  const fullStory = storyBase.length > 140 ? `${storyBase.slice(0, 137)}…` : storyBase;
+  const careerText = `${role}${company ? `，目前在${company}` : ''}。${projectSentence}`;
+  const storyBase = [careerText, achievementSentence, education].join('；');
+  const shortStory = storyBase.length > 90 ? `${storyBase.slice(0, 87)}…` : storyBase;
+  const fullStory = `${name} 是一位${role}${company ? `，当前服务于${company}` : ''}的从业者。${projectSentence}。${achievementSentence}。${education}。`;
 
   const mbti = contains(['沟通', '客户', '市场', '运营', '销售', '产品'])
     ? 'ENFP'
@@ -61,35 +73,39 @@ function createFallbackAnalysis(resumeText: string): AnalysisResult {
           ? 'ESTJ'
           : 'INTJ';
 
+  const skillCount = (normalized.match(/(TypeScript|JavaScript|React|Next\.js|Node\.js|Python|SQL|AI|Figma|数据分析|架构|UX|UI|产品|运营)/g) || []).length;
+  const projectCount = (normalized.match(/(项目|主导|负责|落地|上线|优化|交付|迭代|重构|搭建)/g) || []).length;
+  const achievementCount = (normalized.match(/(增长|提升|降低|覆盖|发布|完成|达成|获|荣获|入选|突破)/g) || []).length;
+
   const dimensions: Dimension[] = [
     {
       icon: '💼',
       label: '职业经历',
-      score: 65 + Math.min(25, Math.floor(normalized.length / 1200)),
-      text: roleSentence,
+      score: 60 + Math.min(30, Math.floor(normalized.length / 1000)),
+      text: careerText,
     },
     {
       icon: '🧠',
       label: '核心技能',
-      score: 60 + Math.min(30, Math.floor((normalized.match(/(Python|TypeScript|JavaScript|React|SQL|AI|产品|数据|架构|系统|前端|后端)/g) || []).length * 6)),
+      score: 55 + Math.min(35, skillCount * 6),
       text: skillSentence,
     },
     {
       icon: '🎓',
       label: '教育背景',
-      score: 55 + (educationSentence.includes('大学') || educationSentence.includes('本科') || educationSentence.includes('硕士') || educationSentence.includes('博士') ? 20 : 0),
-      text: educationSentence,
+      score: 55 + (education.includes('大学') || education.includes('本科') || education.includes('硕士') || education.includes('博士') ? 20 : 0),
+      text: education,
     },
     {
       icon: '💡',
       label: '项目经验',
-      score: 60 + Math.min(25, Math.floor((normalized.match(/(项目|主导|负责|落地|上线|优化|交付|迭代|搭建)/g) || []).length * 5)),
+      score: 58 + Math.min(32, projectCount * 5),
       text: projectSentence,
     },
     {
       icon: '🌟',
       label: '成就亮点',
-      score: 55 + Math.min(25, Math.floor((normalized.match(/(奖|增长|提升|突破|覆盖|发布|完成|达成|入选)/g) || []).length * 7)),
+      score: 56 + Math.min(30, achievementCount * 6),
       text: achievementSentence,
     },
     {
@@ -98,16 +114,16 @@ function createFallbackAnalysis(resumeText: string): AnalysisResult {
       score: 58,
       text: contains(['用户', '价值', '成长', '原则', '诚信', '目标'])
         ? '简历中体现出明确的价值判断与可持续成长思维。'
-        : '简历内容显示出较强的目标意识与自我驱动能力。',
+        : '整体呈现出较强的目标意识、执行力与可塑性。',
     },
     {
       icon: '⚡',
       label: '潜力与方向',
       score: 57,
       text: contains(['产品', '运营', '市场', '增长'])
-        ? '未来可在产品运营与增长方向继续深化。'
+        ? '未来可在产品运营与增长方向持续深化，形成更强的业务影响力。'
         : contains(['数据', '架构', '系统', '技术'])
-          ? '未来可在技术架构与数据方向继续发力。'
+          ? '未来可在技术架构与数据能力上继续扩展。'
           : '未来具备继续扩展认知边界与带来更多业务价值的空间。',
     },
   ];
