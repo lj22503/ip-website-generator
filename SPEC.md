@@ -9,8 +9,9 @@
 - `saas/` — Vercel 部署版（Web UI，浏览器直接使用）
 
 **最新修复**：
-- `saas/nextjs/app/generate/page.tsx` 改为按需加载 `pdfjs-dist`，解决 Next.js 构建阶段的浏览器 API 依赖问题。
-- 生产构建已验证通过：`npm run build` 成功，`/generate` 与主页可正常渲染。
+- `skill/core.py` 所有 `open(args.content)` 添加 `encoding="utf-8"`，解决 Windows GBK 环境下读取 UTF-8 中文 JSON 失败的 Bug。
+- 三套 Jinja2 模板（developerfolio / alfolio / rahulbeniwal）全部可基于 `test_data_all_fields.json` 生成苏轼完整样例。
+- `adapter_output.json` 加入 `.gitignore`。
 
 **Vercel 部署地址**：`https://ip-website-generator-saas.vercel.app`
 
