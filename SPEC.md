@@ -209,6 +209,78 @@ ip-website-generator/
 
 ---
 
+## 叙事结构重构（2026-05-25）
+
+### 问题诊断
+- **About + Story 重复** — About 应从 Story 提取精华，非独立全文
+- **Framework 单独成区块** — 方法论应融入 Skills 内作为子项
+- **Timeline + Experience 重复** — 两者都是经历，合并为一个
+- **Soul/Identity/Challenge 引述碎片化** — 合并精简
+
+### 解决方案
+| 问题 | 解决方案 |
+|------|---------|
+| About + Story 重复 | 合并为「我是谁」：bio 做简介 + story 三段（经历/挑战/洞见）做细节 |
+| 独立 SOUL 大声明区块 | 移除，soul_statement 在 Identity Stats Grid 左上角展示一行 |
+| 独立 FRAMEWORK 大区块 | 方法论卡片下沉到 SKILLS 模块底部 |
+| 独立 TIMELINE 区块 | 移除，experience 模块本身就是时间线 |
+| 重复的 CHALLENGE QUOTE | 保留为轻量横条，引述核心挑战 |
+
+### 各模板最终区块顺序
+
+**developerfolio**（深色科技风）：
+`HERO → Identity Stats → 我是谁 → 技能(含方法论) → 职业经历 → 教育 → 项目 → 成就 → 文章 → 评价 → 联系 → FOOTER`
+
+**alfolio**（学术风）：
+`侧栏(含头像/MBTI/关键词) → 我是谁 → 技能(含方法论) → 职业经历 → 联系方式 → 评价`
+
+**rahulbeniwal**（极简项目风）：
+`HERO → Identity Stats → 我是谁 → 挑战引述 → 项目 → 技能(含方法论) → 职业经历 → 联系 → 评价 → FOOTER`
+
+### Adapter 字段传递（三个适配器同步）
+- `mbti` — 从 `story.mbti` 提取
+- `soul_statement` — 从 `story.insights` 提取
+- `challenge_quote` — 从 `story.challenges` 提取
+- `framework_items` — 优先独立字段，回退从 `about.bio` 拆分段落
+- `stats` — `{mbti, skills, years, availability}` (to_alfolio/to_rahulbeniwal 新增)
+- `testimonials` / `resources` — 直通传递
+
+### 数据缺失自动隐藏
+所有新增区块均为 `{% if data.xxx %}` 条件渲染，数据缺失时区块自动隐藏不报错。
+
+---
+
+## 叙事结构重构 v2（2026-05-25 下午）
+
+### 核心理念
+以 Hermes 三个示例（`hermes_personal_site.html` 等）为基准，重构模板结构：
+- SOUL（内核）：价值观/原则卡片/最深挑战
+- FRAMEWORK（方法论）：方法论卡片网格
+- FORM（风格）：相处方式/MBTI
+- STORY（故事）：成长轨迹时间线
+- SKILLS（技能）：技能分类
+- WORKS（作品）：项目卡片
+
+### developerfolio 区块结构（参考 Hermes 示例）
+```
+HERO → SOUL（原则+最深挑战）→ FRAMEWORK（方法论网格）→ FORM（MBTI）→ STORY（成长轨迹）→ SKILLS（技能图谱）→ WORKS（项目作品）→ CONTACT → FOOTER
+```
+
+### 关键字段映射
+| Hermes 数据字段 | developerfolio 模板变量 |
+|---------------|----------------------|
+| `story.insights` | `data.story.insights` → Soul 大声明 |
+| `form.keywords[]` | `data.form.keywords` → 原则卡片 |
+| `story.deepest_challenge` | `data.story.deepest_challenge` → 深挑战引述 |
+| `framework_items[]` | `data.framework_items` → 方法论卡片 |
+| `mbti` / `mbti_description` | `data.mbti` / `data.mbti_description` → MBTI 卡片 |
+| `form.interaction_styles[]` | `data.form.interaction_styles` → 相处方式列表 |
+| `story.timeline[]` | `data.story.timeline` → 故事时间线 |
+| `skills.categories[]` | `data.skills.categories` → 技能标签 |
+| `projects[]` | `data.projects` → 项目卡片 |
+
+---
+
 ## Git Commits
 
 | Commit | 内容 |
