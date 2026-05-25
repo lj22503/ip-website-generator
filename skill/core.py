@@ -379,7 +379,7 @@ def generate(args):
                 product = "portfolio"
             # Load user content if provided, otherwise use demo
             if args.content:
-                with open(args.content) as f:
+                with open(args.content, encoding="utf-8") as f:
                     raw = json.load(f)
                     # Support both flat JSON and {"content": {...}} wrapped JSON
                     content = raw.get("content", raw)
@@ -397,7 +397,7 @@ def generate(args):
     else:
         # Load content from JSON file if provided
         if args.content:
-            with open(args.content) as f:
+            with open(args.content, encoding="utf-8") as f:
                 raw = json.load(f)
                 content = raw.get("content", raw)
         else:
@@ -413,7 +413,7 @@ def generate(args):
         # Support both flat JSON and {"content": {...}} wrapped
         # Pass FULL raw JSON so adapter can access top-level name/role
         if args.content:
-            with open(args.content) as f:
+            with open(args.content, encoding="utf-8") as f:
                 raw = json.load(f)
                 content = raw  # keep raw so adapter sees name/role at top level
         elif args.demo:
