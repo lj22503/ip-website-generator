@@ -1,0 +1,280 @@
+{
+  "content": {
+    "name": "苏轼",
+    "role": "北宋文学家、书画家、政治家",
+    "title": "北宋文学家、书画家、政治家",
+    "hero_story": {
+      "headline": "一蓑烟雨任平生",
+      "subtitle": "唐宋八大家 · 苏东坡 · 豪放派词宗"
+    },
+    "headline": "一蓑烟雨任平生",
+    "hero_subtitle": "唐宋八大家 · 苏东坡 · 豪放派词宗",
+    "avatar": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Su_shi2.jpg/440px-Su_shi2.jpg",
+    "location": "眉州眉山（今四川眉山）",
+    "available": "不可用",
+    "accent_color": "#8b5cf6",
+    "accent_secondary": "#f59e0b",
+    "bg_color": "#0a0a0f",
+    "surface_color": "#12121a",
+    "year": "2026",
+    "greeting": "你好，我是",
+
+    "about": {
+      "subtitle": "关于苏轼",
+      "headline": "关于苏轼",
+      "bio": "苏轼是宋代文学最高成就代表，中国文学史上最全面的天才之一。诗、词、文、书、画五绝皆精，散文与欧阳修并称「欧苏」，诗与黄庭坚并称「苏黄」，词与辛弃疾并称「苏辛」，书法为「宋四家」之首。兼擅水利、医药、烹饪、酿酒、养生。一生屡遭贬谪而从不坠志，以旷达超脱的人生态度成为中国文人精神丰碑。",
+      "description": "苏轼是宋代文学最高成就代表，中国文学史上最全面的天才之一。",
+      "image": "",
+      "paragraphs": [
+        "苏轼是宋代文学最高成就代表，中国文学史上最全面的天才之一。诗、词、文、书、画五绝皆精，散文与欧阳修并称「欧苏」。",
+        "兼擅水利、医药、烹饪、酿酒、养生。一生屡遭贬谪而从不坠志，以旷达超脱的人生态度成为中国文人精神丰碑。"
+      ]
+    },
+
+    "story": {
+      "experiences": "苏轼一生历经北宋仁宗、英宗，神宗、哲宗、徽宗五朝，仕途屡起屡落。早年随父苏洵、弟苏辙进京应试，嘉祐二年（1057年）进士及第。",
+      "challenges": "苏轼一生三次贬谪，每每置于死地而后生。黄州贬谪：四十三岁因「乌台诗案」下狱百余日，几近处死，贬黄州团练副使不得签书公事，人生跌入谷底。",
+      "insights": "苏轼的旷达并非天生，而是一次次与命运博弈后的超脱。他曾说：「吾上可陪玉皇大帝，下可陪卑田院乞儿。」——无论庙堂还是田间，他都能与人真诚相对。",
+      "mbti": "ENFP",
+      "mbti_description": "外向直觉情感知觉型 — 热情洋溢的梦想家，富有感染力创造力",
+      "deepest_challenge": "问汝平生功业，黄州惠州儋州。",
+      "narrative": "苏轼将儒家的入世，道家的旷达、佛家的超脱融为一体，形成了独特的东坡式人生哲学。",
+      "timeline": [
+        {"year": "1057", "title": "进士及第", "description": "随父苏洵、弟苏辙进京应试，嘉祐二年进士及第，欧阳修叹曰出人头地。"},
+        {"year": "1077", "title": "徐州抗洪", "description": "黄河决口，亲率军民筑堤七十余日，保全全城。"},
+        {"year": "1080", "title": "贬谪黄州", "description": "因乌台诗案贬黄州，躬耕东坡，自号东坡居士。"},
+        {"year": "1089", "title": "疏浚西湖", "description": "知杭州，主持疏浚西湖，筑苏堤，建三塔。"},
+        {"year": "1098", "title": "儋州办学", "description": "远贬海南儋州，于儋州开馆授学，培养海南首位举人。"}
+      ],
+      "experiences_paragraphs": [
+        "苏轼一生历经北宋仁宗、英宗，神宗、哲宗、徽宗五朝，仕途屡起屡落。",
+        "早年随父苏洵、弟苏辙进京应试，嘉祐二年（1057年）进士及第，主考官欧阳修叹曰：'老夫当避路，放他出一头地也。'",
+        "中年因反对王安石变法，自请外任杭州、密州、徐州、湖州。熙宁九年（1077年）黄河决口徐州，苏轼亲率军民筑堤七十余日，保全全城。"
+      ]
+    },
+
+    "framework_items": [
+      {"number": "1", "title": "以意为主", "description": "文章合为时而著，诗歌合为事而作。"},
+      {"number": "2", "title": "随物赋形", "description": "为文当如流水，随物赋形，因势利导。"},
+      {"number": "3", "title": "通达权变", "description": "执一害道，守经而不知变通。"},
+      {"number": "4", "title": "情理之中", "description": "论事以情理为主，不可意气用事。"}
+    ],
+
+    "skills": {
+      "categories": [
+        {"name": "文学创作", "items": ["诗", "词", "散文", "赋", "记", "论", "书", "志"]},
+        {"name": "艺术成就", "items": ["行书", "楷书", "枯木怪石画", "文人画理论"]},
+        {"name": "政治实务", "items": ["水利工程", "城市供水系统", "抗洪救灾", "变法讨论"]},
+        {"name": "生活技艺", "items": ["烹饪（东坡肉/羹）", "酿酒", "养生", "古琴"]}
+      ],
+      "bars": [
+        {"name": "诗词创作", "pct": 98, "percentage": 98},
+        {"name": "书法绘画", "pct": 95, "percentage": 95},
+        {"name": "散文成就", "pct": 97, "percentage": 97},
+        {"name": "政治实务", "pct": 80, "percentage": 80},
+        {"name": "生活艺术", "pct": 90, "percentage": 90}
+      ]
+    },
+
+    "experience": [
+      {
+        "period": "1061-1065",
+        "date": "1061-1065",
+        "duration": "1061-1065",
+        "role": "大理评事、凤翔签判",
+        "title": "大理评事、凤翔签判",
+        "company": "凤翔府",
+        "location": "陕西凤翔",
+        "description": "协助知府处理文书刑狱，改革衙前役法减轻百姓负担，组织修建东湖。",
+        "achievements": ["改革衙前役法", "修建东湖"]
+      },
+      {
+        "period": "1080-1084",
+        "date": "1080-1084",
+        "duration": "1080-1084",
+        "role": "黄州团练副使",
+        "title": "黄州团练副使",
+        "company": "黄州",
+        "location": "湖北黄冈",
+        "description": "因乌台诗案贬黄州，躬耕东坡，自号东坡居士。完成《易传》《论语说》两部学术著作。",
+        "achievements": ["躬耕东坡", "完成《易传》《论语说》", "创制东坡肉"]
+      },
+      {
+        "period": "1089-1091",
+        "date": "1089-1091",
+        "duration": "1089-1091",
+        "role": "知州",
+        "title": "知州",
+        "company": "杭州",
+        "location": "浙江杭州",
+        "description": "主持疏浚西湖，用淤泥筑成苏堤，建三塔，设立中国第一家公立医院「安乐坊」。",
+        "achievements": ["筑苏堤", "疏浚西湖", "建安乐坊"]
+      }
+    ],
+
+    "education": [
+      {
+        "period": "1037-1056",
+        "date": "1037-1056",
+        "degree": "政治经济学硕士",
+        "title": "政治经济学硕士",
+        "institution": "南京大学",
+        "school": "南京大学",
+        "description": "经济学理论深造，研究金融市场与宏观经济政策"
+      },
+      {
+        "period": "2008-2012",
+        "date": "2008-2012",
+        "degree": "经济学学士",
+        "title": "经济学学士",
+        "institution": "南京大学",
+        "school": "南京大学",
+        "description": "经济学基础学习"
+      }
+    ],
+
+    "projects": [
+      {
+        "title": "徐州抗洪（1077年）",
+        "name": "徐州抗洪（1077年）",
+        "year": "1077",
+        "role": "知徐州",
+        "background": "黄河决口，苏轼『庐于城上，过家不入』，组织五千民夫筑堤抗洪。",
+        "description": "黄河决口，苏轼『庐于城上，过家不入』，组织五千民夫筑堤抗洪。",
+        "outcome": "堤成，全城保全。朝廷嘉奖，建黄楼纪念。",
+        "result": "堤成，全城保全。朝廷嘉奖，建黄楼纪念。",
+        "tags": ["水利", "抗洪", "政绩"],
+        "url": "#"
+      },
+      {
+        "title": "杭州苏堤与西湖疏浚",
+        "name": "杭州苏堤与西湖疏浚",
+        "year": "1089-1090",
+        "role": "知杭州",
+        "background": "用湖底淤泥筑成长堤，建三塔，疏浚西湖，恢复水域生态。",
+        "description": "用湖底淤泥筑成长堤，建三塔，疏浚西湖，恢复水域生态。",
+        "outcome": "苏堤至今为西湖十景之首，西湖焕然一新。",
+        "result": "苏堤至今为西湖十景之首，西湖焕然一新。",
+        "tags": ["水利", "市政", "文化遗存"],
+        "url": "#"
+      },
+      {
+        "title": "《黄州寒食诗帖》",
+        "name": "《黄州寒食诗帖》",
+        "year": "1082",
+        "role": "书画家",
+        "background": "黄州第三年书写的两首寒食诗，自嘲诗书俱老，情感沉郁顿挫。",
+        "description": "黄州第三年书写的两首寒食诗，自嘲诗书俱老，情感沉郁顿挫。",
+        "outcome": "被誉为『天下第三行书』，现存于台北故宫博物院。",
+        "result": "被誉为『天下第三行书』，现存于台北故宫博物院。",
+        "tags": ["书法", "诗词", "文人画"],
+        "url": "#"
+      }
+    ],
+
+    "mini_projects": [
+      {"name": "东坡肉", "description": "黄州时期创制的名菜，流传至今", "title": "东坡肉"},
+      {"name": "东坡羹", "description": "简朴而美味的饮食发明", "title": "东坡羹"},
+      {"name": "广州自来水工程", "description": "世界最早的城市管道供水系统之一", "title": "广州自来水工程"}
+    ],
+
+    "open_source": [
+      {"name": "东坡易传", "description": "对《易经》的注解著作", "language": "古文", "stars": "1000+"},
+      {"name": "东坡志林", "description": "随笔文集，涵盖政治、历史、文学", "language": "古文", "stars": "800+"},
+      {"name": "苏沈良方", "description": "医药方剂著作", "language": "古文", "stars": "500+"}
+    ],
+
+    "achievements": [
+      {"title": "徐州抗洪", "description": "黄河决口，亲率军民筑堤七十余日，保全全城。建黄楼纪念，后人称『苏黄楼』。", "date": "1077", "year": "1077"},
+      {"title": "疏浚西湖筑苏堤", "description": "用淤泥筑成长堤，植柳桃，建六桥，今『苏堤春晓』为西湖十景之首。", "date": "1089-1090", "year": "1089"},
+      {"title": "天下第三行书", "description": "《黄州寒食诗帖》被誉为『天下第三行书』，奠定苏轼『宋四家』之首地位。", "date": "1082", "year": "1082"},
+      {"title": "儋州办学", "description": "在海南开馆授学，培养海南历史上首位举人姜唐佐，开文化教育先河。", "date": "1098", "year": "1098"}
+    ],
+
+    "blogs": [
+      {"title": "《念奴娇·赤壁怀古》", "date": "1082", "excerpt": "大江东去，浪淘尽，千古风流人物", "url": "#", "description": "大江东去，浪淘尽，千古风流人物", "read_time": 5},
+      {"title": "《水调歌头·明月几时有》", "date": "1076", "excerpt": "但愿人长久，千里共婵娟", "url": "#", "description": "但愿人长久，千里共婵娟", "read_time": 4},
+      {"title": "《前赤壁赋》", "date": "1082", "excerpt": "惟江上之清风，与山间之明月，耳得之而为声，目遇之而成色", "url": "#", "description": "惟江上之清风，与山间之明月，耳得之而为声，目遇之而成色", "read_time": 6}
+    ],
+
+    "news": [
+      {"title": "苏轼研究新成果发布", "date": "2024-03", "url": "#"},
+      {"title": "儋州发现苏轼亲笔题字", "date": "2023-11", "url": "#"}
+    ],
+
+    "publications": [
+      {"title": "《东坡易传》", "authors": "苏轼", "venue": "元丰三年", "description": "对《易经》的系统注解"},
+      {"title": "《东坡志林》", "authors": "苏轼", "venue": "元丰四年", "description": "随笔杂文合集"}
+    ],
+
+    "contact": {
+      "email": "sudongpo@history.cn",
+      "phone": "13800138000",
+      "links": [
+        "公众号 | 苏东坡研究",
+        "知乎专栏 | #"
+      ]
+    },
+
+    "socials": {
+      "github": "https://github.com/sudongpo",
+      "linkedin": "https://linkedin.com/in/sudongpo",
+      "twitter": "https://twitter.com/sudongpo",
+      "email": "sudongpo@history.cn",
+      "phone": "13800138000",
+      "medium": ""
+    },
+
+    "badges": [
+      {"text": "唐宋八大家", "href": "#"},
+      "宋四家之首",
+      "豪放派词宗",
+      "文人画开创者"
+    ],
+
+    "resume_url": "#",
+
+    "footer": "Personal IP Site Generator · 叙事工程驱动",
+
+    "contact_heading": "期待合作",
+    "contact_subtitle": "如果您有金融科技产品、AI应用或C端增长相关需求，欢迎联系",
+    "contact_note": "通常24小时内回复",
+
+    "hero_meta": [
+      {"label": "朝代", "value": "北宋"},
+      {"label": "流派", "value": "豪放派"},
+      {"label": "成就", "value": "诗书文画五绝"}
+    ],
+
+    "resources": {
+      "network": [
+        {"name": "欧阳修", "role": "恩师/伯乐", "description": "宋代文坛宗主，读苏轼文章后预言『三十年后无人道着我』"},
+        {"name": "王安石", "role": "政敌/晚年和解", "description": "虽政治对立，晚年于金陵相逢，赞叹『不知更几百年方有如此人物』"},
+        {"name": "黄庭坚", "role": "学生/词友", "description": "与苏轼亦师亦友，并称『苏黄』"}
+      ],
+      "tools": ["东坡易传", "东坡志林", "东坡酒经", "苏沈良方"],
+      "communities": ["元祐党人", "蜀学学派"],
+      "influence": ["后世文人精神偶像", "日本汉诗影响深远", "韩国东坡热"]
+    },
+
+    "form": {
+      "keywords": [
+        {"title": "旷达", "description": "面对命运不公以审美方式超越"},
+        {"title": "乐天派", "description": "逆境中仍保持积极心态"},
+        {"title": "全才", "description": "诗书文画五绝皆精"}
+      ],
+      "style": "豪放中见细腻，逆境中见超脱，学问中见性情",
+      "external_presence": ["文学作品", "书法绘画真迹", "苏堤等历史遗迹", "民间美食传说"],
+      "interaction_styles": [
+        {"icon": "✦", "title": "真诚", "description": "不拐弯抹角，有话直说"},
+        {"icon": "◈", "title": "有趣", "description": "幽默风趣，善于自嘲"},
+        {"icon": "△", "title": "达观", "description": "经历起伏后仍保持平和"}
+      ]
+    },
+
+    “testimonials”: [
+      {“quote”: “test1”, “author”: “a”},
+      {“quote”: “test2”, “author”: “b”}
+    ]
+  }
+}
