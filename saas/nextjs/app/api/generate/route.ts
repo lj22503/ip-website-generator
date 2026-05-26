@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     // Resources dimension text → social links (heuristic extraction if no social_links provided)
     const resourcesText = resourcesDim?.text || '';
-    const socialLinksFromResources = social_links?.length > 0
+    const socialLinksFromResources = (social_links?.length ?? 0) > 0
       ? social_links
       : (resourcesText.includes('人脉') || resourcesText.includes('资源') || resourcesText.includes('合作'))
         ? []
@@ -179,7 +179,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Social links from Resources dimension or provided social_links
-    if (socialLinksFromResources !== undefined || social_links?.length > 0) {
+    if (socialLinksFromResources !== undefined || (social_links?.length ?? 0) > 0) {
       pageContent['social'] = {
         links: social_links || [],
       };
