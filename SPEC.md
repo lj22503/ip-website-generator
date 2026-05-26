@@ -9,9 +9,11 @@
 - `saas/` — Vercel 部署版（Web UI，浏览器直接使用）
 
 **最新修复**：
-- `skill/core.py` 所有 `open(args.content)` 添加 `encoding="utf-8"`，解决 Windows GBK 环境下读取 UTF-8 中文 JSON 失败的 Bug。
+- `skill/core.py` 所有 `open(args.content)` 添加 `encoding="utf-8"`，解决 Windows GBK 环境下读取 UTF-8 中文 JSON 失败问题。
 - 三套 Jinja2 模板（developerfolio / alfolio / rahulbeniwal）全部可基于 `test_data_all_fields.json` 生成苏轼完整样例。
 - `adapter_output.json` 加入 `.gitignore`。
+- **SaaS 新增模板模式**：`/api/generate` 支持 `template` 参数（developerfolio / alfolio / rahulbeniwal），使用纯 TypeScript 字符串模板引擎渲染完整 HTML，与 Skill 逻辑一致。Step3 UI 新增模板选择 Tab。
+- `saas/nextjs/next.config.js` 配置 webpack 支持 `.html` 文件作为 `asset/source` 模块直接导入。
 
 **Vercel 部署地址**：`https://ip-website-generator-saas.vercel.app`
 
@@ -177,6 +179,7 @@ ip-website-generator/
 ### SaaS 版本
 - [x] `/api/generate` 响应字段名一致 ✅ 2026-05-22 → `renderPage()` 返回 `html_base64`
 - [x] `saas/nextjs/lib/css-builder.ts` 10 套设计系统 ✅ 2026-05-22 端口完成（10套，完整实现）
+- [x] SaaS `/api/generate` 支持 template 参数 + Step3 UI 模板选择器 ✅ 2026-05-26
 
 ---
 
@@ -188,7 +191,6 @@ ip-website-generator/
 - [ ] Surface 层接入 render_page（`--surface` 参数生效）
 
 ### SaaS 版本
-- [ ] Vercel 部署后 bug 修复并上线
 - [ ] `saas/nextjs/lib/css-builder.ts` 补充 44 套设计系统至 54 套
 - [ ] 落地页 `personal-ip-site/index.html` 与 SaaS 集成或合并
 
