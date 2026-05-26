@@ -433,6 +433,13 @@ export default function GeneratePage() {
   const [toastMsg, setToastMsg] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('developerfolio');
+
+  const TEMPLATE_OPTIONS = [
+    { id: 'developerfolio', name: '深色科技风', desc: '现代深色布局，适合技术/产品背景' },
+    { id: 'alfolio', name: '学术侧栏', desc: '左栏信息卡，右栏内容流，适合学术/专业背景' },
+    { id: 'rahulbeniwal', name: '极简项目风', desc: '大字体+大字距，适合创意/设计师背景' },
+  ];
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -551,6 +558,7 @@ export default function GeneratePage() {
           full_story: analysisResult.full_story,
           mbti: analysisResult.mbti,
           style: selectedStyle,
+          template: selectedTemplate,
           profile,
         }),
       });
@@ -828,6 +836,32 @@ export default function GeneratePage() {
                     <div className={styles.styleCheck}>✓</div>
                   </button>
                 ))}
+              </div>
+
+              <div style={{ marginBottom: 24 }}>
+                <p className={styles.sectionLabel} style={{ fontSize: '0.75rem', marginBottom: 8 }}>页面结构</p>
+                <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+                  {TEMPLATE_OPTIONS.map((tpl) => (
+                    <button
+                      key={tpl.id}
+                      type="button"
+                      onClick={() => setSelectedTemplate(tpl.id)}
+                      style={{
+                        padding: '10px 16px',
+                        borderRadius: 10,
+                        border: selectedTemplate === tpl.id ? '2px solid var(--accent)' : '1px solid rgba(255,255,255,0.12)',
+                        background: selectedTemplate === tpl.id ? 'rgba(0,117,222,0.12)' : 'rgba(20,20,28,0.9)',
+                        color: selectedTemplate === tpl.id ? '#55d4eb' : '#9090a8',
+                        cursor: 'pointer',
+                        fontSize: '0.88rem',
+                        fontWeight: 600,
+                        transition: 'all 0.2s',
+                      }}
+                    >
+                      {tpl.name}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className={styles.previewFrame}>
