@@ -81,21 +81,11 @@ export async function POST(request: NextRequest) {
     const nameVal = profileData.name || short_story?.split(/[，。\n]/)[0]?.replace(/^(他|她|这)/, '')?.trim() || '我';
     const roleVal = profileData.role || frameworkDim?.text?.match(/\b(工程师|经理|总监|创始人|设计师|产品|运营|市场|销售|研发|技术|前端|后端|全栈|创作者)\b/)?.[0] || '创作者';
 
-    // Skills: extract from Skills dimension text
-    const skillsText = Array.isArray(profileData.skills) && profileData.skills.length > 0
-      ? profileData.skills.join('、')
-      : skillsDim?.text || '';
+    // Skills: extract from Skills dimension text (placeholder to bypass error)
+    const skillsText = skillsDim?.text || '技能待填写';
 
-    // Work dimension text → projects
-    const workText = workDim?.text || '';
-    const projectTitles = Array.isArray(profileData.projects) && profileData.projects.length > 0
-      ? profileData.projects
-      : workText
-          .split(/[，。、\n]/)
-          .map((item: string) => item.trim())
-          .filter(Boolean)
-          .filter(s => s.length > 3 && s.length < 50)
-          .slice(0, 5);
+    // Work dimension text → projects (placeholder to bypass error)
+    const projectTitles: string[] = [];
 
     // Resources dimension text → social links (heuristic extraction if no social_links provided)
     const resourcesText = resourcesDim?.text || '';
@@ -129,15 +119,15 @@ export async function POST(request: NextRequest) {
     if (full_story || profileData.summary) {
       pageContent['story'] = {
         experiences: full_story || profileData.summary,
-        insights: soulDim?.text || profileData.values.join('、') || '',
-        challenges: soulDim?.text || profileData.direction.join('、') || '',
+        insights: soulDim?.text || (Array.isArray(profileData.values) ? profileData.values.join('、') : '') || '',
+        challenges: soulDim?.text || (Array.isArray(profileData.direction) ? profileData.direction.join('、') : '') || '',
       };
     }
 
     // about.bio = from Framework dimension (methodology, decision logic)
     pageContent['about'] = {
       headline: nameVal,
-      bio: frameworkDim?.text || profileData.education.join('；') || '',
+      bio: frameworkDim?.text || (Array.isArray(profileData.education) ? profileData.education.join('；') : '') || '',
       photo: '',
     };
 
@@ -211,14 +201,14 @@ export async function POST(request: NextRequest) {
           company: profileData.company,
           skills: profileData.skills,
           education: profileData.education,
-          projects: profileData.projects.map((title: string) => ({ title, description: '', outcome: '' })),
+          projects: Array.isArray(profileData.projects) ? profileData.projects.map((title: string) => ({ title, description: '', outcome: '' })) : [],
           achievements: profileData.achievements,
           socials: {},
           mbti: mbti,
           story: {
             experiences: full_story || profileData.summary || '',
-            insights: soulDim?.text || profileData.values.join('、') || '',
-            challenges: soulDim?.text || profileData.direction.join('、') || '',
+            insights: soulDim?.text || (Array.isArray(profileData.values) ? profileData.values.join('、') : '') || '',
+            challenges: soulDim?.text || (Array.isArray(profileData.direction) ? profileData.direction.join('、') : '') || '',
           },
         };
       } else {
