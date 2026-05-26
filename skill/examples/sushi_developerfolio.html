@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>苏轼 — 北宋文学家、书画家、政治家</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: rgba(20,20,30,0.85);
+  --accent: #0075de;
+  --accent-secondary: #00c7b7;
+  --text-primary: #e8e8f0;
+  --text-secondary: #9090a8;
+  --text-muted: #606078;
+  --border: rgba(255,255,255,0.08);
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --radius: 14px;
+  --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+.section {
+  padding: 80px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+.section-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+.section-header { margin-bottom: 40px; }
+.section-divider {
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+
+/* NAVBAR */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent);
+  text-decoration: none;
+}
+.nav-links {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+.nav-links a:hover {
+  color: var(--text-primary);
+  background: var(--border);
+}
+@media (max-width: 768px) { .nav-links { display: none; } }
+
+/* HERO */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(85,212,235,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(168,85,247,0.08) 0%, transparent 50%);
+}
+.hero-avatar {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  object-fit: cover;
+  margin-bottom: 24px;
+  box-shadow: 0 0 40px rgba(85,212,235,0.25);
+}
+.hero-greeting {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.hero-name {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-title {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+.hero-subtitle {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 560px;
+  margin-bottom: 32px;
+  line-height: 1.8;
+}
+.hero-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 40px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: rgba(85,212,235,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(85,212,235,0.2);
+  text-decoration: none;
+}
+.hero-socials {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.social-icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.social-icon:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(85,212,235,0.2);
+}
+.hero-scroll {
+  position: absolute;
+  bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ABOUT */
+.about-bio {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  white-space: pre-line;
+}
+
+/* STORY */
+.story-block { max-width: 720px; }
+.story-card { margin-bottom: 32px; }
+.story-card h3 {
+  font-size: 1.1rem;
+  margin-bottom: 12px;
+  font-weight: 700;
+}
+.story-card p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  line-height: 1.9;
+  margin-bottom: 12px;
+}
+
+/* SKILLS */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.skill-category {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: var(--transition);
+}
+.skill-category:hover {
+  border-color: rgba(85,212,235,0.3);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.skill-cat-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.skill-tags { display: flex; flex-wrap: wrap; gap: 8px; }
+.skill-tag {
+  padding: 4px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.skill-bars { display: flex; flex-direction: column; gap: 16px; max-width: 600px; }
+.skill-bar-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.skill-bar-name { font-size: 0.88rem; font-weight: 600; }
+.skill-bar-pct { font-size: 0.78rem; color: var(--accent); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.skill-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.skill-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+  border-radius: 3px;
+  transition: width 1.2s ease;
+}
+
+/* TIMELINE */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px; bottom: 8px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-secondary));
+  border-radius: 1px;
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 36px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -33px; top: 8px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 10px rgba(85,212,235,0.4);
+}
+.timeline-date {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 4px;
+}
+.timeline-role { font-size: 1.05rem; font-weight: 700; margin-bottom: 2px; }
+.timeline-company { font-size: 0.9rem; color: var(--accent-secondary); font-weight: 600; margin-bottom: 8px; }
+.timeline-desc { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.7; }
+
+/* PROJECTS */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  border-color: rgba(85,212,235,0.3);
+}
+.project-banner {
+  height: 140px;
+  background: linear-gradient(135deg, rgba(85,212,235,0.15), rgba(168,85,247,0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.project-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, var(--bg-card));
+}
+.project-banner-icon { font-size: 2.5rem; opacity: 0.6; }
+.project-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.project-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.project-title { font-size: 1rem; font-weight: 700; color: var(--text-primary); }
+.project-year { font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; white-space: nowrap; }
+.project-role { font-size: 0.82rem; color: var(--accent); font-weight: 600; }
+.project-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; flex: 1; }
+.project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+.project-tag {
+  padding: 3px 10px;
+  background: rgba(85,212,235,0.08);
+  border: 1px solid rgba(85,212,235,0.15);
+  border-radius: 4px;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.project-link:hover { gap: 10px; }
+
+/* ACHIEVEMENTS */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.achievement-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: var(--transition);
+}
+.achievement-card:hover {
+  border-color: rgba(168,85,247,0.3);
+  transform: translateY(-2px);
+}
+.achievement-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-secondary);
+  flex-shrink: 0;
+}
+.achievement-title { font-size: 0.88rem; font-weight: 700; margin-bottom: 4px; }
+.achievement-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
+
+/* BLOGS */
+.blogs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+.blog-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: var(--transition);
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+.blog-card:hover {
+  border-color: rgba(85,212,235,0.3);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+.blog-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
+.blog-excerpt { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
+.blog-meta { font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+/* CONTACT */
+.contact-box {
+  background: var(--bg-card);
+  border: 1px solid rgba(85,212,235,0.2);
+  border-radius: var(--radius);
+  padding: 40px;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.contact-heading { font-size: 1.8rem; font-weight: 900; margin-bottom: 8px; }
+.contact-sub { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 32px; }
+.contact-links { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: var(--transition);
+  width: 100%;
+  max-width: 320px;
+  justify-content: center;
+}
+.contact-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(85,212,235,0.06);
+  transform: translateY(-1px);
+}
+.contact-note { margin-top: 24px; font-size: 0.8rem; color: var(--text-muted); }
+
+/* FOOTER */
+.footer {
+  text-align: center;
+  padding: 32px 24px;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.footer-socials { display: flex; gap: 12px; justify-content: center; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="#" class="nav-logo">苏轼</a>
+  <ul class="nav-links">
+    <li><a href="#about">关于</a></li>
+    <li><a href="#skills">技能</a></li>
+    <li><a href="#experience">经历</a></li>
+    <li><a href="#projects">项目</a></li>
+    <li><a href="#achievements">成就</a></li>
+    <li><a href="#blogs">博客</a></li>
+    <li><a href="#contact">联系</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+
+  
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Su_shi2.jpg/440px-Su_shi2.jpg" alt="苏轼" class="hero-avatar">
+  
+
+  <div class="hero-greeting">你好，我是</div>
+  <h1 class="hero-name">苏轼</h1>
+  <p class="hero-title">北宋文学家、书画家、政治家</p>
+  
+  <p class="hero-subtitle">唐宋八大家 · 苏东坡 · 豪放派词宗</p>
+  
+
+  
+  <div class="hero-badges">
+    
+    <a href="#" class="badge">唐宋八大家</a>
+    
+    <a href="#" class="badge">宋四家之首</a>
+    
+    <a href="#" class="badge">豪放派词宗</a>
+    
+    <a href="#" class="badge">文人画开创者</a>
+    
+  </div>
+  
+
+  <div class="hero-socials">
+    
+    <a href="https://github.com/sudongpo" class="social-icon" target="_blank"><i data-lucide="github" style="width:18px;height:18px"></i></a>
+    
+    
+    <a href="https://linkedin.com/in/sudongpo" class="social-icon" target="_blank"><i data-lucide="linkedin" style="width:18px;height:18px"></i></a>
+    
+    
+    <a href="mailto:sudongpo@history.cn" class="social-icon"><i data-lucide="mail" style="width:18px;height:18px"></i></a>
+    
+  </div>
+
+  
+  <a href="#" class="badge" style="margin-top:20px;cursor:pointer" download>
+    <i data-lucide="download" style="width:14px;height:14px"></i> 下载简历
+  </a>
+  
+
+  <div class="hero-scroll">
+    <i data-lucide="chevrons-down" style="width:20px;height:20px"></i>
+    <span>向下滚动</span>
+  </div>
+</section>
+
+<!-- ABOUT -->
+
+<section class="section" id="about">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">关于我</h2>
+    <p class="section-subtitle">关于苏轼</p>
+  </div>
+  <div style="max-width:720px">
+    <p class="about-bio">苏轼是宋代文学最高成就代表，中国文学史上最全面的天才之一。诗、词、文、书、画五绝皆精，散文与欧阳修并称「欧苏」，诗与黄庭坚并称「苏黄」，词与辛弃疾并称「苏辛」，书法为「宋四家」之首。兼擅水利、医药、烹饪、酿酒、养生。一生屡遭贬谪而从不坠志，以旷达超脱的人生态度成为中国文人精神丰碑。</p>
+  </div>
+</section>
+
+
+<!-- STORY -->
+
+<section class="section" id="story">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">我的故事</h2>
+  </div>
+  <div class="story-block">
+
+    
+    <div class="story-card">
+      <h3 style="color:var(--accent)">✦ 经历</h3>
+      
+      <p>苏轼一生历经北宋仁宗、英宗，神宗、哲宗、徽宗五朝，仕途屡起屡落。早年随父苏洵、弟苏辙进京应试，嘉祐二年（1057年）进士及第。</p>
+      
+    </div>
+    
+
+    
+    <div class="story-card">
+      <h3 style="color:var(--accent-secondary)">✦ 挑战</h3>
+      
+      <p>苏轼一生三次贬谪，每每置于死地而后生。黄州贬谪：四十三岁因乌台诗案下狱百余日，几近处死，贬黄州团练副使不得签书公事，人生跌入谷底。</p>
+      
+    </div>
+    
+
+    
+    <div class="story-card">
+      <h3 style="color:#f59e0b">✦ 洞见</h3>
+      
+      <p>苏轼的旷达并非天生，而是一次次与命运博弈后的超脱。他曾说：吾上可陪玉皇大帝，下可陪卑田院乞儿。无论庙堂还是田间，他都能与人真诚相对。</p>
+      
+    </div>
+    
+
+  </div>
+</section>
+
+
+<!-- SKILLS -->
+
+<section class="section" id="skills">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">技能图谱</h2>
+    <p class="section-subtitle">我所掌握的技术与工具</p>
+  </div>
+
+  <div class="skills-grid" style="margin-bottom:32px">
+    
+    <div class="skill-category">
+      <div class="skill-cat-title">文学创作</div>
+      <div class="skill-tags">
+        
+        <span class="skill-tag">诗</span>
+        
+        <span class="skill-tag">词</span>
+        
+        <span class="skill-tag">散文</span>
+        
+        <span class="skill-tag">赋</span>
+        
+        <span class="skill-tag">记</span>
+        
+        <span class="skill-tag">论</span>
+        
+        <span class="skill-tag">书</span>
+        
+        <span class="skill-tag">志</span>
+        
+      </div>
+    </div>
+    
+    <div class="skill-category">
+      <div class="skill-cat-title">艺术成就</div>
+      <div class="skill-tags">
+        
+        <span class="skill-tag">行书</span>
+        
+        <span class="skill-tag">楷书</span>
+        
+        <span class="skill-tag">枯木怪石画</span>
+        
+        <span class="skill-tag">文人画理论</span>
+        
+      </div>
+    </div>
+    
+    <div class="skill-category">
+      <div class="skill-cat-title">政治实务</div>
+      <div class="skill-tags">
+        
+        <span class="skill-tag">水利工程</span>
+        
+        <span class="skill-tag">城市供水系统</span>
+        
+        <span class="skill-tag">抗洪救灾</span>
+        
+        <span class="skill-tag">变法讨论</span>
+        
+      </div>
+    </div>
+    
+    <div class="skill-category">
+      <div class="skill-cat-title">生活技艺</div>
+      <div class="skill-tags">
+        
+        <span class="skill-tag">烹饪（东坡肉/羹）</span>
+        
+        <span class="skill-tag">酿酒</span>
+        
+        <span class="skill-tag">养生</span>
+        
+        <span class="skill-tag">古琴</span>
+        
+      </div>
+    </div>
+    
+  </div>
+
+  
+  <div class="skill-bars">
+    
+    <div class="skill-bar-item">
+      <div class="skill-bar-header">
+        <span class="skill-bar-name">诗词创作</span>
+        <span class="skill-bar-pct">98%</span>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-fill" style="width:98%"></div>
+      </div>
+    </div>
+    
+    <div class="skill-bar-item">
+      <div class="skill-bar-header">
+        <span class="skill-bar-name">书法绘画</span>
+        <span class="skill-bar-pct">95%</span>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-fill" style="width:95%"></div>
+      </div>
+    </div>
+    
+    <div class="skill-bar-item">
+      <div class="skill-bar-header">
+        <span class="skill-bar-name">散文成就</span>
+        <span class="skill-bar-pct">97%</span>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-fill" style="width:97%"></div>
+      </div>
+    </div>
+    
+    <div class="skill-bar-item">
+      <div class="skill-bar-header">
+        <span class="skill-bar-name">政治实务</span>
+        <span class="skill-bar-pct">80%</span>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-fill" style="width:80%"></div>
+      </div>
+    </div>
+    
+    <div class="skill-bar-item">
+      <div class="skill-bar-header">
+        <span class="skill-bar-name">生活艺术</span>
+        <span class="skill-bar-pct">90%</span>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-fill" style="width:90%"></div>
+      </div>
+    </div>
+    
+  </div>
+  
+</section>
+
+
+<!-- EXPERIENCE -->
+
+<section class="section" id="experience">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">职业经历</h2>
+    <p class="section-subtitle">我的职业发展轨迹</p>
+  </div>
+  <div class="timeline">
+    
+    <div class="timeline-item">
+      <div class="timeline-date">1061-1065</div>
+      <div class="timeline-role">大理评事、凤翔签判</div>
+      <div class="timeline-company">凤翔府 · 陕西凤翔</div>
+      <div class="timeline-desc">协助知府处理文书刑狱，改革衙前役法减轻百姓负担，组织修建东湖。</div>
+      
+      <ul style="margin-top:8px;padding-left:16px">
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">改革衙前役法</li>
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">修建东湖</li>
+        
+      </ul>
+      
+    </div>
+    
+    <div class="timeline-item">
+      <div class="timeline-date">1080-1084</div>
+      <div class="timeline-role">黄州团练副使</div>
+      <div class="timeline-company">黄州 · 湖北黄冈</div>
+      <div class="timeline-desc">因乌台诗案贬黄州，躬耕东坡，自号东坡居士。完成《易传》《论语说》两部学术著作。</div>
+      
+      <ul style="margin-top:8px;padding-left:16px">
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">躬耕东坡</li>
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">完成《易传》《论语说》</li>
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">创制东坡肉</li>
+        
+      </ul>
+      
+    </div>
+    
+    <div class="timeline-item">
+      <div class="timeline-date">1089-1091</div>
+      <div class="timeline-role">知州</div>
+      <div class="timeline-company">杭州 · 浙江杭州</div>
+      <div class="timeline-desc">主持疏浚西湖，用淤泥筑成苏堤，建三塔，设立中国第一家公立医院「安乐坊」。</div>
+      
+      <ul style="margin-top:8px;padding-left:16px">
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">筑苏堤</li>
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">疏浚西湖</li>
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">建安乐坊</li>
+        
+      </ul>
+      
+    </div>
+    
+  </div>
+</section>
+
+
+<!-- EDUCATION -->
+
+<section class="section" id="education">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">教育背景</h2>
+  </div>
+  <div class="timeline">
+    
+    <div class="timeline-item">
+      <div class="timeline-date">1037-1056</div>
+      <div class="timeline-role">政治经济学硕士</div>
+      <div class="timeline-company">南京大学</div>
+      <div class="timeline-desc">经济学理论深造，研究金融市场与宏观经济政策</div>
+    </div>
+    
+    <div class="timeline-item">
+      <div class="timeline-date">2008-2012</div>
+      <div class="timeline-role">经济学学士</div>
+      <div class="timeline-company">南京大学</div>
+      <div class="timeline-desc">经济学基础学习</div>
+    </div>
+    
+  </div>
+</section>
+
+
+<!-- PROJECTS -->
+
+<section class="section" id="projects">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">项目作品</h2>
+    <p class="section-subtitle">这些项目代表了我的能力边界</p>
+  </div>
+  <div class="projects-grid">
+    
+    <div class="project-card">
+      <div class="project-banner">
+        <span class="project-banner-icon">
+          <i data-lucide="folder-open" style="width:48px;height:48px;color:var(--accent)"></i>
+        </span>
+      </div>
+      <div class="project-body">
+        <div class="project-header">
+          <span class="project-title">徐州抗洪（1077年）</span>
+          <span class="project-year">1077</span>
+        </div>
+        <div class="project-role">知徐州</div>
+        <div class="project-desc">黄河决口，苏轼庐于城上，过家不入，组织五千民夫筑堤抗洪。</div>
+        <div class="project-desc" style="color:var(--accent-secondary)">✦ 堤成，全城保全。朝廷嘉奖，建黄楼纪念。</div>
+        
+        <div class="project-tags">
+          <span class="project-tag">水利</span><span class="project-tag">抗洪</span><span class="project-tag">政绩</span>
+        </div>
+        
+        <a href="#" class="project-link" target="_blank">查看详情 <i data-lucide="arrow-right" style="width:14px;height:14px"></i></a>
+      </div>
+    </div>
+    
+    <div class="project-card">
+      <div class="project-banner">
+        <span class="project-banner-icon">
+          <i data-lucide="folder-open" style="width:48px;height:48px;color:var(--accent)"></i>
+        </span>
+      </div>
+      <div class="project-body">
+        <div class="project-header">
+          <span class="project-title">杭州苏堤与西湖疏浚</span>
+          <span class="project-year">1089-1090</span>
+        </div>
+        <div class="project-role">知杭州</div>
+        <div class="project-desc">用湖底淤泥筑成长堤，建三塔，疏浚西湖，恢复水域生态。</div>
+        <div class="project-desc" style="color:var(--accent-secondary)">✦ 苏堤至今为西湖十景之首，西湖焕然一新。</div>
+        
+        <div class="project-tags">
+          <span class="project-tag">水利</span><span class="project-tag">市政</span><span class="project-tag">文化遗存</span>
+        </div>
+        
+        <a href="#" class="project-link" target="_blank">查看详情 <i data-lucide="arrow-right" style="width:14px;height:14px"></i></a>
+      </div>
+    </div>
+    
+    <div class="project-card">
+      <div class="project-banner">
+        <span class="project-banner-icon">
+          <i data-lucide="folder-open" style="width:48px;height:48px;color:var(--accent)"></i>
+        </span>
+      </div>
+      <div class="project-body">
+        <div class="project-header">
+          <span class="project-title">《黄州寒食诗帖》</span>
+          <span class="project-year">1082</span>
+        </div>
+        <div class="project-role">书画家</div>
+        <div class="project-desc">黄州第三年书写的两首寒食诗，自嘲诗书俱老，情感沉郁顿挫。</div>
+        <div class="project-desc" style="color:var(--accent-secondary)">✦ 被誉为天下第三行书，现存于台北故宫博物院。</div>
+        
+        <div class="project-tags">
+          <span class="project-tag">书法</span><span class="project-tag">诗词</span><span class="project-tag">文人画</span>
+        </div>
+        
+        <a href="#" class="project-link" target="_blank">查看详情 <i data-lucide="arrow-right" style="width:14px;height:14px"></i></a>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+
+<!-- ACHIEVEMENTS -->
+
+<section class="section" id="achievements">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">荣誉成就</h2>
+  </div>
+  <div class="achievements-grid">
+    
+    <div class="achievement-card">
+      <div class="achievement-icon">
+        <i data-lucide="star" style="width:20px;height:20px"></i>
+      </div>
+      <div>
+        <div class="achievement-title">徐州抗洪</div>
+        <div class="achievement-desc">黄河决口，亲率军民筑堤七十余日，保全全城。建黄楼纪念，后人称苏黄楼。</div>
+        <div class="achievement-desc" style="font-family:'JetBrains Mono',monospace">1077</div>
+      </div>
+    </div>
+    
+    <div class="achievement-card">
+      <div class="achievement-icon">
+        <i data-lucide="star" style="width:20px;height:20px"></i>
+      </div>
+      <div>
+        <div class="achievement-title">疏浚西湖筑苏堤</div>
+        <div class="achievement-desc">用淤泥筑成长堤，植柳桃，建六桥，今苏堤春晓为西湖十景之首。</div>
+        <div class="achievement-desc" style="font-family:'JetBrains Mono',monospace">1089</div>
+      </div>
+    </div>
+    
+    <div class="achievement-card">
+      <div class="achievement-icon">
+        <i data-lucide="star" style="width:20px;height:20px"></i>
+      </div>
+      <div>
+        <div class="achievement-title">天下第三行书</div>
+        <div class="achievement-desc">《黄州寒食诗帖》被誉为天下第三行书，奠定苏轼宋四家之首地位。</div>
+        <div class="achievement-desc" style="font-family:'JetBrains Mono',monospace">1082</div>
+      </div>
+    </div>
+    
+    <div class="achievement-card">
+      <div class="achievement-icon">
+        <i data-lucide="star" style="width:20px;height:20px"></i>
+      </div>
+      <div>
+        <div class="achievement-title">儋州办学</div>
+        <div class="achievement-desc">在海南开馆授学，培养海南历史上首位举人姜唐佐，开文化教育先河。</div>
+        <div class="achievement-desc" style="font-family:'JetBrains Mono',monospace">1098</div>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+
+<!-- BLOGS -->
+
+<section class="section" id="blogs">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">最新文章</h2>
+    <p class="section-subtitle">我在思考的东西</p>
+  </div>
+  <div class="blogs-grid">
+    
+    <a href="#" class="blog-card" target="_blank">
+      <div class="blog-title">《念奴娇·赤壁怀古》</div>
+      <div class="blog-excerpt">大江东去，浪淘尽，千古风流人物</div>
+      <div class="blog-meta">1082 · 5 min</div>
+    </a>
+    
+    <a href="#" class="blog-card" target="_blank">
+      <div class="blog-title">《水调歌头·明月几时有》</div>
+      <div class="blog-excerpt">但愿人长久，千里共婵娟</div>
+      <div class="blog-meta">1076 · 4 min</div>
+    </a>
+    
+    <a href="#" class="blog-card" target="_blank">
+      <div class="blog-title">《前赤壁赋》</div>
+      <div class="blog-excerpt">惟江上之清风，与山间之明月，耳得之而为声，目遇之而成色</div>
+      <div class="blog-meta">1082 · 6 min</div>
+    </a>
+    
+  </div>
+</section>
+
+
+<!-- CONTACT -->
+<section class="section" id="contact">
+  <div class="section-header" style="text-align:center">
+    <div class="section-divider" style="margin:0 auto 20px"></div>
+    <h2 class="section-title">联系我</h2>
+    <p class="section-subtitle">合作、咨询或只是想打个招呼</p>
+  </div>
+  <div class="contact-box">
+    <h3 class="contact-heading">期待合作</h3>
+    <p class="contact-sub">如果您有金融科技产品、AI应用或C端增长相关需求，欢迎联系</p>
+    <div class="contact-links">
+      
+      <a href="mailto:sudongpo@history.cn" class="contact-link">
+        <i data-lucide="mail" style="width:18px;height:18px"></i>
+        sudongpo@history.cn
+      </a>
+      
+      
+      <a href="https://linkedin.com/in/sudongpo" class="contact-link" target="_blank">
+        <i data-lucide="linkedin" style="width:18px;height:18px"></i>
+        LinkedIn
+      </a>
+      
+      
+      <a href="https://github.com/sudongpo" class="contact-link" target="_blank">
+        <i data-lucide="github" style="width:18px;height:18px"></i>
+        GitHub
+      </a>
+      
+    </div>
+    <p class="contact-note">通常24小时内回复</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-socials">
+    
+    <a href="https://github.com/sudongpo" class="social-icon" target="_blank" style="width:34px;height:34px"><i data-lucide="github" style="width:16px;height:16px"></i></a>
+    
+    
+    <a href="https://linkedin.com/in/sudongpo" class="social-icon" target="_blank" style="width:34px;height:34px"><i data-lucide="linkedin" style="width:16px;height:16px"></i></a>
+    
+  </div>
+  <p>© 苏轼 2026</p>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

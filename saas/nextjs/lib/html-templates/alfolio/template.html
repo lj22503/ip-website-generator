@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ data.name }} — {{ data.title }}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root {
+  --bg-primary: #fdfbf7;
+  --bg-sidebar: #1a1625;
+  --bg-content: #fdfbf7;
+  --text-sidebar: #e8e4f0;
+  --text-muted-sidebar: #8a86a0;
+  --accent: #c45d35;
+  --accent-light: rgba(124,58,237,0.12);
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --text-muted: #8888a8;
+  --border: rgba(0,0,0,0.08);
+  --sidebar-width: 280px;
+  --content-max: 820px;
+  --radius: 12px;
+  --transition: 0.3s ease;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Inter', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+}
+
+/* LAYOUT */
+.layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-sidebar);
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  overflow-y: auto;
+  padding: 40px 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  z-index: 100;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
+
+.sidebar-avatar {
+  width: 100px; height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--accent);
+  margin-bottom: 20px;
+  display: block;
+}
+.sidebar-name {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--text-sidebar);
+  margin-bottom: 4px;
+  line-height: 1.3;
+}
+.sidebar-title {
+  font-size: 0.78rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+.sidebar-bio {
+  font-size: 0.8rem;
+  color: var(--text-muted-sidebar);
+  line-height: 1.7;
+  margin-bottom: 24px;
+  border-left: 2px solid rgba(124,58,237,0.3);
+  padding-left: 12px;
+}
+.sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 32px;
+}
+.sidebar-nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: var(--text-muted-sidebar);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 500;
+  transition: var(--transition);
+}
+.sidebar-nav a:hover,
+.sidebar-nav a.active {
+  background: rgba(124,58,237,0.15);
+  color: var(--text-sidebar);
+}
+.sidebar-nav a i { opacity: 0.7; }
+.sidebar-nav a:hover i, .sidebar-nav a.active i { opacity: 1; }
+
+.sidebar-socials {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+.sidebar-social-link {
+  width: 34px; height: 34px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted-sidebar);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.sidebar-social-link:hover {
+  border-color: var(--accent);
+  color: var(--text-sidebar);
+  background: var(--accent-light);
+}
+
+/* MAIN CONTENT */
+.main {
+  margin-left: var(--sidebar-width);
+  flex: 1;
+  padding: 60px 48px;
+  max-width: calc(var(--sidebar-width) + var(--content-max) + 96px);
+}
+
+@media (max-width: 900px) {
+  .sidebar { width: 100%; position: relative; min-height: auto; padding: 32px 24px; }
+  .main { margin-left: 0; padding: 32px 24px; }
+  .layout { flex-direction: column; }
+  .sidebar-socials { display: none; }
+}
+
+/* SECTION STYLES */
+.content-section {
+  max-width: var(--content-max);
+  margin-bottom: 72px;
+}
+.content-section + .content-section {
+  padding-top: 48px;
+  border-top: 1px solid var(--border);
+}
+.section-heading {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 4px;
+  color: var(--text-primary);
+}
+.section-subheading {
+  font-size: 0.82rem;
+  color: var(--accent);
+  font-weight: 600;
+  margin-bottom: 28px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.section-divider {
+  width: 40px; height: 3px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  border-radius: 2px;
+  margin-bottom: 28px;
+}
+
+/* ABOUT TEXT */
+.about-text {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: var(--text-secondary);
+}
+.about-text p + p { margin-top: 16px; }
+
+/* PUBLICATIONS */
+.pub-list { display: flex; flex-direction: column; gap: 20px; }
+.pub-item {
+  padding: 20px 24px;
+  background: rgba(124,58,237,0.03);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.pub-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.4;
+}
+.pub-authors { font-size: 0.78rem; color: var(--text-muted); margin-bottom: 4px; }
+.pub-venue {
+  font-size: 0.78rem;
+  color: var(--accent);
+  font-weight: 600;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+.pub-desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
+
+/* NEWS / BLOG */
+.news-list { display: flex; flex-direction: column; gap: 16px; }
+.news-item {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.news-date {
+  font-size: 0.72rem;
+  font-family: 'Courier New', monospace;
+  color: var(--accent);
+  font-weight: 700;
+  white-space: nowrap;
+  padding-top: 2px;
+  min-width: 80px;
+}
+.news-title {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-decoration: none;
+  line-height: 1.5;
+  transition: var(--transition);
+}
+.news-title:hover { color: var(--accent); }
+
+/* SKILLS */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+.skill-group {
+  background: rgba(124,58,237,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+}
+.skill-group-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--accent);
+  margin-bottom: 10px;
+}
+.skill-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.skill-item {
+  font-size: 0.78rem;
+  padding: 3px 10px;
+  background: rgba(124,58,237,0.06);
+  border: 1px solid rgba(124,58,237,0.12);
+  border-radius: 4px;
+  color: var(--text-secondary);
+}
+
+/* EXPERIENCE */
+.exp-list { display: flex; flex-direction: column; gap: 28px; }
+.exp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.exp-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
+.exp-date { font-size: 0.72rem; color: var(--text-muted); font-family: monospace; white-space: nowrap; }
+.exp-company { font-size: 0.82rem; color: var(--accent); font-weight: 600; margin-bottom: 8px; }
+.exp-desc {
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+  padding-left: 14px;
+  border-left: 2px solid var(--border);
+}
+
+/* PROJECTS */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+}
+.project-item {
+  background: rgba(124,58,237,0.03);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+  transition: var(--transition);
+}
+.project-item:hover {
+  border-color: rgba(124,58,237,0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(124,58,237,0.08);
+}
+.project-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+  color: var(--text-primary);
+}
+.project-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 10px; }
+.project-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.project-tag {
+  font-size: 0.68rem;
+  padding: 2px 8px;
+  background: var(--accent-light);
+  border-radius: 4px;
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* CONTACT */
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.contact-item:last-child { border-bottom: none; }
+.contact-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+.contact-text { color: var(--text-secondary); }
+.contact-text a { color: var(--accent); text-decoration: none; }
+.contact-text a:hover { text-decoration: underline; }
+
+/* STORY */
+.story-phase {
+  margin-bottom: 32px;
+  padding: 20px 24px;
+  background: rgba(255,255,255,0.04);
+  border-left: 3px solid var(--accent);
+  border-radius: 0 8px 8px 0;
+}
+.story-phase-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  margin: 0 0 12px 0;
+}
+.story-phase-content p {
+  color: var(--text-secondary);
+  line-height: 1.75;
+  margin: 0 0 10px 0;
+}
+.story-phase-content p:last-child { margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+<div class="layout">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+  {% if data.avatar %}
+  <img src="{{ data.avatar }}" alt="{{ data.name }}" class="sidebar-avatar">
+  {% endif %}
+
+  <div class="sidebar-name">{{ data.name }}</div>
+  <div class="sidebar-title">{{ data.title }}</div>
+
+  {% if data.about and data.about.bio %}
+  <div class="sidebar-bio">{{ data.about.bio[:100] }}{% if data.about.bio|length > 100 %}...{% endif %}</div>
+  {% endif %}
+
+  <nav class="sidebar-nav">
+    <a href="#about"><i data-lucide="user" style="width:15px;height:15px"></i> 关于</a>
+    {% if data.news or data.blogs %}<a href="#news"><i data-lucide="newspaper" style="width:15px;height:15px"></i> 最新动态</a>{% endif %}
+    {% if data.publications %}<a href="#publications"><i data-lucide="book-open" style="width:15px;height:15px"></i> 发表成果</a>{% endif %}
+    {% if data.projects %}<a href="#projects"><i data-lucide="folder-archive" style="width:15px;height:15px"></i> 项目作品</a>{% endif %}
+    {% if data.skills %}<a href="#skills"><i data-lucide="cpu" style="width:15px;height:15px"></i> 技能</a>{% endif %}
+    {% if data.experience %}<a href="#experience"><i data-lucide="briefcase" style="width:15px;height:15px"></i> 经历</a>{% endif %}
+    <a href="#contact"><i data-lucide="mail" style="width:15px;height:15px"></i> 联系</a>
+  </nav>
+
+  <div class="sidebar-socials">
+    {% if data.socials and data.socials.github %}
+    <a href="{{ data.socials.github }}" class="sidebar-social-link" target="_blank"><i data-lucide="github" style="width:16px;height:16px"></i></a>
+    {% endif %}
+    {% if data.socials and data.socials.linkedin %}
+    <a href="{{ data.socials.linkedin }}" class="sidebar-social-link" target="_blank"><i data-lucide="linkedin" style="width:16px;height:16px"></i></a>
+    {% endif %}
+    {% if data.socials and data.socials.email %}
+    <a href="mailto:{{ data.socials.email }}" class="sidebar-social-link"><i data-lucide="mail" style="width:16px;height:16px"></i></a>
+    {% endif %}
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+<!-- ABOUT -->
+{% if data.about and data.about.bio %}
+<section class="content-section" id="about">
+  <div class="section-divider"></div>
+  <h1 class="section-heading">关于我</h1>
+  <p class="section-subheading">{{ data.name }}{% if data.title %} · {{ data.title }}{% endif %}</p>
+  <div class="about-text">
+    {% if data.about.paragraphs %}
+      {% for para in data.about.paragraphs %}
+    <p>{{ para }}</p>
+      {% endfor %}
+    {% else %}
+    <p>{{ data.about.bio }}</p>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+<!-- STORY -->
+{% if data.story and (data.story.experiences or data.story.challenges or data.story.insights) %}
+{% if data.story.experiences %}
+<section class="content-section" id="story-experiences">
+  <div class="section-divider"></div>
+  <h2 class="section-heading">经历</h2>
+  <div class="story-phase">
+    <div class="story-phase-title">✦ 经历</div>
+    <div class="story-phase-content">
+      {% if data.story.experiences is string %}
+      <p>{{ data.story.experiences }}</p>
+      {% else %}
+      {% for para in data.story.experiences %}
+      <p>{{ para }}</p>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if data.story.challenges %}
+<section class="content-section" id="story-challenges">
+  <div class="section-divider"></div>
+  <h2 class="section-heading">挑战</h2>
+  <div class="story-phase">
+    <div class="story-phase-title">✦ 挑战</div>
+    <div class="story-phase-content">
+      {% if data.story.challenges is string %}
+      <p>{{ data.story.challenges }}</p>
+      {% else %}
+      {% for para in data.story.challenges %}
+      <p>{{ para }}</p>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if data.story.insights %}
+<section class="content-section" id="story-insights">
+  <div class="section-divider"></div>
+  <h2 class="section-heading">洞见</h2>
+  <div class="story-phase">
+    <div class="story-phase-title">✦ 洞见</div>
+    <div class="story-phase-content">
+      {% if data.story.insights is string %}
+      <p>{{ data.story.insights }}</p>
+      {% else %}
+      {% for para in data.story.insights %}
+      <p>{{ para }}</p>
+      {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endif %}
+
+<!-- NEWS / BLOG -->
+{% if data.news %}
+<section class="content-section" id="news">
+  <div class="section-divider"></div>
+  <h2 class="section-heading">最新动态</h2>
+  <div class="news-list">
+    {% for item in data.news %}
+    <div class="news-item">
+      {% if item.date %}<span class="news-date">{{ item.date }}</span>{% endif %}
+      <a href="{{ item.url or '#' }}" class="news-title" target="_blank">{{ item.title }}</a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- PUBLICATIONS -->
+{% if data.publications %}
+<section class="content-section" id="publications">
+  <div class="section-divider"></div>
+  <h2 class="section-heading">发表成果</h2>
+  <div class="pub-list">
+    {% for pub in data.publications %}
+    <div class="pub-item">
+      <div class="pub-title">{{ pub.title }}</div>
+      {% if pub.authors %}<div class="pub-authors">{{ pub.authors }}</div>{% endif %}
+      {% if pub.venue %}<div class="pub-venue">{{ pub.venue }}</div>{% endif %}
+      {% if pub.description %}<div class="pub-desc">{{ pub.description }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- PROJECTS -->
+{% if data.projects %}
+<section class="content-section" id="projects">
+  <div class="section-divider"></div>
+  <h2 class="section-heading">项目作品</h2>
+  <div class="projects-grid">
+    {% for project in data.projects %}
+    <div class="project-item">
+      <div class="project-name">{{ project.title or project.name }}</div>
+      {% if project.description %}<div class="project-desc">{{ project.description }}</div>{% endif %}
+      {% if project.tags %}
+      <div class="project-tags">
+        {% for tag in project.tags %}<span class="project-tag">{{ tag }}</span>{% endfor %}
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- SKILLS -->
+{% if data.skills and data.skills.categories %}
+<section class="content-section" id="skills">
+  <div class="section-divider"></div>
+  <h2 class="section-heading">技能</h2>
+  <div class="skills-grid">
+    {% for cat in data.skills.categories %}
+    <div class="skill-group">
+      <div class="skill-group-title">{{ cat.name }}</div>
+      <div class="skill-list">
+        {% for item in cat.skill_list %}
+        <span class="skill-item">{{ item }}</span>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- EXPERIENCE -->
+{% if data.experience %}
+<section class="content-section" id="experience">
+  <div class="section-divider"></div>
+  <h2 class="section-heading">职业经历</h2>
+  <div class="exp-list">
+    {% for exp in data.experience %}
+    <div class="exp-item">
+      <div class="exp-header">
+        <span class="exp-title">{{ exp.role or exp.title }}</span>
+        {% if exp.period or exp.date %}<span class="exp-date">{{ exp.period or exp.date }}</span>{% endif %}
+      </div>
+      {% if exp.company %}<div class="exp-company">{{ exp.company }}</div>{% endif %}
+      {% if exp.description %}<div class="exp-desc">{{ exp.description }}</div>{% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- CONTACT -->
+<section class="content-section" id="contact">
+  <div class="section-divider"></div>
+  <h2 class="section-heading">联系方式</h2>
+  <div>
+
+    {% if data.socials and data.socials.email %}
+    <div class="contact-item">
+      <div class="contact-icon"><i data-lucide="mail" style="width:16px;height:16px"></i></div>
+      <div class="contact-text"><a href="mailto:{{ data.socials.email }}">{{ data.socials.email }}</a></div>
+    </div>
+    {% endif %}
+
+    {% if data.socials and data.socials.linkedin %}
+    <div class="contact-item">
+      <div class="contact-icon"><i data-lucide="linkedin" style="width:16px;height:16px"></i></div>
+      <div class="contact-text"><a href="{{ data.socials.linkedin }}" target="_blank">LinkedIn</a></div>
+    </div>
+    {% endif %}
+
+    {% if data.socials and data.socials.github %}
+    <div class="contact-item">
+      <div class="contact-icon"><i data-lucide="github" style="width:16px;height:16px"></i></div>
+      <div class="contact-text"><a href="{{ data.socials.github }}" target="_blank">GitHub</a></div>
+    </div>
+    {% endif %}
+
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

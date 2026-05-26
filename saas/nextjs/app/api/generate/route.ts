@@ -1,8 +1,14 @@
 // API Route: POST /api/generate
 // Generates a personal IP website from AI-analyzed 7 IP dimensions
+// Supports both renderPage() mode (legacy) and Jinja2 template mode (new)
 
 import { NextRequest, NextResponse } from 'next/server';
 import { renderPage } from '@/lib/html-renderer';
+import { adapt, TemplateName } from '@/lib/data-adapter';
+import { renderTemplate } from '@/lib/template-renderer';
+import developerfolioHtml from '@/lib/html-templates/developerfolio/template.html';
+import alfolioHtml from '@/lib/html-templates/alfolio/template.html';
+import rahulbeniwalHtml from '@/lib/html-templates/rahulbeniwal/template.html';
 
 interface Dimension {
   icon: string;
@@ -30,9 +36,11 @@ interface GenerateRequest {
   full_story: string;
   mbti: string;
   style: string;
+  template?: TemplateName;
   profile?: ProfileData;
   contact_email?: string;
   social_links?: Array<{ platform: string; url: string }>;
+  content?: Record<string, unknown>;
 }
 
 export async function POST(request: NextRequest) {
@@ -186,12 +194,28 @@ export async function POST(request: NextRequest) {
     }
 
     // Render
-    const html = renderPage({
-      designSystem: design,
-      content: pageContent,
-      selectedModules: ['hero_featured', 'about', 'story', 'skills', 'projects', 'awards', 'contact', 'social'],
-      productType: 'personal_site',
-    });
+    let html: string;
+    const template = body.template;
+    if (template) {
+      // ── Jinja2 template mode ──
+      // Use direct content JSON if provided, otherwise build from dimensions
+      const content = body.content || pageContent;
+      const templateData = adapt(content as Record<string, unknown>, template);
+      const templateHtml =
+        template === 'developerfolio' ? developerfolioHtml :
+        template === 'alfolio' ? alfolioHtml :
+        template === 'rahulbeniwal' ? rahulbeniwalHtml :
+        developerfolioHtml;
+      html = renderTemplate(templateHtml, templateData as unknown as Record<string, unknown>);
+    } else {
+      // ── Legacy renderPage mode ──
+      html = renderPage({
+        designSystem: design,
+        content: pageContent,
+        selectedModules: ['hero_featured', 'about', 'story', 'skills', 'projects', 'awards', 'contact', 'social'],
+        productType: 'personal_site',
+      });
+    }
 
     const id = `site-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
