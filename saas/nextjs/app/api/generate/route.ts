@@ -82,13 +82,13 @@ export async function POST(request: NextRequest) {
     const roleVal = profileData.role || frameworkDim?.text?.match(/\b(工程师|经理|总监|创始人|设计师|产品|运营|市场|销售|研发|技术|前端|后端|全栈|创作者)\b/)?.[0] || '创作者';
 
     // Skills: extract from Skills dimension text
-    const skillsText = profileData.skills.length > 0
+    const skillsText = Array.isArray(profileData.skills) && profileData.skills.length > 0
       ? profileData.skills.join('、')
       : skillsDim?.text || '';
 
     // Work dimension text → projects
     const workText = workDim?.text || '';
-    const projectTitles = profileData.projects.length > 0
+    const projectTitles = Array.isArray(profileData.projects) && profileData.projects.length > 0
       ? profileData.projects
       : workText
           .split(/[，。、\n]/)
@@ -198,8 +198,46 @@ export async function POST(request: NextRequest) {
     const template = body.template;
     if (template) {
       // ── Jinja2 template mode ──
-      // Use direct content JSON if provided, otherwise build from dimensions
-      const content = body.content || pageContent;
+      // Use profileData as content directly (has name/role/skills/etc.)
+      // Fall back to building from dimensions if no profile provided
+      let content: Record<string, unknown> = {};
+      if (profileData.name && profileData.name !== '我') {
+        // Build from profile data (comes from buildProfileData which has name/role/company/skills/...)
+        content = {
+          name: profileData.name,
+          role: profileData.role,
+          title: profileData.role,
+          bio: frameworkDim?.text || profileData.summary || '',
+          company: profileData.company,
+          skills: profileData.skills,
+          education: profileData.education,
+          projects: profileData.projects.map((title: string) => ({ title, description: '', outcome: '' })),
+          achievements: profileData.achievements,
+          socials: {},
+          mbti: mbti,
+          story: {
+            experiences: full_story || profileData.summary || '',
+            insights: soulDim?.text || profileData.values.join('、') || '',
+            challenges: soulDim?.text || profileData.direction.join('、') || '',
+          },
+        };
+      } else {
+        // Build minimal content from dimensions
+        content = {
+          name: nameVal || '我',
+          role: roleVal || '创作者',
+          title: [roleVal, ...brandKeywords].filter(Boolean).join(' · '),
+          bio: frameworkDim?.text || '',
+          skills: skillsText ? skillsText.split(/[，、,\n]/).filter((s: string) => s.trim()) : [],
+          story: {
+            experiences: full_story || '',
+            insights: soulDim?.text || '',
+            challenges: soulDim?.text || '',
+          },
+          socials: {},
+          mbti: mbti,
+        };
+      }
       const templateData = adapt(content as Record<string, unknown>, template);
       const templateHtml =
         template === 'developerfolio' ? developerfolioHtml :
@@ -226,10 +264,12 @@ export async function POST(request: NextRequest) {
       message: 'Website generated successfully',
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error('Generation error:', error);
+    const errMsg = error instanceof Error ? error.message : String(error);
+    const errStack = error instanceof Error ? error.stack : '';
     return NextResponse.json(
-      { error: 'Failed to generate website', details: String(error) },
+      { error: 'Failed to generate website', details: `${errMsg}\n${errStack}` },
       { status: 500 }
     );
   }
