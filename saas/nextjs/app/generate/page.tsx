@@ -434,6 +434,11 @@ export default function GeneratePage() {
   const [toastVisible, setToastVisible] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<string>('developerfolio');
+  // Editable fields for Step 2 (7 IP dimensions + narratives)
+  const [editedFields, setEditedFields] = useState<Record<string, string>>({});
+  const [editedMbti, setEditedMbti] = useState('');
+  const [editedShortStory, setEditedShortStory] = useState('');
+  const [editedFullStory, setEditedFullStory] = useState('');
 
   const TEMPLATE_OPTIONS = [
     { id: 'developerfolio', name: '深色科技风', desc: '现代深色布局，适合技术/产品背景' },
@@ -512,10 +517,18 @@ export default function GeneratePage() {
       if (!res.ok) throw new Error('Analysis failed');
       const data = await res.json();
       clearInterval(interval);
-      setAnalysisResult({
+      const newResult = {
         ...data,
         profile: buildProfileData(cleanedResumeText, data),
-      });
+      };
+      setAnalysisResult(newResult);
+      // Initialize editable fields from analysis result
+      const fieldMap: Record<string, string> = {};
+      (data.dimensions || []).forEach((d: Dimension) => { fieldMap[d.label] = d.text || ''; });
+      setEditedFields(fieldMap);
+      setEditedMbti(data.mbti || '');
+      setEditedShortStory(data.short_story || '');
+      setEditedFullStory(data.full_story || '');
       setActiveStep(3);
     } catch {
       clearInterval(interval);
@@ -546,6 +559,12 @@ export default function GeneratePage() {
 
     const profile = analysisResult.profile ?? buildProfileData(resumeText, analysisResult);
 
+    // Reconstruct dimensions from edited fields
+    const editedDimensions = analysisResult.dimensions.map((d: Dimension) => ({
+      ...d,
+      text: editedFields[d.label] || d.text,
+    }));
+
     setIsGenerating(true);
 
     try {
@@ -553,10 +572,10 @@ export default function GeneratePage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          dimensions: analysisResult.dimensions,
-          short_story: analysisResult.short_story,
-          full_story: analysisResult.full_story,
-          mbti: analysisResult.mbti,
+          dimensions: editedDimensions,
+          short_story: editedShortStory || analysisResult.short_story,
+          full_story: editedFullStory || analysisResult.full_story,
+          mbti: editedMbti || analysisResult.mbti,
           style: selectedStyle,
           template: selectedTemplate,
           profile,
@@ -573,7 +592,7 @@ export default function GeneratePage() {
     } finally {
       setIsGenerating(false);
     }
-  }, [analysisResult, selectedStyle, showToast]);
+  }, [analysisResult, selectedStyle, selectedTemplate, editedFields, editedShortStory, editedFullStory, editedMbti, resumeText, showToast]);
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -774,17 +793,56 @@ export default function GeneratePage() {
                   <div className={styles.statusText}>{STATUS_LABELS[Math.min(analyzeIdx, STATUS_LABELS.length - 1)]}</div>
                 </div>
               ) : (
-                <div className={styles.dimensionsGrid}>
-                  {analysisResult.dimensions.map((dim, index) => (
-                    <div key={dim.label} className={styles.dimCard}>
-                      <div className={styles.dimHeader}>
-                        <div className={`${styles.dimIcon} ${styles[`i${index + 1}` as keyof typeof styles]}`}>{DIM_ICONS[`i${index + 1}`]}</div>
-                        <div className={styles.dimLabel}>{dim.label}</div>
-                        <div className={styles.dimScore}>{dim.score}</div>
+                <div className={styles.fieldsGrid}>
+                  <div className={styles.fieldsSection}>
+                    <div className={styles.fieldsSectionTitle}>🔷 核心维度（AI 解析结果，可手动修改）</div>
+                    {analysisResult.dimensions.map((dim, index) => (
+                      <div key={dim.label} className={styles.fieldRow}>
+                        <div className={styles.fieldLabel}>
+                          <span className={`${styles.dimIcon} ${styles[`i${index + 1}` as keyof typeof styles]}`}>{DIM_ICONS[`i${index + 1}`]}</span>
+                          {dim.label}
+                        </div>
+                        <textarea
+                          className={styles.fieldTextarea}
+                          value={editedFields[dim.label] || ''}
+                          onChange={(e) => setEditedFields((prev) => ({ ...prev, [dim.label]: e.target.value }))}
+                          rows={2}
+                        />
                       </div>
-                      <div className={styles.dimText}>{dim.text}</div>
+                    ))}
+                  </div>
+                  <div className={styles.fieldsSection}>
+                    <div className={styles.fieldsSectionTitle}>🔶 叙事与性格</div>
+                    <div className={styles.fieldRow}>
+                      <div className={styles.fieldLabel}>MBTI 性格</div>
+                      <input
+                        className={styles.fieldInput}
+                        value={editedMbti}
+                        onChange={(e) => setEditedMbti(e.target.value)}
+                        placeholder="如 INTJ、ENFP"
+                      />
                     </div>
-                  ))}
+                    <div className={styles.fieldRow}>
+                      <div className={styles.fieldLabel}>一句话介绍</div>
+                      <textarea
+                        className={styles.fieldTextarea}
+                        value={editedShortStory}
+                        onChange={(e) => setEditedShortStory(e.target.value)}
+                        rows={2}
+                        placeholder="50字以内的简短自我介绍故事"
+                      />
+                    </div>
+                    <div className={styles.fieldRow}>
+                      <div className={styles.fieldLabel}>完整故事</div>
+                      <textarea
+                        className={styles.fieldTextarea}
+                        value={editedFullStory}
+                        onChange={(e) => setEditedFullStory(e.target.value)}
+                        rows={4}
+                        placeholder="150字以内的完整人物故事，第三人称视角"
+                      />
+                    </div>
+                  </div>
                 </div>
               )}
 
