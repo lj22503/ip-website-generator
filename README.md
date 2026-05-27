@@ -8,6 +8,7 @@
 ## 最近修复
 
 - `core.py` 所有 `open(args.content)` 添加 `encoding="utf-8"`，解决 Windows GBK 环境读取中文 JSON 失败问题。运行方式：`PYTHONIOENCODING=utf-8 python skill/core.py ...`
+- SaaS 模板渲染器 (`saas/nextjs/lib/template-renderer.ts`) 修复嵌套 `{% for %}`、`{{ project.title or project.name }}` 和循环上下文变量解析问题。
 - 三套 Jinja2 模板（developerfolio / alfolio / rahulbeniwal）全部可正常生成苏轼完整示例（test_data_all_fields.json）。
 
 ---

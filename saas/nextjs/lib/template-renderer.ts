@@ -53,17 +53,58 @@ function truthy(v: unknown): boolean {
   return v !== null && v !== undefined && v !== false && v !== "" && !(typeof v === "number" && isNaN(v as number));
 }
 
-/**
- * Process Jinja2 `or` defaults in interpolation: {{ data.x or "default" }}
- * Must run before other replacements.
- */
-function replaceOrDefaults(html: string): string {
-  return html.replace(/\{\{\s*([^|}]+?)\s*or\s+"([^"]+)"\s*\}\}/g, (_1: string, path: string, def: string) => {
-    const val = get({}, path.trim());
-    return val !== "" ? val : def;
-  }).replace(/\{\{\s*([^|}]+?)\s*or\s+'([^']+)'\s*\}\}/g, (_1: string, path: string, def: string) => {
-    const val = get({}, path.trim());
-    return val !== "" ? val : def;
+function resolvePath(data: StrMap, context: StrMap, path: string): unknown {
+  const parts = path.split(".");
+  if (parts[0] === "data") {
+    return get(data, parts.slice(1).join("."));
+  }
+
+  let cur: unknown = context[parts[0]];
+  if (cur === undefined && isObj(data) && Object.prototype.hasOwnProperty.call(data, parts[0])) {
+    cur = (data as StrMap)[parts[0]];
+  }
+
+  for (let i = 1; i < parts.length; i++) {
+    if (!isObj(cur)) return "";
+    cur = (cur as StrMap)[parts[i]];
+  }
+
+  return cur;
+}
+
+function replaceVariables(html: string, data: StrMap, context: StrMap): string {
+  let result = html;
+
+  result = result.replace(/\{\{\s*([a-zA-Z_][\w.]*)\s+or\s+"([^"\\]*)"\s*\}\}/g, (_1: string, path: string, def: string) => {
+    const val = resolvePath(data, context, path.trim());
+    return truthy(val) ? toStr(val) : def;
+  });
+  result = result.replace(/\{\{\s*([a-zA-Z_][\w.]*)\s+or\s+'([^'\\]*)'\s*\}\}/g, (_1: string, path: string, def: string) => {
+    const val = resolvePath(data, context, path.trim());
+    return truthy(val) ? toStr(val) : def;
+  });
+  result = result.replace(/\{\{\s*([a-zA-Z_][\w.]*)\s+or\s+([a-zA-Z_][\w.]*)\s*\}\}/g, (_1: string, path1: string, path2: string) => {
+    const val1 = resolvePath(data, context, path1.trim());
+    const val2 = resolvePath(data, context, path2.trim());
+    return truthy(val1) ? toStr(val1) : toStr(val2);
+  });
+  result = result.replace(/\{\{\s*([a-zA-Z_][\w.]*)\s*\}\}/g, (_1: string, path: string) => {
+    return toStr(resolvePath(data, context, path.trim()));
+  });
+
+  return result;
+}
+
+function evaluateCondition(data: StrMap, context: StrMap, condition: string): boolean {
+  return condition
+    .split(" and ")
+    .map((part) => part.trim())
+    .every((part) => truthy(resolvePath(data, context, part)));
+}
+
+function processIfBlocks(html: string, data: StrMap, context: StrMap): string {
+  return html.replace(/\{%\s*if\s+([^%]+?)\s*%\}([\s\S]*?)\{%\s*endif\s*%\}/g, (_: string, condition: string, body: string) => {
+    return evaluateCondition(data, context, condition) ? body : "";
   });
 }
 
@@ -124,87 +165,31 @@ function processFor(html: string, data: StrMap): string {
 }
 
 /** Main render function */
+
 export function renderTemplate(htmlTemplate: string, data: StrMap): string {
-  let html = htmlTemplate;
-
-  // 1. Handle `or` defaults in {{ }} interpolations
-  html = html.replace(/\{\{\s*data\.([\w.]+)\s*or\s+"([^"]+)"\s*\}\}/g, (_1: string, path: string, def: string) => {
-    const val = get(data, path);
-    return val !== "" ? val : def;
-  }).replace(/\{\{\s*data\.([\w.]+)\s*or\s+'([^']+)'\s*\}\}/g, (_1: string, path: string, def: string) => {
-    const val = get(data, path);
-    return val !== "" ? val : def;
-  }).replace(/\{\{\s*data\.([\w.]+)\s*\}\}/g, (_1: string, path: string) => {
-    const val = get(data, path);
-    return val;
-  });
-
-  // 2. Process for loops (may need multiple passes for nested)
-  for (let pass = 0; pass < 3; pass++) {
-    const before = html;
+  function processTemplate(html: string, context: StrMap = {}): string {
     html = html.replace(
-      /\{%\s*for\s+(\w+)\s+in\s+data\.([\w.]+)\s*%\}[\s\S]*?\{%\s*endfor\s*%\}/g,
-      (block, itemName, dataPath) => {
-        const arr = getArr(data, dataPath);
+      /\{%\s*for\s+(\w+)\s+in\s+([a-zA-Z_][\w.]*)\s*%\}([\s\S]*?)\{%\s*endfor\s*%\}/g,
+      (_: string, itemName: string, path: string, body: string) => {
+        const arr = resolvePath(data, context, path);
         if (!isArr(arr) || arr.length === 0) return "";
-        const innerStart = block.indexOf("%}") + 2;
-        const innerEnd = block.lastIndexOf("{%");
-        const body = block.slice(innerStart, innerEnd);
-        return arr.map((item) => {
-          if (!isObj(item)) return toStr(item);
-          const m = item as StrMap;
-          let result = body;
-          // item.field references
-          result = result.replace(/\{\{\s*item\.(\w+)\s*\}\}/g, (_s: string, k: string) => toStr(m[k]));
-          result = result.replace(/\{\{\s*item\.(\w+)\s*or\s+"([^"]+)"\s*\}\}/g, (_s: string, k: string, def: string) => toStr(m[k]) || def);
-          result = result.replace(/\{\{\s*item\.(\w+)\s*or\s+'([^']+)'\s*\}\}/g, (_s: string, k: string, def: string) => toStr(m[k]) || def);
-          // item.nested.field
-          result = result.replace(/\{\{\s*item\.([\w.]+)\.(\w+)\s*\}\}/g, (_s: string, obj: string, k: string) => {
-            const o = m[obj];
-            return isObj(o) ? toStr((o as StrMap)[k]) : "";
-          });
-          // Handle inner for loops: {% for tag in item.tags %}
-          result = result.replace(
-            /\{%\s*for\s+(\w+)\s+in\s+item\.(\w+)\s*%\}[\s\S]*?\{%\s*endfor\s*%\}/g,
-            (iblock: string, itag: string, ipath: string) => {
-              const iarr = m[ipath];
-              if (!isArr(iarr)) return "";
-              const istart = iblock.indexOf("%}") + 2;
-              const iend = iblock.lastIndexOf("{%");
-              const ibody = iblock.slice(istart, iend);
-              return iarr.map((t) => {
-                if (isObj(t)) return ibody.replace(/\{\{\s*item\.(\w+)\s*\}\}/g, (_s2: string, k2: string) => toStr((t as StrMap)[k2]));
-                return toStr(t);
-              }).join("");
-            }
-          );
-          return result;
-        }).join("");
+        return arr
+          .map((item) => {
+            const childContext: StrMap = { ...context, [itemName]: item };
+            return processTemplate(body, childContext);
+          })
+          .join("");
       }
     );
-    if (html === before) break;
+
+    let previous = "";
+    while (previous !== html) {
+      previous = html;
+      html = processIfBlocks(html, data, context);
+    }
+
+    return replaceVariables(html, data, context);
   }
 
-  // 3. Process if blocks (remove entire {% if data.x %}...{% endif %} when falsey)
-  html = html.replace(
-    /\{%\s*if\s+data\.([\w.]+)\s*%\}[\s\S]*?\{%\s*endif\s*%\}/g,
-    (block, path) => {
-      const val = get(data, path.split(".")[0] === "data" ? path.slice(5) : path);
-      return truthy(val) ? block : "";
-    }
-  );
-  // Also handle {% if data.socials and data.socials.xxx %}
-  html = html.replace(
-    /\{%\s*if\s+data\.([\w.]+)\s+and\s+data\.([\w.]+)\s*%\}[\s\S]*?\{%\s*endif\s*%\}/g,
-    (block, path1, path2) => {
-      const v1 = get(data, path1);
-      const v2 = get(data, path2);
-      return truthy(v1) && truthy(v2) ? block : "";
-    }
-  );
-
-  // 4. Clean up any raw Jinja2 tags left (shouldn't happen if above works)
-  html = html.replace(/\{%[^%]*%\}/g, "");
-
-  return html;
+  return processTemplate(htmlTemplate);
 }

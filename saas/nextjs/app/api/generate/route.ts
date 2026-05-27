@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
     const body: GenerateRequest = await request.json();
     const { dimensions, short_story, full_story, mbti, style, profile, contact_email, social_links } = body;
 
-    if (!dimensions && !short_story && !full_story) {
+    if (!dimensions && !short_story && !full_story && !profile) {
       return NextResponse.json(
         { error: 'Missing content: dimensions or stories required' },
         { status: 400 }
