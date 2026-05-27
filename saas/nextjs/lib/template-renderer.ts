@@ -53,42 +53,77 @@ function truthy(v: unknown): boolean {
   return v !== null && v !== undefined && v !== false && v !== "" && !(typeof v === "number" && isNaN(v as number));
 }
 
+function parseLiteralOrPath(data: StrMap, context: StrMap, value: string): unknown {
+  const trimmed = value.trim();
+  if (/^".*"$/.test(trimmed) || /^'.*'$/.test(trimmed)) {
+    return trimmed.slice(1, -1);
+  }
+  if (/^-?\d+(?:\.\d+)?$/.test(trimmed)) {
+    return Number(trimmed);
+  }
+  if (trimmed === "true") return true;
+  if (trimmed === "false") return false;
+  return resolvePath(data, context, trimmed);
+}
+
 function resolvePath(data: StrMap, context: StrMap, path: string): unknown {
-  const parts = path.split(".");
+  const trimmed = path.trim();
+  const lengthMatch = trimmed.match(/^(.*)\|length$/);
+  if (lengthMatch) {
+    const val = resolvePath(data, context, lengthMatch[1].trim());
+    if (typeof val === "string" || isArr(val)) return (val as string | unknown[]).length;
+    if (isObj(val)) return Object.keys(val).length;
+    return 0;
+  }
+
+  const sliceMatch = trimmed.match(/^(.*)\[:(\d+)\]$/);
+  if (sliceMatch) {
+    const val = resolvePath(data, context, sliceMatch[1].trim());
+    const count = Number(sliceMatch[2]);
+    if (typeof val === "string") return (val as string).slice(0, count);
+    if (isArr(val)) return (val as unknown[]).slice(0, count);
+    return "";
+  }
+
+  const parts = trimmed.split(".");
+  let cur: unknown;
   if (parts[0] === "data") {
-    return get(data, parts.slice(1).join("."));
+    cur = data;
+    parts.shift();
+  } else {
+    cur = context[parts[0]];
+    if (cur === undefined && isObj(data) && Object.prototype.hasOwnProperty.call(data, parts[0])) {
+      cur = (data as StrMap)[parts[0]];
+    }
+    parts.shift();
   }
 
-  let cur: unknown = context[parts[0]];
-  if (cur === undefined && isObj(data) && Object.prototype.hasOwnProperty.call(data, parts[0])) {
-    cur = (data as StrMap)[parts[0]];
-  }
-
-  for (let i = 1; i < parts.length; i++) {
+  for (const part of parts) {
     if (!isObj(cur)) return "";
-    cur = (cur as StrMap)[parts[i]];
+    cur = (cur as StrMap)[part];
   }
 
   return cur;
 }
 
 function replaceVariables(html: string, data: StrMap, context: StrMap): string {
+  const expr = "[a-zA-Z_][\\w.]*?(?:\\[:\\d+\\])?(?:\\|length)?";
   let result = html;
 
-  result = result.replace(/\{\{\s*([a-zA-Z_][\w.]*)\s+or\s+"([^"\\]*)"\s*\}\}/g, (_1: string, path: string, def: string) => {
+  result = result.replace(new RegExp(`\\{\\{\\s*(${expr})\\s+or\\s+"([^"\\\\]*)"\\s*\\}\\}`, "g"), (_1: string, path: string, def: string) => {
     const val = resolvePath(data, context, path.trim());
     return truthy(val) ? toStr(val) : def;
   });
-  result = result.replace(/\{\{\s*([a-zA-Z_][\w.]*)\s+or\s+'([^'\\]*)'\s*\}\}/g, (_1: string, path: string, def: string) => {
+  result = result.replace(new RegExp(`\\{\\{\\s*(${expr})\\s+or\\s+'([^'\\\\]*)'\\s*\\}\\}`, "g"), (_1: string, path: string, def: string) => {
     const val = resolvePath(data, context, path.trim());
     return truthy(val) ? toStr(val) : def;
   });
-  result = result.replace(/\{\{\s*([a-zA-Z_][\w.]*)\s+or\s+([a-zA-Z_][\w.]*)\s*\}\}/g, (_1: string, path1: string, path2: string) => {
+  result = result.replace(new RegExp(`\\{\\{\\s*(${expr})\\s+or\\s+(${expr})\\s*\\}\\}`, "g"), (_1: string, path1: string, path2: string) => {
     const val1 = resolvePath(data, context, path1.trim());
     const val2 = resolvePath(data, context, path2.trim());
     return truthy(val1) ? toStr(val1) : toStr(val2);
   });
-  result = result.replace(/\{\{\s*([a-zA-Z_][\w.]*)\s*\}\}/g, (_1: string, path: string) => {
+  result = result.replace(new RegExp(`\\{\\{\\s*(${expr})\\s*\\}\\}`, "g"), (_1: string, path: string) => {
     return toStr(resolvePath(data, context, path.trim()));
   });
 
@@ -96,10 +131,41 @@ function replaceVariables(html: string, data: StrMap, context: StrMap): string {
 }
 
 function evaluateCondition(data: StrMap, context: StrMap, condition: string): boolean {
-  return condition
-    .split(" and ")
-    .map((part) => part.trim())
-    .every((part) => truthy(resolvePath(data, context, part)));
+  const expr = condition.trim();
+  if (expr.includes(" or ")) {
+    return expr.split(/\s+or\s+/).some((part) => evaluateCondition(data, context, part));
+  }
+  if (expr.includes(" and ")) {
+    return expr.split(/\s+and\s+/).every((part) => evaluateCondition(data, context, part));
+  }
+
+  const stringCheck = expr.match(/^(.*)\s+is\s+string$/);
+  if (stringCheck) {
+    return typeof resolvePath(data, context, stringCheck[1].trim()) === "string";
+  }
+
+  const comparison = expr.match(/^(.*?)(==|!=|>=|<=|>|<)(.*)$/);
+  if (comparison) {
+    const left = resolvePath(data, context, comparison[1].trim());
+    const right = parseLiteralOrPath(data, context, comparison[3].trim());
+    if (comparison[2] === "==") return left === right;
+    if (comparison[2] === "!=") return left !== right;
+    const leftNum = typeof left === "number" ? left : Number(left);
+    const rightNum = typeof right === "number" ? right : Number(right);
+    if (Number.isNaN(leftNum) || Number.isNaN(rightNum)) {
+      if (comparison[2] === ">") return toStr(left) > toStr(right);
+      if (comparison[2] === "<") return toStr(left) < toStr(right);
+      if (comparison[2] === ">=") return toStr(left) >= toStr(right);
+      if (comparison[2] === "<=") return toStr(left) <= toStr(right);
+      return false;
+    }
+    if (comparison[2] === ">=") return leftNum >= rightNum;
+    if (comparison[2] === "<=") return leftNum <= rightNum;
+    if (comparison[2] === ">") return leftNum > rightNum;
+    if (comparison[2] === "<") return leftNum < rightNum;
+  }
+
+  return truthy(resolvePath(data, context, expr));
 }
 
 function processIfBlocks(html: string, data: StrMap, context: StrMap): string {
@@ -168,19 +234,26 @@ function processFor(html: string, data: StrMap): string {
 
 export function renderTemplate(htmlTemplate: string, data: StrMap): string {
   function processTemplate(html: string, context: StrMap = {}): string {
-    html = html.replace(
-      /\{%\s*for\s+(\w+)\s+in\s+([a-zA-Z_][\w.]*)\s*%\}([\s\S]*?)\{%\s*endfor\s*%\}/g,
-      (_: string, itemName: string, path: string, body: string) => {
-        const arr = resolvePath(data, context, path);
-        if (!isArr(arr) || arr.length === 0) return "";
-        return arr
-          .map((item) => {
-            const childContext: StrMap = { ...context, [itemName]: item };
-            return processTemplate(body, childContext);
-          })
-          .join("");
-      }
-    );
+    const pathExpr = "[a-zA-Z_][\\w.]*?(?:\\[:\\d+\\])?(?:\\|length)?";
+    html = html.replace(new RegExp(`\\{%\\s*for\\s+(\\w+)\\s+in\\s+(${pathExpr})\\s*%\\}([\\s\\S]*?)\\{%\\s*endfor\\s*%\\}`, "g"), (_: string, itemName: string, path: string, body: string) => {
+      const arr = resolvePath(data, context, path);
+      if (!isArr(arr) || arr.length === 0) return "";
+      return (arr as unknown[])
+        .map((item, idx) => {
+          const childContext: StrMap = {
+            ...context,
+            [itemName]: item,
+            loop: {
+              index: idx + 1,
+              index0: idx,
+              first: idx === 0,
+              last: idx === (arr as unknown[]).length - 1,
+            },
+          };
+          return processTemplate(body, childContext);
+        })
+        .join("");
+    });
 
     let previous = "";
     while (previous !== html) {
