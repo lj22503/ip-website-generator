@@ -168,10 +168,135 @@ function evaluateCondition(data: StrMap, context: StrMap, condition: string): bo
   return truthy(resolvePath(data, context, expr));
 }
 
-function processIfBlocks(html: string, data: StrMap, context: StrMap): string {
-  return html.replace(/\{%\s*if\s+([^%]+?)\s*%\}([\s\S]*?)\{%\s*endif\s*%\}/g, (_: string, condition: string, body: string) => {
-    return evaluateCondition(data, context, condition) ? body : "";
-  });
+function processIfBlocks(
+  html: string,
+  data: StrMap,
+  context: StrMap,
+  processNested: (html: string, context: StrMap) => string
+): string {
+  const tagRegex = /\{%\s*(if|elif|else|endif)\b([^%]*)%\}/g;
+  const tokens: Array<{ type: string; expr: string; index: number; end: number }> = [];
+  let match: RegExpExecArray | null;
+
+  while ((match = tagRegex.exec(html)) !== null) {
+    tokens.push({
+      type: match[1],
+      expr: match[2].trim(),
+      index: match.index,
+      end: match.index + match[0].length,
+    });
+  }
+
+  if (tokens.length === 0) return html;
+
+  const stack: Array<{
+    start: number;
+    condition: string;
+    ifTagEnd: number;
+    elifs: Array<{ condition: string; start: number; end: number }>;
+    elseStart: number | null;
+    elseEnd: number | null;
+    endifIndex: number | null;
+    endifEnd: number | null;
+  }> = [];
+  const blocks: Array<{
+    start: number;
+    condition: string;
+    ifTagEnd: number;
+    elifs: Array<{ condition: string; start: number; end: number }>;
+    elseStart: number | null;
+    elseEnd: number | null;
+    endifIndex: number;
+    endifEnd: number;
+  }> = [];
+
+  for (const token of tokens) {
+    if (token.type === "if") {
+      stack.push({
+        start: token.index,
+        condition: token.expr,
+        ifTagEnd: token.end,
+        elifs: [],
+        elseStart: null,
+        elseEnd: null,
+        endifIndex: null,
+        endifEnd: null,
+      });
+      continue;
+    }
+
+    const current = stack[stack.length - 1];
+    if (!current) continue;
+
+    if (token.type === "elif" && current.elseStart === null && current.endifIndex === null) {
+      current.elifs.push({ condition: token.expr, start: token.index, end: token.end });
+      continue;
+    }
+
+    if (token.type === "else" && current.elseStart === null && current.endifIndex === null) {
+      current.elseStart = token.index;
+      current.elseEnd = token.end;
+      continue;
+    }
+
+    if (token.type === "endif") {
+      current.endifIndex = token.index;
+      current.endifEnd = token.end;
+      blocks.push(current as any);
+      stack.pop();
+    }
+  }
+
+  if (blocks.length === 0) return html;
+
+  blocks.sort((a, b) => b.start - a.start);
+
+  let result = html;
+  const adjustments: Array<{ start: number; delta: number }> = [];
+  const offsetAt = (pos: number) => adjustments.reduce((sum, adj) => (adj.start < pos ? sum + adj.delta : sum), 0);
+
+  for (const block of blocks) {
+    const ifStart = block.start + offsetAt(block.start);
+    const ifEnd = block.ifTagEnd + offsetAt(block.ifTagEnd);
+    const endifStart = block.endifIndex! + offsetAt(block.endifIndex!);
+    const endifEnd = block.endifEnd! + offsetAt(block.endifEnd!);
+
+    const branches: Array<{ condition: string | null; start: number; end: number }> = [];
+    let cursor = ifEnd;
+    let currentCondition: string | null = block.condition;
+
+    for (const elif of block.elifs) {
+      branches.push({ condition: currentCondition, start: cursor, end: elif.start + offsetAt(elif.start) });
+      cursor = elif.end + offsetAt(elif.end);
+      currentCondition = elif.condition;
+    }
+
+    if (block.elseStart !== null && block.elseEnd !== null) {
+      branches.push({ condition: currentCondition, start: cursor, end: block.elseStart + offsetAt(block.elseStart) });
+      branches.push({ condition: null, start: block.elseEnd + offsetAt(block.elseEnd), end: endifStart });
+    } else {
+      branches.push({ condition: currentCondition, start: cursor, end: endifStart });
+    }
+
+    let selected = "";
+    for (const branch of branches) {
+      const body = result.slice(branch.start, branch.end);
+      if (branch.condition === null) {
+        selected = body;
+        break;
+      }
+      if (evaluateCondition(data, context, branch.condition)) {
+        selected = body;
+        break;
+      }
+    }
+
+    const processed = processNested(selected, context);
+    result = result.slice(0, ifStart) + processed + result.slice(endifEnd);
+    adjustments.push({ start: block.start, delta: processed.length - (block.endifEnd! - block.start) });
+  }
+
+  return result;
 }
 
 /** Process {% if data.x %}...{% endif %} */
@@ -258,7 +383,7 @@ export function renderTemplate(htmlTemplate: string, data: StrMap): string {
     let previous = "";
     while (previous !== html) {
       previous = html;
-      html = processIfBlocks(html, data, context);
+      html = processIfBlocks(html, data, context, processTemplate);
     }
 
     return replaceVariables(html, data, context);
