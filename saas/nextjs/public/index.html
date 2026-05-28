@@ -5,6 +5,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal IP Site — 你的故事，值得被看见</title>
     <meta name="description" content="上传一份简历，炼出一个有灵魂的个人网站。叙事驱动，设计系统切换，下载即用。">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://personalip.mangofolio.com/">
+    <meta property="og:title" content="Personal IP Site — 你的故事，值得被看见">
+    <meta property="og:description" content="上传一份简历，炼出一个有灵魂的个人网站。叙事驱动，设计系统切换，下载即用。">
+    <meta property="og:image" content="https://personalip.mangofolio.com/og-image.png">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://personalip.mangofolio.com/">
+    <meta name="twitter:title" content="Personal IP Site — 你的故事，值得被看见">
+    <meta name="twitter:description" content="上传一份简历，炼出一个有灵魂的个人网站。叙事驱动，设计系统切换，下载即用。">
+    <meta name="twitter:image" content="https://personalip.mangofolio.com/og-image.png">
+    
+    <!-- Canonical -->
+    <link rel="canonical" href="https://personalip.mangofolio.com/">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
     <style>
@@ -536,6 +554,18 @@
         .steps-grid { grid-template-columns: 1fr 1fr; }
         .steps-grid .step-card:not(:last-child)::after { display: none; }
         nav .nav-links { display: none; }
+        .mobile-menu-toggle { display: block; }
+        .nav-links.active {
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: var(--bg-secondary);
+            padding: 20px;
+            border-top: 1px solid var(--border);
+        }
     }
 
     @media (max-width: 600px) {
@@ -547,10 +577,17 @@
 <body>
 
 <!-- NAV -->
-<nav>
+<nav role="navigation" aria-label="主导航">
     <div class="container">
-        <div class="nav-logo">Personal <strong style="color:var(--accent)">IP</strong> Site</div>
-        <div class="nav-links">
+        <div class="nav-logo">
+            <a href="/" aria-label="Personal IP Site 首页">
+                Personal <strong style="color:var(--accent)">IP</strong> Site
+            </a>
+        </div>
+        <button class="mobile-menu-toggle" aria-label="切换菜单" aria-expanded="false" onclick="toggleMobileMenu()">
+            <span class="hamburger"></span>
+        </button>
+        <div class="nav-links" id="navLinks">
             <a href="#example">示例</a>
             <a href="#features">特点</a>
             <a href="#how">使用方法</a>
@@ -756,6 +793,17 @@
 </footer>
 
 <script>
+// Mobile menu toggle
+function toggleMobileMenu() {
+    const navLinks = document.getElementById('navLinks');
+    const toggle = document.querySelector('.mobile-menu-toggle');
+    if (navLinks && toggle) {
+        navLinks.classList.toggle('active');
+        toggle.setAttribute('aria-expanded', navLinks.classList.contains('active'));
+    }
+}
+
+// Example switcher
 document.querySelectorAll('.switch-btn').forEach(function(btn) {
     btn.addEventListener('click', function() {
         document.querySelectorAll('.switch-btn').forEach(function(b) { b.classList.remove('active'); });

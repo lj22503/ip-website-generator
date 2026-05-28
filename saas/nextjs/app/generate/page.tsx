@@ -555,17 +555,28 @@ export default function GeneratePage() {
         }),
       });
 
-      if (!res.ok) throw new Error('Generation failed');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.details || 'Generation failed');
+      }
+      
       const data = await res.json();
-      setGeneratedHtml(data.html || '');
+      
+      if (!data.html || data.html.length < 100) {
+        throw new Error('生成的 HTML 内容过短，可能生成失败');
+      }
+      
+      setGeneratedHtml(data.html);
       setActiveStep(4);
       showToast('页面已生成，预览和下载已经就绪');
-    } catch {
-      showToast('生成失败，请重试');
+    } catch (error) {
+      const errorMsg = error instanceof Error ? error.message : '生成失败，请重试';
+      console.error('Generation error:', error);
+      showToast(`生成失败：${errorMsg}`);
     } finally {
       setIsGenerating(false);
     }
-  }, [analysisResult, selectedStyle, showToast]);
+  }, [analysisResult, selectedStyle, resumeText, showToast]);
 
   const handleFileChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -660,12 +671,12 @@ export default function GeneratePage() {
 
   return (
     <div className={styles.page}>
-      <nav className={styles.nav}>
+      <nav className={styles.nav} role="navigation" aria-label="生成流程导航">
         <div className={styles.navContainer}>
           <div className={styles.navLogo}>
-            Personal <strong style={{ color: 'var(--accent)' }}>IP</strong> Site · 生成器
+            <a href="/" aria-label="返回首页">Personal <strong style={{ color: 'var(--accent)' }}>IP</strong> Site · 生成器</a>
           </div>
-          <div className={styles.navHint}>Step {activeStep} / 4</div>
+          <div className={styles.navHint} role="status" aria-live="polite">Step {activeStep} / 4</div>
         </div>
       </nav>
 
@@ -678,8 +689,10 @@ export default function GeneratePage() {
                   type="button"
                   className={`${styles.stepItem} ${activeStep === step ? styles.active : ''} ${activeStep > step ? styles.done : ''}`}
                   onClick={() => goToStep(step)}
+                  aria-current={activeStep === step ? 'step' : undefined}
+                  aria-label={`步骤 ${step}: ${['上传简历', 'AI 解析', '选择风格', '下载使用'][step - 1]}`}
                 >
-                  <span className={styles.stepCircle}>{activeStep > step ? '✓' : step}</span>
+                  <span className={styles.stepCircle} aria-hidden="true">{activeStep > step ? '✓' : step}</span>
                   <span className={styles.stepLabel}>{['上传简历', 'AI 解析', '选择风格', '下载使用'][step - 1]}</span>
                 </button>
                 {step < 4 && <span className={`${styles.stepArrow} ${activeStep > step ? styles.filled : ''}`}>→</span>}
@@ -699,8 +712,8 @@ export default function GeneratePage() {
                 上传 PDF 或 Word 文件，或者直接粘贴简历文本。系统会优先提取文本内容，再进入叙事生成流程。
               </p>
 
-              <div className={styles.uploadZone} onClick={() => fileInputRef.current?.click()}>
-                <div className={styles.uploadIcon}>{isExtracting ? '⏳' : '↗'}</div>
+              <div className={styles.uploadZone} onClick={() => fileInputRef.current?.click()} role="button" tabIndex={0} aria-label="上传简历文件">
+                <div className={styles.uploadIcon} aria-hidden="true">{isExtracting ? '⏳' : '↗'}</div>
                 <div className={styles.uploadTitle}>{isExtracting ? '正在提取文本…' : '点击上传文件'}</div>
                 <div className={styles.uploadHint}>支持 PDF / DOCX / DOC，不超过 10MB</div>
                 <div className={styles.uploadFormats}>
@@ -716,6 +729,7 @@ export default function GeneratePage() {
                 accept=".pdf,.docx,.doc"
                 style={{ display: 'none' }}
                 onChange={handleFileChange}
+                aria-label="选择简历文件"
               />
 
               {fileName && (
@@ -737,10 +751,15 @@ export default function GeneratePage() {
                 value={resumeText}
                 onChange={(event) => setResumeText(event.target.value)}
                 placeholder={`在此粘贴你的简历全文……\n\n示例：\n张三 | 高级前端工程师\n2019 — 2024  ABC 科技  前端技术负责人\n主导设计并落地了公司级组件库，覆盖 12 条业务线……`}
+                aria-label="粘贴简历文本"
+                aria-describedby="paste-hint"
               />
+              <div id="paste-hint" className="sr-only" style={{ position: 'absolute', width: '1px', height: '1px', overflow: 'hidden' }}>
+                在此粘贴你的简历全文，包括工作经历、项目经验、技能等信息
+              </div>
 
               <div className={styles.stepActions}>
-                <button type="button" className={`${styles.btn} ${styles.btnPrimary} ${styles.btnWide}`} onClick={handleAnalyze}>
+                <button type="button" className={`${styles.btn} ${styles.btnPrimary} ${styles.btnWide}`} onClick={handleAnalyze} aria-label="开始 AI 解析简历">
                   开始 AI 解析 →
                 </button>
               </div>
