@@ -541,6 +541,10 @@ export default function GeneratePage() {
 
     setIsGenerating(true);
 
+    // 添加 30 秒超时控制
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
     try {
       const res = await fetch('/api/generate', {
         method: 'POST',
@@ -553,7 +557,10 @@ export default function GeneratePage() {
           style: selectedStyle,
           profile,
         }),
+        signal: controller.signal,
       });
+      
+      clearTimeout(timeoutId);
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
@@ -570,7 +577,16 @@ export default function GeneratePage() {
       setActiveStep(4);
       showToast('页面已生成，预览和下载已经就绪');
     } catch (error) {
-      const errorMsg = error instanceof Error ? error.message : '生成失败，请重试';
+      clearTimeout(timeoutId);
+      
+      let errorMsg = '生成失败，请重试';
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          errorMsg = '生成超时（30 秒），请检查网络后重试';
+        } else {
+          errorMsg = error.message;
+        }
+      }
       console.error('Generation error:', error);
       showToast(`生成失败：${errorMsg}`);
     } finally {

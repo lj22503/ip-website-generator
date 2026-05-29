@@ -21,6 +21,20 @@ interface AnalysisResult {
 const apiKey = process.env.ANTHROPIC_API_KEY;
 const client = apiKey ? new Anthropic({ apiKey }) : null;
 
+// 检查 API Key 是否配置
+function checkApiKey() {
+  if (!client) {
+    return {
+      ok: false,
+      error: 'AI 服务未配置',
+      details: process.env.NODE_ENV === 'development' 
+        ? '缺少 ANTHROPIC_API_KEY 环境变量' 
+        : undefined
+    };
+  }
+  return { ok: true };
+}
+
 function createFallbackAnalysis(resumeText: string): AnalysisResult {
   const raw = resumeText.replace(/\u0000/g, '').replace(/\r/g, '').trim();
   const normalized = raw.replace(/\s+/g, ' ').trim();
