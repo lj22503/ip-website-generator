@@ -14,6 +14,7 @@
 - `adapter_output.json` 加入 `.gitignore`。
 - **SaaS 新增模板模式**：`/api/generate` 支持 `template` 参数（developerfolio / alfolio / rahulbeniwal），使用纯 TypeScript 字符串模板引擎渲染完整 HTML，与 Skill 逻辑一致。Step3 UI 新增模板选择 Tab。
 - `saas/nextjs/next.config.js` 配置 webpack 支持 `.html` 文件作为 `asset/source` 模块直接导入。
+- **SaaS 修复 template-renderer.ts 嵌套 for 循环 bug**：原 `processFor` 用非贪婪正则 `([\s\S]*?)` 捕获 body，嵌套场景下会错误地在内层 `{% endfor %}` 就停止；改用 `findMatchingEndfor` 找匹配 endfor 实现嵌套正确性。同时修复字符串元素早期返回 bug（`if (!isObj(item)) return toStr(item)` 导致内层循环 `<span class="skill-tag">{{ item }}</span>` 整体被跳过），改为 `itemMap = isObj(item) ? item : {}` 确保 primitive 类型也走完整渲染流程。
 
 **Vercel 部署地址**：`https://ip-website-generator-saas.vercel.app`
 
