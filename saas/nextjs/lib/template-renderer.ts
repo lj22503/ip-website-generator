@@ -323,62 +323,110 @@ function processIf(html: string, data: StrMap): string {
   });
 }
 
-/** Process {% for item in data.items %}...{% endfor %} */
-function processFor(html: string, data: StrMap): string {
-  const re = /\{%\s*for\s+(\w+)\s+in\s+([\w.]+)\s*%\}([\s\S]*?)\{%\s*endfor\s*%\}/g;
-  return html.replace(re, (_1: string, itemName: string, dataPath: string, body: string) => {
-    const arr = getArr(data, dataPath);
-    if (!arr || arr.length === 0) return "";
-    return arr.map((item) => {
-      if (!isObj(item)) return toStr(item);
-      const itemMap = item as StrMap;
-      // Replace {{ item.field }} or {{ data.field }} within the loop body
-      let result = body;
-      result = result.replace(/\{\{\s*item\.(\w+)\s*\}\}/g, (_: string, k: string) => toStr(itemMap[k]));
-      result = result.replace(/\{\{\s*data\.(\w+)\s*\}\}/g, (_: string, k: string) => toStr(itemMap[k] ?? data[k]));
-      result = result.replace(/\{\{\s*item\.(\w+)\s*\|\s*or\s+"([^"]+)"\s*\}\}/g, (_: string, k: string, def: string) => toStr(itemMap[k]) || def);
-      result = result.replace(/\{\{\s*item\.(\w+)\s*\|\s*or\s+'([^']+)'\s*\}\}/g, (_: string, k: string, def: string) => toStr(itemMap[k]) || def);
-      // Handle nested for loops within this item (e.g. project.tags)
-      result = result.replace(
-        /\{%\s*for\s+(\w+)\s+in\s+item\.(\w+)\s*%\}[\s\S]*?\{%\s*endfor\s*%\}/g,
-        (_: string, tagName: string, tagPath: string) => {
-          const tagArr = itemMap[tagPath];
-          if (!isArr(tagArr)) return "";
-          return tagArr.map((t) => {
-            const tagStr = isObj(t) ? (t as StrMap).toString() : toStr(t);
-            return tagStr;
-          }).join("");
-        }
-      );
-      return result;
+/** Find the matching {% endfor %} for an {% for %} at startPos, returning the endfor position */
+function findMatchingEndfor(html: string, startPos: number): number | null {
+  // Find the end of the opening {% for ... %} tag
+  const openTagEnd = html.indexOf('%}', startPos);
+  if (openTagEnd === -1) return null;
+
+  let depth = 1;
+  let i = openTagEnd + 2; // Start scanning after the opening tag
+
+  while (i < html.length && depth > 0) {
+    // Find the next {%
+    const nextTag = html.indexOf('{%', i);
+    if (nextTag === -1) return null;
+
+    const c13 = html.slice(nextTag, nextTag + 13);
+    const c10 = html.slice(nextTag, nextTag + 10);
+    const c11 = html.slice(nextTag, nextTag + 11);
+
+    if (c11.startsWith('{% for ') || c10.startsWith('{%for ')) {
+      depth++;
+      i = nextTag + 11;
+    } else if (c13.startsWith('{% endfor %}') || c13.startsWith('{%endfor%}')) {
+      depth--;
+      if (depth === 0) return nextTag;
+      i = nextTag + 13;
+    } else {
+      i = nextTag + 2;
+    }
+  }
+  return null;
+}
+
+/** Process {% for item in data.items %}...{% endfor %} with proper nested loop handling */
+function processFor(html: string, data: StrMap, context: StrMap = {}): string {
+  // Match {% for tag in path %}...{% endfor %} with proper nesting
+  // We need to find the matching endfor by tracking nesting depth
+  const forOpenRe = /\{%\s*for\s+(\w+)\s+in\s+([\w.]+)\s*%\}/g;
+  let result = html;
+  let offset = 0;
+
+  // We can't use a simple regex replace because of nested loops
+  // Instead, find each {% for %}, find its matching {% endfor %}, then replace
+  const tokens: Array<{ openStart: number; openEnd: number; itemName: string; dataPath: string; bodyStart: number; bodyEnd: number; endforStart: number; endforEnd: number }> = [];
+
+  // Find all {% for %} positions
+  const openMatches: Array<{ index: number; itemName: string; dataPath: string; endTagPos: number }> = [];
+  let m;
+  const cloneRe = new RegExp(forOpenRe.source, forOpenRe.flags);
+  while ((m = cloneRe.exec(html)) !== null) {
+    openMatches.push({ index: m.index, itemName: m[1], dataPath: m[2], endTagPos: m.index + m[0].length });
+  }
+
+  // For each {% for %}, find its matching {% endfor %}
+  for (const om of openMatches) {
+    const endforPos = findMatchingEndfor(html, om.index);
+    if (endforPos === null) continue;
+    tokens.push({
+      openStart: om.index,
+      openEnd: om.endTagPos,
+      itemName: om.itemName,
+      dataPath: om.dataPath,
+      bodyStart: om.endTagPos,
+      bodyEnd: endforPos,
+      endforStart: endforPos,
+      endforEnd: endforPos + 13,
+    });
+  }
+
+  // Sort by position descending (replace from end to start to preserve positions)
+  tokens.sort((a, b) => b.openStart - a.openStart);
+
+  for (const tok of tokens) {
+    const body = result.slice(tok.bodyStart, tok.bodyEnd);
+    const arr = resolvePath(data, context, tok.dataPath);
+    if (!isArr(arr) || arr.length === 0) continue;
+    const replacement = arr.map((item, idx) => {
+      const itemMap = isObj(item) ? (item as StrMap) : {};
+      // Bind current item to loop variable name
+      const iterContext: StrMap = { ...context, [tok.itemName]: item };
+      let res = body;
+      // First recursively process any nested for loops
+      res = processFor(res, data, iterContext);
+      // Then replace {{ item.xxx }} and {{ item }} in the processed result
+      res = res.replace(/\{\{\s*item\.(\w+)\s*\}\}/g, (_: string, k: string) => toStr(itemMap[k]));
+      res = res.replace(/\{\{\s*data\.(\w+)\s*\}\}/g, (_: string, k: string) => toStr(itemMap[k] != null ? itemMap[k] : data[k]));
+      res = res.replace(/\{\{\s*item\.(\w+)\s*\|\s*or\s+"([^"]+)"\s*\}\}/g, (_: string, k: string, def: string) => toStr(itemMap[k]) || def);
+      res = res.replace(/\{\{\s*item\.(\w+)\s*\|\s*or\s+'([^']+)'\s*\}\}/g, (_: string, k: string, def: string) => toStr(itemMap[k]) || def);
+      res = res.replace(/\{\{\s*item\s*\}\}/g, () => toStr(item));
+      // Now replace remaining {{ ... }} (like {{ cat.name }}) using full context
+      res = replaceVariables(res, data, iterContext);
+      return res;
     }).join("");
-  });
+    result = result.slice(0, tok.openStart) + replacement + result.slice(tok.endforEnd);
+  }
+
+  return result;
 }
 
 /** Main render function */
 
 export function renderTemplate(htmlTemplate: string, data: StrMap): string {
   function processTemplate(html: string, context: StrMap = {}): string {
-    const pathExpr = "[a-zA-Z_][\\w.]*?(?:\\[:\\d+\\])?(?:\\|length)?";
-    html = html.replace(new RegExp(`\\{%\\s*for\\s+(\\w+)\\s+in\\s+(${pathExpr})\\s*%\\}([\\s\\S]*?)\\{%\\s*endfor\\s*%\\}`, "g"), (_: string, itemName: string, path: string, body: string) => {
-      const arr = resolvePath(data, context, path);
-      if (!isArr(arr) || arr.length === 0) return "";
-      return (arr as unknown[])
-        .map((item, idx) => {
-          const childContext: StrMap = {
-            ...context,
-            [itemName]: item,
-            loop: {
-              index: idx + 1,
-              index0: idx,
-              first: idx === 0,
-              last: idx === (arr as unknown[]).length - 1,
-            },
-          };
-          return processTemplate(body, childContext);
-        })
-        .join("");
-    });
+    // Use nesting-aware for loop processing
+    html = processFor(html, data, context);
 
     let previous = "";
     while (previous !== html) {

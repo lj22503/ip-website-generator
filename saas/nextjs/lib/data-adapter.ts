@@ -43,15 +43,11 @@ function paragraphsFromText(text: string): string[] {
 
 function normalizeSkills(skills: unknown): Array<{ name: string; skill_list: string[] }> {
   if (!skills) return [];
-  if (isDict(skills) && isList((skills as Dict).categories)) {
-    return (skills as Dict).categories as List,
-      [];
-  }
   if (isDict(skills) && "categories" in (skills as Dict)) {
     const cats = (skills as Dict).categories as List;
     return cats.map((cat) => {
       if (isDict(cat)) {
-        const items = (cat as Dict).items || (cat as Dict).skills || [];
+        const items = (cat as Dict).items || (cat as Dict).skills || (cat as Dict).skill_list || [];
         return { name: str((cat as Dict).name, ""), skill_list: items as string[] };
       }
       return { name: "技能", skill_list: cat as string[] };
@@ -272,7 +268,7 @@ export function toDeveloperfolio(content: Content): DevfolioData {
     const skillsCats: Dict = { categories: skillsAny.categories, items: skillsAny.items };
     const skillsBars: unknown = skillsAny.bars;
     result.skills = {
-      categories: normalizeSkills(skillsCats),
+      categories: normalizeSkills(skillsAny),
     };
     if (skillsBars) {
       (result as any).skills_bars = skillsBars;

@@ -15,6 +15,12 @@ interface Dimension {
   label: string;
   score: number;
   text: string;
+  sub_labels?: Array<{
+    title: string;
+    description: string;
+    outcome?: string;
+    tags?: string[];
+  }>;
 }
 
 interface ProfileData {
@@ -81,11 +87,14 @@ export async function POST(request: NextRequest) {
     const nameVal = profileData.name || short_story?.split(/[，。\n]/)[0]?.replace(/^(他|她|这)/, '')?.trim() || '我';
     const roleVal = profileData.role || frameworkDim?.text?.match(/\b(工程师|经理|总监|创始人|设计师|产品|运营|市场|销售|研发|技术|前端|后端|全栈|创作者)\b/)?.[0] || '创作者';
 
-    // Skills: extract from Skills dimension text (placeholder to bypass error)
-    const skillsText = skillsDim?.text || '技能待填写';
+    // Skills: sub_labels as categories [{name, skill_list}]
+    const skillsSubLabels = skillsDim?.sub_labels || [];
+    const skillsCategories = skillsSubLabels
+      .filter((sl: any) => sl.tags && sl.tags.length > 0)
+      .map((sl: any) => ({ name: sl.title, skill_list: sl.tags }));
 
-    // Work dimension text → projects (placeholder to bypass error)
-    const projectTitles: string[] = [];
+    // Work dimension sub_labels → projects
+    const workSubLabels = workDim?.sub_labels || [];
 
     // Resources dimension text → social links (heuristic extraction if no social_links provided)
     const resourcesText = resourcesDim?.text || '';
@@ -110,7 +119,7 @@ export async function POST(request: NextRequest) {
     pageContent['hero_featured'] = {
       title: nameVal,
       subtitle: [roleVal, ...brandKeywords].filter(Boolean).join(' · '),
-      featured_projects: projectTitles.slice(0, 5),
+      featured_projects: workSubLabels.slice(0, 5).map((sl: any) => sl.title),
     };
 
     // story.experiences = full_story (AI-generated narrative), NOT raw dimension text
@@ -131,36 +140,24 @@ export async function POST(request: NextRequest) {
       photo: '',
     };
 
-    // Skills from Skills dimension
-    if (skillsText || mbti) {
-      const skillTags = skillsText
-        ? skillsText
-            .split(/[，、,\n]/)
-            .map((s: string) => s.trim())
-            .filter((s: string) => s.length > 0 && s.length < 20)
-            .slice(0, 15)
-        : [];
-
+    // Skills from Skills dimension sub_labels
+    if (skillsCategories.length > 0 || mbti) {
       pageContent['skills'] = {
         categories: [
-          { name: '核心技能', items: skillTags },
-          { name: 'MBTI', items: mbti ? [mbti] : [] },
+          ...skillsCategories,
+          ...(mbti ? [{ name: 'MBTI', items: [mbti] }] : []),
         ],
       };
     }
 
-    // Projects from Work dimension
-    if (projectTitles.length > 0) {
+    // Projects from Work dimension sub_labels
+    if (workSubLabels.length > 0) {
       pageContent['projects'] = {
-        projects: projectTitles.map((title: string) => ({
-          title,
-          year: '',
-          role: roleVal,
-          background: '',
-          outcome: '',
-          tags: skillsText
-            ? skillsText.split(/[，、,\n]/).slice(0, 4).map((s: string) => s.trim())
-            : profileData.skills.slice(0, 4),
+        projects: workSubLabels.map((sl) => ({
+          title: sl.title,
+          description: sl.description,
+          outcome: sl.outcome || '',
+          tags: sl.tags || [],
           url: '',
         })),
       };
@@ -218,7 +215,12 @@ export async function POST(request: NextRequest) {
           role: roleVal || '创作者',
           title: [roleVal, ...brandKeywords].filter(Boolean).join(' · '),
           bio: frameworkDim?.text || '',
-          skills: skillsText ? skillsText.split(/[，、,\n]/).filter((s: string) => s.trim()) : [],
+          skills: skillsCategories.length > 0 ? { categories: skillsCategories } : { categories: [] },
+          projects: workSubLabels.map((sl) => ({
+            title: sl.title,
+            description: sl.description,
+            outcome: sl.outcome || '',
+          })),
           story: {
             experiences: full_story || '',
             insights: soulDim?.text || '',
