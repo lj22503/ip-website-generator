@@ -19,7 +19,21 @@
 
 ---
 
-## 核心架构：Surface × Design System × Component × Template
+## 核心架构：双轨并行
+
+```
+skill/                          saas/
+  ↓ Python CLI                   ↓ Next.js + TypeScript
+  本地运行                       Vercel 部署
+  rendering/ 渲染引擎             nextjs/lib/ 渲染器（TS 端口）
+```
+
+**独立维护，不互通**：
+- `skill/rendering/` — Python 原版（本地 CLI）
+- `saas/nextjs/lib/` — TypeScript 端口版（Vercel Serverless）
+- 两套代码独立演进，不要混用，不要让 saas 调用 skill 的 Python
+
+## Surface × Design System × Component × Template
 
 ```
 用户场景（Surface）
