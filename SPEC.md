@@ -305,6 +305,36 @@ HERO → SOUL（原则+最深挑战）→ FRAMEWORK（方法论网格）→ FORM
 
 ---
 
+## Git 工作流规范
+
+**分支策略**（main → 拉个人分支 → 编码提交 → 推送远程 → GitHub PR 合并到 main → 本地同步 main）：
+1. 切到 `main` → `git pull` 获取最新代码
+2. 从 `main` 新建个人分支 `feat/xxx` 或 `fix/xxx`
+3. 在个人分支编码、提交（不要直接在 main 上开发）
+4. 推送到远程 → GitHub 创建 PR → 合并到 `main`
+5. 本地切回 `main` → `git pull` 同步，保持本地 `main` 为最新
+
+**禁止事项**：
+- 禁止在 `main` 或 `master` 直接提交修改（用 PR 合并）
+- 禁止提交 `.env`、`node_modules`、`__pycache__` 等敏感文件
+
+---
+
+## Git 工作流规范
+
+**分支策略**（main → 拉个人分支 → 编码提交 → 推送远程 → GitHub PR 合并到 main → 本地同步 main）：
+1. 切到 `main` → `git pull` 获取最新代码
+2. 从 `main` 新建个人分支 `feat/xxx` 或 `fix/xxx`
+3. 在个人分支编码、提交（不要直接在 main 上开发）
+4. 推送到远程 → GitHub 创建 PR → 合并到 `main`
+5. 本地切回 `main` → `git pull` 同步，保持本地 `main` 为最新
+
+**禁止事项**：
+- 禁止在 `main` 或 `master` 直接提交修改（用 PR 合并）
+- 禁止提交 `.env`、`node_modules`、`__pycache__` 等敏感文件
+
+---
+
 ## Git Commits
 
 | Commit | 内容 |
