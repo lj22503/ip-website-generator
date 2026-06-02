@@ -123,7 +123,7 @@ function normalizeExtractedText(text: string) {
 }
 
 function sanitizeResumeText(text: string) {
-  const original = normalizeExtractedText(text);
+  const original = normalizeExtractedText(text).replace(/[\­​᠋᠌᠍]/g, '');
   if (!original) return '';
 
   const cleanedLines = original
@@ -162,7 +162,7 @@ function splitSentences(text: string) {
 }
 
 function extractName(text: string, lines: string[]) {
-  const firstLine = lines[0] || '';
+  const firstLine = (lines[0] || '').replace(/­/g, '').replace(/​|᠋|᠌|᠍/g, ' ').replace(/[\|­​]+/g, ' ').trim();
   if (firstLine.includes('|')) {
     return firstLine.split('|')[0].trim();
   }
@@ -238,14 +238,15 @@ function inferMbti(text: string, role: string) {
 }
 
 function buildProfileData(resumeText: string, analysis?: AnalysisResult | null): ProfileData {
-  const normalized = normalizeExtractedText(resumeText);
+  const normalized = normalizeExtractedText(resumeText).replace(/[\­​᠋᠌᠍]/g, '');
   const lines = normalized
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean);
   const text = normalized.replace(/\s+/g, ' ');
 
-  const name = extractName(text, lines);
+  let name = extractName(text, lines);
+  if (name.length > 30 || name.length < 2) name = '我';
   const role = extractRole(text);
   const company = extractCompany(text);
   const skillsFromText = extractSkills(text);
