@@ -555,6 +555,7 @@ export default function GeneratePage() {
           full_story: analysisResult.full_story,
           mbti: analysisResult.mbti,
           style: selectedStyle,
+          template: selectedTemplate,
           profile,
         }),
         signal: controller.signal,
