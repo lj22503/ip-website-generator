@@ -433,7 +433,8 @@ export default function GeneratePage() {
   const [toastMsg, setToastMsg] = useState('');
   const [toastVisible, setToastVisible] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<string>('developerfolio');
+  // Editable fields for Step 2 (7 IP dimensions + narratives)
 
   useEffect(() => {
     fetch('/api/designs')
