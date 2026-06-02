@@ -39,6 +39,10 @@ package-lock.json
 .env
 .env.local
 
+# Generated outputs
+adapter_output.json
+*.output.json
+
 # Next.js build
 .next/
 .vercel/

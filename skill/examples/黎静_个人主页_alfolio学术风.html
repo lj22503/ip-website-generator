@@ -3,11 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ data.name }} — {{ data.title }}</title>
+<title>黎静 — 资深金融产品经理（C端方向）</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
 <style>
+/* ================================================
+   al-folio Inspired Template — Academic Sidebar Layout
+   Inspired by: alshedivat/al-folio
+   ================================================ */
+
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 
 :root {
@@ -37,13 +42,13 @@ body {
   line-height: 1.7;
 }
 
-/* LAYOUT */
+/* ── LAYOUT ──────────────────────────────────── */
 .layout {
   display: flex;
   min-height: 100vh;
 }
 
-/* SIDEBAR */
+/* ── SIDEBAR ─────────────────────────────────── */
 .sidebar {
   width: var(--sidebar-width);
   background: var(--bg-sidebar);
@@ -139,7 +144,7 @@ body {
   background: var(--accent-light);
 }
 
-/* MAIN CONTENT */
+/* ── MAIN CONTENT ─────────────────────────────── */
 .main {
   margin-left: var(--sidebar-width);
   flex: 1;
@@ -154,7 +159,7 @@ body {
   .sidebar-socials { display: none; }
 }
 
-/* SECTION STYLES */
+/* ── SECTION STYLES ──────────────────────────── */
 .content-section {
   max-width: var(--content-max);
   margin-bottom: 72px;
@@ -184,7 +189,7 @@ body {
   margin-bottom: 28px;
 }
 
-/* ABOUT TEXT */
+/* ── ABOUT TEXT ──────────────────────────────── */
 .about-text {
   font-family: 'Source Serif 4', Georgia, serif;
   font-size: 1.05rem;
@@ -193,7 +198,7 @@ body {
 }
 .about-text p + p { margin-top: 16px; }
 
-/* PUBLICATIONS */
+/* ── PUBLICATIONS ───────────────────────────── */
 .pub-list { display: flex; flex-direction: column; gap: 20px; }
 .pub-item {
   padding: 20px 24px;
@@ -218,8 +223,20 @@ body {
   margin-bottom: 8px;
 }
 .pub-desc { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; }
+.pub-links { display: flex; gap: 10px; margin-top: 10px; }
+.pub-link {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+  padding: 3px 10px;
+  border: 1px solid rgba(124,58,237,0.25);
+  border-radius: 4px;
+  transition: var(--transition);
+}
+.pub-link:hover { background: var(--accent-light); }
 
-/* NEWS / BLOG */
+/* ── NEWS / BLOG ────────────────────────────── */
 .news-list { display: flex; flex-direction: column; gap: 16px; }
 .news-item {
   display: flex;
@@ -245,7 +262,7 @@ body {
 }
 .news-title:hover { color: var(--accent); }
 
-/* SKILLS */
+/* ── SKILLS ─────────────────────────────────── */
 .skills-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -275,8 +292,9 @@ body {
   color: var(--text-secondary);
 }
 
-/* EXPERIENCE */
+/* ── EXPERIENCE ─────────────────────────────── */
 .exp-list { display: flex; flex-direction: column; gap: 28px; }
+.exp-item {}
 .exp-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
 .exp-title { font-size: 0.95rem; font-weight: 700; color: var(--text-primary); }
 .exp-date { font-size: 0.72rem; color: var(--text-muted); font-family: monospace; white-space: nowrap; }
@@ -289,7 +307,7 @@ body {
   border-left: 2px solid var(--border);
 }
 
-/* PROJECTS */
+/* ── PROJECTS ───────────────────────────────── */
 .projects-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -324,7 +342,7 @@ body {
   font-weight: 600;
 }
 
-/* CONTACT */
+/* ── CONTACT ────────────────────────────────── */
 .contact-item {
   display: flex;
   align-items: center;
@@ -348,12 +366,22 @@ body {
 .contact-text a { color: var(--accent); text-decoration: none; }
 .contact-text a:hover { text-decoration: underline; }
 
-/* STORY */
+/* ── DARK MODE ──────────────────────────────── */
+[data-theme="dark"] {
+  --bg-primary: #0f0e17;
+  --bg-content: #12111c;
+  --text-primary: #e8e8f4;
+  --text-secondary: #9898b0;
+  --text-muted: #606078;
+  --border: rgba(255,255,255,0.07);
+}
+
+/* Story — 叙事三段式 */
 .story-phase {
   margin-bottom: 32px;
   padding: 20px 24px;
   background: rgba(255,255,255,0.04);
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--accent, #7c3aed);
   border-radius: 0 8px 8px 0;
 }
 .story-phase-title {
@@ -361,7 +389,7 @@ body {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--accent);
+  color: var(--accent, #7c3aed);
   margin: 0 0 12px 0;
 }
 .story-phase-content p {
@@ -376,246 +404,298 @@ body {
 
 <div class="layout">
 
-<!-- SIDEBAR -->
+<!-- ═══ SIDEBAR ════════════════════════════════════ -->
 <aside class="sidebar">
-
-  {% if data.avatar %}
-  <img src="{{ data.avatar }}" alt="{{ data.name }}" class="sidebar-avatar">
-  {% endif %}
-
-  <div class="sidebar-name">{{ data.name }}</div>
-  <div class="sidebar-title">{{ data.title }}</div>
-
-  {% if data.about and data.about.bio %}
-  <div class="sidebar-bio">{{ data.about.bio[:100] }}{% if data.about.bio|length > 100 %}...{% endif %}</div>
-  {% endif %}
+  
+  <img src="https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/v2/cover/RC1lbKwipogI59x8cKZc7FALnwe/?fallback_source=1&height=1280&width=1280" alt="黎静" class="sidebar-avatar">
+  
+  <div class="sidebar-name">黎静</div>
+  <div class="sidebar-title">资深金融产品经理（C端方向）</div>
+  
+  <div class="sidebar-bio">10年资深金融产品经理，专注C端基金理财与投顾服务，擅长AI驱动的智能化产品设计。</div>
+  
 
   <nav class="sidebar-nav">
     <a href="#about"><i data-lucide="user" style="width:15px;height:15px"></i> 关于</a>
-    {% if data.news or data.blogs %}<a href="#news"><i data-lucide="newspaper" style="width:15px;height:15px"></i> 最新动态</a>{% endif %}
-    {% if data.publications %}<a href="#publications"><i data-lucide="book-open" style="width:15px;height:15px"></i> 发表成果</a>{% endif %}
-    {% if data.projects %}<a href="#projects"><i data-lucide="folder-archive" style="width:15px;height:15px"></i> 项目作品</a>{% endif %}
-    {% if data.skills %}<a href="#skills"><i data-lucide="cpu" style="width:15px;height:15px"></i> 技能</a>{% endif %}
-    {% if data.experience %}<a href="#experience"><i data-lucide="briefcase" style="width:15px;height:15px"></i> 经历</a>{% endif %}
+    
+    <a href="#news"><i data-lucide="newspaper" style="width:15px;height:15px"></i> 最新动态</a>
+    <a href="#publications"><i data-lucide="book-open" style="width:15px;height:15px"></i> 发表成果</a>
+    <a href="#projects"><i data-lucide="folder-archive" style="width:15px;height:15px"></i> 项目作品</a>
+    <a href="#skills"><i data-lucide="cpu" style="width:15px;height:15px"></i> 技能</a>
+    <a href="#experience"><i data-lucide="briefcase" style="width:15px;height:15px"></i> 经历</a>
     <a href="#contact"><i data-lucide="mail" style="width:15px;height:15px"></i> 联系</a>
   </nav>
 
   <div class="sidebar-socials">
-    {% if data.socials and data.socials.github %}
-    <a href="{{ data.socials.github }}" class="sidebar-social-link" target="_blank"><i data-lucide="github" style="width:16px;height:16px"></i></a>
-    {% endif %}
-    {% if data.socials and data.socials.linkedin %}
-    <a href="{{ data.socials.linkedin }}" class="sidebar-social-link" target="_blank"><i data-lucide="linkedin" style="width:16px;height:16px"></i></a>
-    {% endif %}
-    {% if data.socials and data.socials.email %}
-    <a href="mailto:{{ data.socials.email }}" class="sidebar-social-link"><i data-lucide="mail" style="width:16px;height:16px"></i></a>
-    {% endif %}
+    <a href="#" class="sidebar-social-link" target="_blank"><i data-lucide="github" style="width:16px;height:16px"></i></a>
+    <a href="#" class="sidebar-social-link" target="_blank"><i data-lucide="linkedin" style="width:16px;height:16px"></i></a>
+    
+    <a href="mailto:lj22503@163.com" class="sidebar-social-link"><i data-lucide="mail" style="width:16px;height:16px"></i></a>
   </div>
 </aside>
 
-<!-- MAIN CONTENT -->
+<!-- ═══ MAIN CONTENT ════════════════════════════ -->
 <main class="main">
 
 <!-- ABOUT -->
-{% if data.about and data.about.bio %}
+
 <section class="content-section" id="about">
   <div class="section-divider"></div>
   <h1 class="section-heading">关于我</h1>
-  <p class="section-subheading">{{ data.name }}{% if data.title %} · {{ data.title }}{% endif %}</p>
+  <p class="section-subheading">黎静 · 资深金融产品经理（C端方向）</p>
   <div class="about-text">
-    {% if data.about.paragraphs %}
-      {% for para in data.about.paragraphs %}
-    <p>{{ para }}</p>
-      {% endfor %}
-    {% else %}
-    <p>{{ data.about.bio }}</p>
-    {% endif %}
+    
+    <p>拥有10年基金产品经验，精通基金理财、投顾服务、资产配置等C端核心业务，具备从工具到场景、从功能到增长的全链路产品设计与运营能力。</p>
+    
+    <p>深入探索基金研究在金融场景的应用，主导过基金诊断、资产规划等多款投研驱动产品落地，并将用户行为分析与策略结合，有效提升留存与转化。</p>
+    
+    <p>擅长通过数据监控、精准运营和体验优化驱动产品增长，主导过APP重大版本转型，具备出色的跨部门协调与项目管理能力。</p>
+    
   </div>
 </section>
-{% endif %}
 
-<!-- STORY -->
-{% if data.story and (data.story.experiences or data.story.challenges or data.story.insights) %}
-{% if data.story.experiences %}
-<section class="content-section" id="story-experiences">
-  <div class="section-divider"></div>
-  <h2 class="section-heading">经历</h2>
-  <div class="story-phase">
-    <div class="story-phase-title">✦ 经历</div>
-    <div class="story-phase-content">
-      {% if data.story.experiences is string %}
-      <p>{{ data.story.experiences }}</p>
-      {% else %}
-      {% for para in data.story.experiences %}
-      <p>{{ para }}</p>
-      {% endfor %}
-      {% endif %}
-    </div>
-  </div>
-</section>
-{% endif %}
 
-{% if data.story.challenges %}
-<section class="content-section" id="story-challenges">
-  <div class="section-divider"></div>
-  <h2 class="section-heading">挑战</h2>
-  <div class="story-phase">
-    <div class="story-phase-title">✦ 挑战</div>
-    <div class="story-phase-content">
-      {% if data.story.challenges is string %}
-      <p>{{ data.story.challenges }}</p>
-      {% else %}
-      {% for para in data.story.challenges %}
-      <p>{{ para }}</p>
-      {% endfor %}
-      {% endif %}
-    </div>
-  </div>
-</section>
-{% endif %}
+<!-- STORY — 叙事三段式（experiences / challenges / insights） -->
 
-{% if data.story.insights %}
-<section class="content-section" id="story-insights">
-  <div class="section-divider"></div>
-  <h2 class="section-heading">洞见</h2>
-  <div class="story-phase">
-    <div class="story-phase-title">✦ 洞见</div>
-    <div class="story-phase-content">
-      {% if data.story.insights is string %}
-      <p>{{ data.story.insights }}</p>
-      {% else %}
-      {% for para in data.story.insights %}
-      <p>{{ para }}</p>
-      {% endfor %}
-      {% endif %}
-    </div>
-  </div>
-</section>
-{% endif %}
-{% endif %}
 
-<!-- NEWS / BLOG -->
-{% if data.news %}
+
+
+
+<!-- NEWS -->
+
 <section class="content-section" id="news">
   <div class="section-divider"></div>
   <h2 class="section-heading">最新动态</h2>
   <div class="news-list">
-    {% for item in data.news %}
+    
     <div class="news-item">
-      {% if item.date %}<span class="news-date">{{ item.date }}</span>{% endif %}
-      <a href="{{ item.url or '#' }}" class="news-title" target="_blank">{{ item.title }}</a>
+      <span class="news-date">2023-12</span>
+      <a href="#" class="news-title" target="_blank">基金诊断工具使用量突破5.9万人次</a>
+      
     </div>
-    {% endfor %}
+    
+    <div class="news-item">
+      <span class="news-date">2021-08</span>
+      <a href="#" class="news-title" target="_blank">APP 4.0改版上线，核心指标显著提升</a>
+      
+    </div>
+    
+    <div class="news-item">
+      <span class="news-date">2022-06</span>
+      <a href="#" class="news-title" target="_blank">智能定投体系上线，定投人数占比提升至45%</a>
+      
+    </div>
+    
   </div>
 </section>
-{% endif %}
+
 
 <!-- PUBLICATIONS -->
-{% if data.publications %}
+
 <section class="content-section" id="publications">
   <div class="section-divider"></div>
   <h2 class="section-heading">发表成果</h2>
   <div class="pub-list">
-    {% for pub in data.publications %}
+    
     <div class="pub-item">
-      <div class="pub-title">{{ pub.title }}</div>
-      {% if pub.authors %}<div class="pub-authors">{{ pub.authors }}</div>{% endif %}
-      {% if pub.venue %}<div class="pub-venue">{{ pub.venue }}</div>{% endif %}
-      {% if pub.description %}<div class="pub-desc">{{ pub.description }}</div>{% endif %}
+      <div class="pub-title">C端基金产品智能化转型路径探索</div>
+      <div class="pub-authors">黎静</div>
+      <div class="pub-venue">2022 · 内部研究报告</div>
+      <div class="pub-desc">探讨AI技术在C端基金理财场景的应用方法论与实践案例。</div>
+      
     </div>
-    {% endfor %}
+    
+    <div class="pub-item">
+      <div class="pub-title">基金诊断评价体系在投顾服务中的应用</div>
+      <div class="pub-authors">黎静</div>
+      <div class="pub-venue">2023 · 产品白皮书</div>
+      <div class="pub-desc">分析如何构建用户可理解的基金量化评价模型，提升投顾服务转化效率。</div>
+      
+    </div>
+    
+    <div class="pub-item">
+      <div class="pub-title">基于用户行为的定投全生命周期运营策略</div>
+      <div class="pub-authors">黎静</div>
+      <div class="pub-venue">2021 · 运营方法论</div>
+      <div class="pub-desc">探索从首投引导到流失预警的定投用户自动化运营体系。</div>
+      
+    </div>
+    
   </div>
 </section>
-{% endif %}
+
 
 <!-- PROJECTS -->
-{% if data.projects %}
+
 <section class="content-section" id="projects">
   <div class="section-divider"></div>
   <h2 class="section-heading">项目作品</h2>
   <div class="projects-grid">
-    {% for project in data.projects %}
+    
     <div class="project-item">
-      <div class="project-name">{{ project.title or project.name }}</div>
-      {% if project.description %}<div class="project-desc">{{ project.description }}</div>{% endif %}
-      {% if project.tags %}
+      <div class="project-name">基金诊断与资产诊断服务</div>
+      <div class="project-desc">AI驱动的顾问式工具，覆盖全市场主流品类。诊断转化率超36%，赋能理财师挖掘外部资产20亿+。</div>
+      
       <div class="project-tags">
-        {% for tag in project.tags %}<span class="project-tag">{{ tag }}</span>{% endfor %}
+        <span class="project-tag">AI算法</span><span class="project-tag">量化模型</span><span class="project-tag">交互设计</span>
       </div>
-      {% endif %}
+      
     </div>
-    {% endfor %}
+    
+    <div class="project-item">
+      <div class="project-name">智能定投与全生命周期运营体系</div>
+      <div class="project-desc">基于用户行为标签的自动化运营体系。定投金额占比提升至14%，人数占比提升至45%。</div>
+      
+      <div class="project-tags">
+        <span class="project-tag">数据标签</span><span class="project-tag">策略引擎</span><span class="project-tag">自动化</span>
+      </div>
+      
+    </div>
+    
+    <div class="project-item">
+      <div class="project-name">中欧财富APP 4.0「投+顾」模式转型</div>
+      <div class="project-desc">从货架式销售升级为投顾式服务平台。客户访问时长提升8%，平台点击率上升11%。</div>
+      
+      <div class="project-tags">
+        <span class="project-tag">产品架构</span><span class="project-tag">体验设计</span><span class="project-tag">服务设计</span>
+      </div>
+      
+    </div>
+    
   </div>
 </section>
-{% endif %}
+
 
 <!-- SKILLS -->
-{% if data.skills and data.skills.categories %}
+
 <section class="content-section" id="skills">
   <div class="section-divider"></div>
   <h2 class="section-heading">技能</h2>
   <div class="skills-grid">
-    {% for cat in data.skills.categories %}
+    
     <div class="skill-group">
-      <div class="skill-group-title">{{ cat.name }}</div>
+      <div class="skill-group-title">产品设计</div>
       <div class="skill-list">
-        {% for item in cat.skill_list %}
-        <span class="skill-item">{{ item }}</span>
-        {% endfor %}
+        
+        <span class="skill-item">需求分析</span>
+        
+        <span class="skill-item">原型设计</span>
+        
+        <span class="skill-item">用户体验</span>
+        
+        <span class="skill-item">交互设计</span>
+        
+        <span class="skill-item">PRD撰写</span>
+        
       </div>
     </div>
-    {% endfor %}
+    
+    <div class="skill-group">
+      <div class="skill-group-title">AI实践</div>
+      <div class="skill-list">
+        
+        <span class="skill-item">Prompt工程</span>
+        
+        <span class="skill-item">AI Agent设计</span>
+        
+        <span class="skill-item">RAG知识库</span>
+        
+        <span class="skill-item">Coze平台</span>
+        
+      </div>
+    </div>
+    
+    <div class="skill-group">
+      <div class="skill-group-title">数据分析</div>
+      <div class="skill-list">
+        
+        <span class="skill-item">用户行为分析</span>
+        
+        <span class="skill-item">A/B测试</span>
+        
+        <span class="skill-item">数据监控</span>
+        
+        <span class="skill-item">精准运营</span>
+        
+        <span class="skill-item">GIO埋点</span>
+        
+      </div>
+    </div>
+    
+    <div class="skill-group">
+      <div class="skill-group-title">金融专业</div>
+      <div class="skill-list">
+        
+        <span class="skill-item">基金理财</span>
+        
+        <span class="skill-item">投顾服务</span>
+        
+        <span class="skill-item">资产配置</span>
+        
+        <span class="skill-item">合规风控</span>
+        
+        <span class="skill-item">AFP持证</span>
+        
+      </div>
+    </div>
+    
   </div>
 </section>
-{% endif %}
+
 
 <!-- EXPERIENCE -->
-{% if data.experience %}
+
 <section class="content-section" id="experience">
   <div class="section-divider"></div>
   <h2 class="section-heading">职业经历</h2>
   <div class="exp-list">
-    {% for exp in data.experience %}
+    
     <div class="exp-item">
       <div class="exp-header">
-        <span class="exp-title">{{ exp.role or exp.title }}</span>
-        {% if exp.period or exp.date %}<span class="exp-date">{{ exp.period or exp.date }}</span>{% endif %}
+        <span class="exp-title">资深产品经理</span>
+        <span class="exp-date">2018 - 2026</span>
       </div>
-      {% if exp.company %}<div class="exp-company">{{ exp.company }}</div>{% endif %}
-      {% if exp.description %}<div class="exp-desc">{{ exp.description }}</div>{% endif %}
+      <div class="exp-company">中欧财富</div>
+      <div class="exp-desc">主导C端产品与用户增长。负责APP核心场景规划与迭代，智能化产品孵化，数据驱动运营体系构建，APP整体体验升级。</div>
     </div>
-    {% endfor %}
+    
+    <div class="exp-item">
+      <div class="exp-header">
+        <span class="exp-title">产品经理</span>
+        <span class="exp-date">2015 - 2018</span>
+      </div>
+      <div class="exp-company">证通股份</div>
+      <div class="exp-desc">金融产品系统优化，证通财富APP迭代，营销工具闭环设计。运营效率提升40%，活期产品用户规模增长100%。</div>
+    </div>
+    
   </div>
 </section>
-{% endif %}
+
 
 <!-- CONTACT -->
 <section class="content-section" id="contact">
   <div class="section-divider"></div>
   <h2 class="section-heading">联系方式</h2>
   <div>
-
-    {% if data.socials and data.socials.email %}
+    
     <div class="contact-item">
       <div class="contact-icon"><i data-lucide="mail" style="width:16px;height:16px"></i></div>
-      <div class="contact-text"><a href="mailto:{{ data.socials.email }}">{{ data.socials.email }}</a></div>
+      <div class="contact-text"><a href="mailto:lj22503@163.com">lj22503@163.com</a></div>
     </div>
-    {% endif %}
-
-    {% if data.socials and data.socials.linkedin %}
+    
+    
     <div class="contact-item">
       <div class="contact-icon"><i data-lucide="linkedin" style="width:16px;height:16px"></i></div>
-      <div class="contact-text"><a href="{{ data.socials.linkedin }}" target="_blank">LinkedIn</a></div>
+      <div class="contact-text"><a href="#" target="_blank">LinkedIn</a></div>
     </div>
-    {% endif %}
-
-    {% if data.socials and data.socials.github %}
+    
+    
     <div class="contact-item">
       <div class="contact-icon"><i data-lucide="github" style="width:16px;height:16px"></i></div>
-      <div class="contact-text"><a href="{{ data.socials.github }}" target="_blank">GitHub</a></div>
+      <div class="contact-text"><a href="#" target="_blank">GitHub</a></div>
     </div>
-    {% endif %}
-
+    
+    
   </div>
 </section>
 

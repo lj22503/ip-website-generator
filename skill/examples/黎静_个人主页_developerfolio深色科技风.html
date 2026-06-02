@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>黎静 — 资深金融产品经理</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<style>
+/* ================================================
+   developerFolio Template — Full Page Layout
+   Inspired by: WebsiteEngine/developerFolio
+   ================================================ */
+
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+
+:root {
+  --bg-primary: #0a0a0f;
+  --bg-secondary: #12121a;
+  --bg-card: rgba(20,20,30,0.85);
+  --accent: #0075de;
+  --accent-secondary: #00c7b7;
+  --text-primary: #e8e8f0;
+  --text-secondary: #9090a8;
+  --text-muted: #606078;
+  --border: rgba(255,255,255,0.08);
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --radius: 14px;
+  --transition: 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Outfit', -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── SECTION BASE ─────────────────────────────── */
+.section {
+  padding: 80px 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  color: var(--text-primary);
+}
+.section-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+}
+.section-header {
+  margin-bottom: 40px;
+}
+.section-divider {
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+  border-radius: 2px;
+  margin-bottom: 20px;
+}
+
+/* ── NAVBAR ───────────────────────────────────── */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1000;
+  padding: 16px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(10,10,15,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent);
+  text-decoration: none;
+}
+.nav-links {
+  display: flex;
+  gap: 8px;
+  list-style: none;
+}
+.nav-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: var(--transition);
+}
+.nav-links a:hover {
+  color: var(--text-primary);
+  background: var(--border);
+}
+@media (max-width: 768px) {
+  .nav-links { display: none; }
+}
+
+/* ── HERO ─────────────────────────────────────── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  position: relative;
+  overflow: hidden;
+}
+.hero-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(85,212,235,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(168,85,247,0.08) 0%, transparent 50%);
+}
+.hero-avatar {
+  width: 140px; height: 140px;
+  border-radius: 50%;
+  border: 3px solid var(--accent);
+  object-fit: cover;
+  margin-bottom: 24px;
+  box-shadow: 0 0 40px rgba(85,212,235,0.25);
+}
+.hero-greeting {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.hero-name {
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, var(--text-primary) 40%, var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-title {
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: var(--text-secondary);
+  margin-bottom: 20px;
+  font-weight: 500;
+}
+.hero-subtitle {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 560px;
+  margin-bottom: 32px;
+  line-height: 1.8;
+}
+.hero-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 36px;
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 40px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: rgba(85,212,235,0.1);
+  color: var(--accent);
+  border: 1px solid rgba(85,212,235,0.2);
+}
+.hero-socials {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+.social-icon {
+  width: 42px; height: 42px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.social-icon:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(85,212,235,0.2);
+}
+.hero-scroll {
+  position: absolute;
+  bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  animation: bounce 2s ease-in-out infinite;
+}
+@keyframes bounce {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+/* ── SKILLS ───────────────────────────────────── */
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+.skill-category {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px;
+  transition: var(--transition);
+}
+.skill-category:hover {
+  border-color: rgba(85,212,235,0.3);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow);
+}
+.skill-cat-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--accent);
+  margin-bottom: 16px;
+}
+.skill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.skill-tag {
+  padding: 4px 12px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+.skill-bars { display: flex; flex-direction: column; gap: 16px; }
+.skill-bar-item {}
+.skill-bar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+.skill-bar-name { font-size: 0.88rem; font-weight: 600; }
+.skill-bar-pct { font-size: 0.78rem; color: var(--accent); font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.skill-bar {
+  height: 6px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.skill-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-secondary));
+  border-radius: 3px;
+  transition: width 1.2s ease;
+}
+
+/* ── EDUCATION & EXPERIENCE ───────────────────── */
+.timeline { position: relative; padding-left: 28px; }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 8px; bottom: 8px;
+  width: 2px;
+  background: linear-gradient(180deg, var(--accent), var(--accent-secondary));
+  border-radius: 1px;
+}
+.timeline-item {
+  position: relative;
+  margin-bottom: 36px;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: -33px; top: 8px;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: 2px solid var(--bg-primary);
+  box-shadow: 0 0 10px rgba(85,212,235,0.4);
+}
+.timeline-date {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 4px;
+}
+.timeline-role {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin-bottom: 2px;
+}
+.timeline-company {
+  font-size: 0.9rem;
+  color: var(--accent-secondary);
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.timeline-desc {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.7;
+}
+.timeline-grade {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+
+/* ── PROJECTS ────────────────────────────────── */
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+}
+.project-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+}
+.project-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  border-color: rgba(85,212,235,0.3);
+}
+.project-banner {
+  height: 140px;
+  background: linear-gradient(135deg, rgba(85,212,235,0.15), rgba(168,85,247,0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+.project-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 50%, var(--bg-card));
+}
+.project-banner-icon {
+  font-size: 2.5rem;
+  opacity: 0.6;
+}
+.project-body { padding: 20px; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+.project-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.project-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+.project-year {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  white-space: nowrap;
+}
+.project-role { font-size: 0.82rem; color: var(--accent); font-weight: 600; }
+.project-desc { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; flex: 1; }
+.project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; }
+.project-tag {
+  padding: 3px 10px;
+  background: rgba(85,212,235,0.08);
+  border: 1px solid rgba(85,212,235,0.15);
+  border-radius: 4px;
+  font-size: 0.72rem;
+  color: var(--accent);
+  font-weight: 600;
+}
+.project-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 12px;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: 600;
+  transition: var(--transition);
+}
+.project-link:hover { gap: 10px; }
+
+/* ── ACHIEVEMENTS ─────────────────────────────── */
+.achievements-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+}
+.achievement-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  transition: var(--transition);
+}
+.achievement-card:hover {
+  border-color: rgba(168,85,247,0.3);
+  transform: translateY(-2px);
+}
+.achievement-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(168,85,247,0.2), rgba(168,85,247,0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-secondary);
+  flex-shrink: 0;
+}
+.achievement-title { font-size: 0.88rem; font-weight: 700; margin-bottom: 4px; }
+.achievement-desc { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.5; }
+
+/* ── BLOGS ────────────────────────────────────── */
+.blogs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+}
+.blog-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  transition: var(--transition);
+  text-decoration: none;
+  display: block;
+  color: inherit;
+}
+.blog-card:hover {
+  border-color: rgba(85,212,235,0.3);
+  transform: translateY(-3px);
+  box-shadow: var(--shadow);
+}
+.blog-title { font-size: 0.95rem; font-weight: 700; margin-bottom: 8px; color: var(--text-primary); }
+.blog-excerpt { font-size: 0.82rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px; }
+.blog-meta { font-size: 0.72rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; }
+
+/* ── CONTACT ──────────────────────────────────── */
+.contact-box {
+  background: var(--bg-card);
+  border: 1px solid rgba(85,212,235,0.2);
+  border-radius: var(--radius);
+  padding: 40px;
+  text-align: center;
+  max-width: 640px;
+  margin: 0 auto;
+}
+.contact-heading {
+  font-size: 1.8rem;
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+.contact-sub {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+.contact-links { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.contact-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 24px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: var(--transition);
+  width: 100%;
+  max-width: 320px;
+  justify-content: center;
+}
+.contact-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(85,212,235,0.06);
+  transform: translateY(-1px);
+}
+.contact-note {
+  margin-top: 24px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+/* ── FOOTER ───────────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 32px 24px;
+  border-top: 1px solid var(--border);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+.footer-socials { display: flex; gap: 12px; justify-content: center; margin-bottom: 16px; }
+
+/* ── DARK/LIGHT TOGGLE ────────────────────────── */
+[data-theme="light"] {
+  --bg-primary: #f8f8fc;
+  --bg-secondary: #f0f0f8;
+  --bg-card: rgba(255,255,255,0.9);
+  --text-primary: #1a1a2e;
+  --text-secondary: #5a5a78;
+  --text-muted: #9090a8;
+  --border: rgba(0,0,0,0.08);
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar">
+  <a href="#" class="nav-logo">黎静</a>
+  <ul class="nav-links">
+    <li><a href="#about">关于</a></li>
+    <li><a href="#skills">技能</a></li>
+    <li><a href="#experience">经历</a></li>
+    <li><a href="#projects">项目</a></li>
+    <li><a href="#achievements">成就</a></li>
+    <li><a href="#blogs">博客</a></li>
+    
+    <li><a href="#contact">联系</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HERO ═══════════════════════════════════════ -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  
+  <img src="https://internal-api-drive-stream.feishu.cn/space/api/box/stream/download/v2/cover/RC1lbKwipogI59x8cKZc7FALnwe/?fallback_source=1&height=1280&width=1280" alt="黎静" class="hero-avatar">
+  
+  <div class="hero-greeting">你好，我是</div>
+  <h1 class="hero-name">黎静</h1>
+  <p class="hero-title">资深金融产品经理</p>
+  <p class="hero-subtitle">10年金融产品专家 · AI驱动的产品创新者 · 上海</p>
+
+  
+  <div class="hero-badges">
+    
+    <span class="badge">
+      <i data-lucide="briefcase" style="width:14px;height:14px"></i>
+      资深产品经理
+    </span>
+    
+    <span class="badge">
+      <i data-lucide="cpu" style="width:14px;height:14px"></i>
+      AI产品实践者
+    </span>
+    
+    <span class="badge">
+      <i data-lucide="trending-up" style="width:14px;height:14px"></i>
+      金融科技专家
+    </span>
+    
+  </div>
+  
+
+  <div class="hero-socials">
+    
+      <a href="#" class="social-icon" target="_blank"><i data-lucide="github" style="width:18px;height:18px"></i></a>
+      <a href="#" class="social-icon" target="_blank"><i data-lucide="linkedin" style="width:18px;height:18px"></i></a>
+      
+      <a href="mailto:lj22503@163.com" class="social-icon"><i data-lucide="mail" style="width:18px;height:18px"></i></a>
+    
+  </div>
+
+  
+  <a href="#" class="badge" style="margin-top:20px;cursor:pointer" download>
+    <i data-lucide="download" style="width:14px;height:14px"></i>
+    下载简历
+  </a>
+  
+
+  <div class="hero-scroll">
+    <i data-lucide="chevrons-down" style="width:20px;height:20px"></i>
+    <span>向下滚动</span>
+  </div>
+</section>
+
+<!-- ═══ ABOUT ════════════════════════════════════ -->
+
+<section class="section" id="about">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">关于我</h2>
+    <p class="section-subtitle">专注C端基金理财与投顾服务</p>
+  </div>
+  <div style="max-width:720px">
+    <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;white-space:pre-line">拥有10年基金产品全链路经验，从工具到场景，从功能到增长，深度参与金融科技产品演进。
+
+主导过基金诊断、资产规划、智能定投等多款AI驱动的顾问式产品，实现业务指标显著提升。将复杂的基金评价模型和资产配置理论转化为用户易懂的量化指标和交互流程。
+
+擅长构建数据驱动的运营体系，通过精准策略和自动化触达解决长尾客户运营难题。具备出色的跨部门协调与项目管理能力，能高效协同技术、设计、投研、运营等多团队。</p>
+  </div>
+</section>
+
+
+<!-- ═══ STORY / 叙事 ════════════════════════════════ -->
+
+<section class="section" id="story">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">我的故事</h2>
+  </div>
+  <div class="story-block" style="max-width:720px">
+    
+    <div class="story-card" style="margin-bottom:32px">
+      <h3 style="color:var(--accent);font-size:1.1rem;margin-bottom:12px">✦ 经历</h3>
+      
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">从经济学背景转型金融科技产品，深刻理解金融理论与用户需求的结合点。</p>
+      
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">在中欧财富主导APP从「货架式销售」向「投顾式服务」转型，重构产品价值主张。</p>
+      
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">探索AI在金融场景的应用，将复杂的基金评价模型转化为用户易懂的量化指标。</p>
+      
+    </div>
+    
+    
+    <div class="story-card" style="margin-bottom:32px">
+      <h3 style="color:var(--accent-secondary,#a855f7);font-size:1.1rem;margin-bottom:12px">✦ 挑战</h3>
+      
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">金融产品的高认知门槛与用户低金融素养之间的矛盾如何平衡？</p>
+      
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">如何在合规框架下实现产品创新，同时确保风险可控？</p>
+      
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">如何构建可持续的用户增长飞轮，而非依赖短期营销刺激？</p>
+      
+    </div>
+    
+    
+    <div class="story-card">
+      <h3 style="color:#f59e0b;font-size:1.1rem;margin-bottom:12px">✦ 洞见</h3>
+      
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">金融产品的本质是服务，而服务需要温度、专业和持续陪伴。</p>
+      
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">技术是手段，不是目的，AI的价值在于赋能而非替代。</p>
+      
+      <p style="font-size:1rem;color:var(--text-secondary);line-height:1.9;margin-bottom:12px">好的产品设计应该让复杂变简单，让专业变易懂。</p>
+      
+    </div>
+    
+  </div>
+</section>
+
+
+<!-- ═══ SKILLS ════════════════════════════════════ -->
+
+<section class="section" id="skills">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">技能图谱</h2>
+    <p class="section-subtitle">我所掌握的技术与工具</p>
+  </div>
+
+  
+  <div class="skills-grid" style="margin-bottom:32px">
+    
+    <div class="skill-category">
+      <div class="skill-cat-title">产品设计</div>
+      <div class="skill-tags">
+        
+        <span class="skill-tag">需求分析</span>
+        
+        <span class="skill-tag">原型设计</span>
+        
+        <span class="skill-tag">用户体验</span>
+        
+        <span class="skill-tag">交互设计</span>
+        
+      </div>
+    </div>
+    
+    <div class="skill-category">
+      <div class="skill-cat-title">AI实践</div>
+      <div class="skill-tags">
+        
+        <span class="skill-tag">Prompt工程</span>
+        
+        <span class="skill-tag">AI Agent设计</span>
+        
+        <span class="skill-tag">RAG知识库</span>
+        
+        <span class="skill-tag">Coze平台</span>
+        
+      </div>
+    </div>
+    
+    <div class="skill-category">
+      <div class="skill-cat-title">数据分析</div>
+      <div class="skill-tags">
+        
+        <span class="skill-tag">用户行为分析</span>
+        
+        <span class="skill-tag">A/B测试</span>
+        
+        <span class="skill-tag">数据监控</span>
+        
+        <span class="skill-tag">精准运营</span>
+        
+      </div>
+    </div>
+    
+    <div class="skill-category">
+      <div class="skill-cat-title">金融专业</div>
+      <div class="skill-tags">
+        
+        <span class="skill-tag">基金理财</span>
+        
+        <span class="skill-tag">投顾服务</span>
+        
+        <span class="skill-tag">资产配置</span>
+        
+        <span class="skill-tag">合规风控</span>
+        
+      </div>
+    </div>
+    
+  </div>
+  
+
+  
+  <div class="skill-bars" style="max-width:600px">
+    
+    <div class="skill-bar-item">
+      <div class="skill-bar-header">
+        <span class="skill-bar-name">产品规划</span>
+        <span class="skill-bar-pct">95%</span>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-fill" style="width:95%"></div>
+      </div>
+    </div>
+    
+    <div class="skill-bar-item">
+      <div class="skill-bar-header">
+        <span class="skill-bar-name">AI应用</span>
+        <span class="skill-bar-pct">85%</span>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-fill" style="width:85%"></div>
+      </div>
+    </div>
+    
+    <div class="skill-bar-item">
+      <div class="skill-bar-header">
+        <span class="skill-bar-name">数据分析</span>
+        <span class="skill-bar-pct">90%</span>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-fill" style="width:90%"></div>
+      </div>
+    </div>
+    
+    <div class="skill-bar-item">
+      <div class="skill-bar-header">
+        <span class="skill-bar-name">项目管理</span>
+        <span class="skill-bar-pct">92%</span>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-fill" style="width:92%"></div>
+      </div>
+    </div>
+    
+    <div class="skill-bar-item">
+      <div class="skill-bar-header">
+        <span class="skill-bar-name">跨部门协作</span>
+        <span class="skill-bar-pct">88%</span>
+      </div>
+      <div class="skill-bar">
+        <div class="skill-bar-fill" style="width:88%"></div>
+      </div>
+    </div>
+    
+  </div>
+  
+</section>
+
+
+<!-- ═══ EXPERIENCE ════════════════════════════════ -->
+
+<section class="section" id="experience">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">职业经历</h2>
+    <p class="section-subtitle">我的职业发展轨迹</p>
+  </div>
+  <div class="timeline">
+    
+    <div class="timeline-item">
+      <div class="timeline-date">2018.05 — 2026.03</div>
+      <div class="timeline-role">资深产品经理</div>
+      <div class="timeline-company">中欧财富 · 上海</div>
+      
+      <div class="timeline-desc">主导APP核心C端场景的产品规划与迭代，智能化产品孵化，数据驱动运营体系构建，APP整体体验升级。</div>
+      
+      
+      <ul style="margin-top:8px;padding-left:16px">
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">非货定投客户数年增长超40%，组合保有量年增长达7倍</li>
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">基金诊断工具全年使用超5.9万人次，资产诊断转化率达36%</li>
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">用户关键触点转化贡献同比增长4.7倍</li>
+        
+      </ul>
+      
+    </div>
+    
+    <div class="timeline-item">
+      <div class="timeline-date">2015.06 — 2018.05</div>
+      <div class="timeline-role">产品经理</div>
+      <div class="timeline-company">证通股份 · 上海</div>
+      
+      <div class="timeline-desc">金融产品系统优化，证通财富APP迭代，营销工具闭环设计。</div>
+      
+      
+      <ul style="margin-top:8px;padding-left:16px">
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">产品上架流程运营效率提升40%</li>
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">中小银行接入周期缩短60%</li>
+        
+        <li style="font-size:0.85rem;color:var(--text-secondary);margin-bottom:4px">活期产品用户规模增长100%，人均AUM达10万元</li>
+        
+      </ul>
+      
+    </div>
+    
+  </div>
+</section>
+
+
+<!-- ═══ EDUCATION ═════════════════════════════════ -->
+
+<section class="section" id="education">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">教育背景</h2>
+  </div>
+  <div class="timeline">
+    
+    <div class="timeline-item">
+      <div class="timeline-date">2012 — 2015</div>
+      <div class="timeline-role">政治经济学硕士</div>
+      <div class="timeline-company">南京大学</div>
+      
+      <div class="timeline-desc">经济学理论深造，研究金融市场与宏观经济政策</div>
+      
+      
+    </div>
+    
+    <div class="timeline-item">
+      <div class="timeline-date">2008 — 2012</div>
+      <div class="timeline-role">经济学学士</div>
+      <div class="timeline-company">南京大学</div>
+      
+      <div class="timeline-desc">经济学基础学习</div>
+      
+      
+    </div>
+    
+  </div>
+</section>
+
+
+<!-- ═══ PROJECTS ══════════════════════════════════ -->
+
+<section class="section" id="projects">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">项目作品</h2>
+    <p class="section-subtitle">这些项目代表了我的能力边界</p>
+  </div>
+  <div class="projects-grid">
+    
+    <div class="project-card">
+      <div class="project-banner">
+        <span class="project-banner-icon">
+          <i data-lucide="folder-open" style="width:48px;height:48px;color:var(--accent)"></i>
+        </span>
+      </div>
+      <div class="project-body">
+        <div class="project-header">
+          <span class="project-title">基金诊断与资产诊断服务</span>
+          <span class="project-year">2023</span>
+        </div>
+        <div class="project-role">产品负责人</div>
+        <div class="project-desc">AI驱动的顾问式工具，将复杂的基金评价模型转化为用户易懂的量化指标和交互流程。</div>
+        <div class="project-desc" style="color:var(--accent-secondary)">✦ 诊断转化率超36%，赋能理财师挖掘外部资产20亿+</div>
+        
+        <div class="project-tags">
+          <span class="project-tag">AI算法</span><span class="project-tag">量化模型</span><span class="project-tag">交互设计</span>
+        </div>
+        
+        
+        <a href="#" class="project-link" target="_blank">
+          查看详情 <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+        </a>
+        
+      </div>
+    </div>
+    
+    <div class="project-card">
+      <div class="project-banner">
+        <span class="project-banner-icon">
+          <i data-lucide="folder-open" style="width:48px;height:48px;color:var(--accent)"></i>
+        </span>
+      </div>
+      <div class="project-body">
+        <div class="project-header">
+          <span class="project-title">智能定投与全生命周期运营体系</span>
+          <span class="project-year">2022</span>
+        </div>
+        <div class="project-role">产品负责人</div>
+        <div class="project-desc">设计「目标盈定投」「智投宝」等智能定投功能，构建基于用户行为的自动化运营体系。</div>
+        <div class="project-desc" style="color:var(--accent-secondary)">✦ 定投金额占比14%，人数占比45%，弱势行情下稳定资金流入</div>
+        
+        <div class="project-tags">
+          <span class="project-tag">数据标签</span><span class="project-tag">策略引擎</span><span class="project-tag">自动化</span>
+        </div>
+        
+        
+        <a href="#" class="project-link" target="_blank">
+          查看详情 <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+        </a>
+        
+      </div>
+    </div>
+    
+    <div class="project-card">
+      <div class="project-banner">
+        <span class="project-banner-icon">
+          <i data-lucide="folder-open" style="width:48px;height:48px;color:var(--accent)"></i>
+        </span>
+      </div>
+      <div class="project-body">
+        <div class="project-header">
+          <span class="project-title">中欧财富APP 4.0转型</span>
+          <span class="project-year">2021</span>
+        </div>
+        <div class="project-role">核心产品负责人</div>
+        <div class="project-desc">主导APP从「货架式销售」向「投顾式服务」转型，重构首页流量分发与服务体系。</div>
+        <div class="project-desc" style="color:var(--accent-secondary)">✦ 客户访问时长提升8%，平台点击率上升11%</div>
+        
+        <div class="project-tags">
+          <span class="project-tag">产品架构</span><span class="project-tag">体验设计</span><span class="project-tag">服务设计</span>
+        </div>
+        
+        
+        <a href="#" class="project-link" target="_blank">
+          查看详情 <i data-lucide="arrow-right" style="width:14px;height:14px"></i>
+        </a>
+        
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+
+<!-- ═══ ACHIEVEMENTS ══════════════════════════════ -->
+
+<section class="section" id="achievements">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">荣誉成就</h2>
+  </div>
+  <div class="achievements-grid">
+    
+    <div class="achievement-card">
+      <div class="achievement-icon">
+        <i data-lucide="target" style="width:20px;height:20px"></i>
+      </div>
+      <div>
+        <div class="achievement-title">基金诊断工具</div>
+        <div class="achievement-desc">全年使用超5.9万人次，位居平台工具榜首</div>
+        <div class="achievement-desc" style="font-family:'JetBrains Mono',monospace">2023</div>
+      </div>
+    </div>
+    
+    <div class="achievement-card">
+      <div class="achievement-icon">
+        <i data-lucide="bar-chart-3" style="width:20px;height:20px"></i>
+      </div>
+      <div>
+        <div class="achievement-title">资产诊断服务</div>
+        <div class="achievement-desc">诊断转化率超36%，赋能理财师挖掘外部资产20亿+</div>
+        <div class="achievement-desc" style="font-family:'JetBrains Mono',monospace">2023</div>
+      </div>
+    </div>
+    
+    <div class="achievement-card">
+      <div class="achievement-icon">
+        <i data-lucide="smartphone" style="width:20px;height:20px"></i>
+      </div>
+      <div>
+        <div class="achievement-title">APP 4.0转型</div>
+        <div class="achievement-desc">客户访问时长提升8%，平台点击率上升11%</div>
+        <div class="achievement-desc" style="font-family:'JetBrains Mono',monospace">2021</div>
+      </div>
+    </div>
+    
+    <div class="achievement-card">
+      <div class="achievement-icon">
+        <i data-lucide="repeat" style="width:20px;height:20px"></i>
+      </div>
+      <div>
+        <div class="achievement-title">智能定投体系</div>
+        <div class="achievement-desc">定投金额占比提升至14%，人数占比提升至45%</div>
+        <div class="achievement-desc" style="font-family:'JetBrains Mono',monospace">2022</div>
+      </div>
+    </div>
+    
+  </div>
+</section>
+
+
+<!-- ═══ BLOGS ═════════════════════════════════════ -->
+
+<section class="section" id="blogs">
+  <div class="section-header">
+    <div class="section-divider"></div>
+    <h2 class="section-title">最新文章</h2>
+    <p class="section-subtitle">我在思考的东西</p>
+  </div>
+  <div class="blogs-grid">
+    
+    <a href="#" class="blog-card" target="_blank">
+      <div class="blog-title">金融AI产品的设计思考</div>
+      
+      <div class="blog-meta">2023-11 · 5 min</div>
+    </a>
+    
+    <a href="#" class="blog-card" target="_blank">
+      <div class="blog-title">C端基金产品的增长策略</div>
+      
+      <div class="blog-meta">2022-08 · 7 min</div>
+    </a>
+    
+    <a href="#" class="blog-card" target="_blank">
+      <div class="blog-title">投顾服务的产品化路径</div>
+      
+      <div class="blog-meta">2021-05 · 6 min</div>
+    </a>
+    
+  </div>
+</section>
+
+
+<!-- ═══ CONTACT ════════════════════════════════════ -->
+<section class="section" id="contact">
+  <div class="section-header" style="text-align:center">
+    <div class="section-divider" style="margin:0 auto 20px"></div>
+    <h2 class="section-title">联系我</h2>
+    <p class="section-subtitle">合作、咨询或只是想打个招呼</p>
+  </div>
+  <div class="contact-box">
+    <h3 class="contact-heading">期待合作</h3>
+    <p class="contact-sub">如果您有金融科技产品、AI应用或C端增长相关需求，欢迎联系</p>
+    <div class="contact-links">
+      
+      <a href="mailto:lj22503@163.com" class="contact-link">
+        <i data-lucide="mail" style="width:18px;height:18px"></i>
+        lj22503@163.com
+      </a>
+      
+      
+      <a href="#" class="contact-link" target="_blank">
+        <i data-lucide="linkedin" style="width:18px;height:18px"></i>
+        LinkedIn
+      </a>
+      
+      
+      <a href="#" class="contact-link" target="_blank">
+        <i data-lucide="github" style="width:18px;height:18px"></i>
+        GitHub
+      </a>
+      
+    </div>
+    <p class="contact-note"></p>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ════════════════════════════════════ -->
+<footer class="footer">
+  
+  <div class="footer-socials">
+    <a href="#" class="social-icon" target="_blank" style="width:34px;height:34px"><i data-lucide="github" style="width:16px;height:16px"></i></a>
+    <a href="#" class="social-icon" target="_blank" style="width:34px;height:34px"><i data-lucide="linkedin" style="width:16px;height:16px"></i></a>
+    
+  </div>
+  
+  <p>© 黎静 2026</p>
+</footer>
+
+<script>lucide.createIcons();</script>
+</body>
+</html>

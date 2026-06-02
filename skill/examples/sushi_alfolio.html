@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>{{ data.name }} — {{ data.title }}</title>
+<title>苏轼 — 北宋文学家、书画家、政治家</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
@@ -379,37 +379,35 @@ body {
 <!-- SIDEBAR -->
 <aside class="sidebar">
 
-  {% if data.avatar %}
-  <img src="{{ data.avatar }}" alt="{{ data.name }}" class="sidebar-avatar">
-  {% endif %}
+  
+  <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Su_shi2.jpg/440px-Su_shi2.jpg" alt="苏轼" class="sidebar-avatar">
+  
 
-  <div class="sidebar-name">{{ data.name }}</div>
-  <div class="sidebar-title">{{ data.title }}</div>
+  <div class="sidebar-name">苏轼</div>
+  <div class="sidebar-title">北宋文学家、书画家、政治家</div>
 
-  {% if data.about and data.about.bio %}
-  <div class="sidebar-bio">{{ data.about.bio[:100] }}{% if data.about.bio|length > 100 %}...{% endif %}</div>
-  {% endif %}
+  
 
   <nav class="sidebar-nav">
     <a href="#about"><i data-lucide="user" style="width:15px;height:15px"></i> 关于</a>
-    {% if data.news or data.blogs %}<a href="#news"><i data-lucide="newspaper" style="width:15px;height:15px"></i> 最新动态</a>{% endif %}
-    {% if data.publications %}<a href="#publications"><i data-lucide="book-open" style="width:15px;height:15px"></i> 发表成果</a>{% endif %}
-    {% if data.projects %}<a href="#projects"><i data-lucide="folder-archive" style="width:15px;height:15px"></i> 项目作品</a>{% endif %}
-    {% if data.skills %}<a href="#skills"><i data-lucide="cpu" style="width:15px;height:15px"></i> 技能</a>{% endif %}
-    {% if data.experience %}<a href="#experience"><i data-lucide="briefcase" style="width:15px;height:15px"></i> 经历</a>{% endif %}
+    <a href="#news"><i data-lucide="newspaper" style="width:15px;height:15px"></i> 最新动态</a>
+    <a href="#publications"><i data-lucide="book-open" style="width:15px;height:15px"></i> 发表成果</a>
+    <a href="#projects"><i data-lucide="folder-archive" style="width:15px;height:15px"></i> 项目作品</a>
+    <a href="#skills"><i data-lucide="cpu" style="width:15px;height:15px"></i> 技能</a>
+    <a href="#experience"><i data-lucide="briefcase" style="width:15px;height:15px"></i> 经历</a>
     <a href="#contact"><i data-lucide="mail" style="width:15px;height:15px"></i> 联系</a>
   </nav>
 
   <div class="sidebar-socials">
-    {% if data.socials and data.socials.github %}
-    <a href="{{ data.socials.github }}" class="sidebar-social-link" target="_blank"><i data-lucide="github" style="width:16px;height:16px"></i></a>
-    {% endif %}
-    {% if data.socials and data.socials.linkedin %}
-    <a href="{{ data.socials.linkedin }}" class="sidebar-social-link" target="_blank"><i data-lucide="linkedin" style="width:16px;height:16px"></i></a>
-    {% endif %}
-    {% if data.socials and data.socials.email %}
-    <a href="mailto:{{ data.socials.email }}" class="sidebar-social-link"><i data-lucide="mail" style="width:16px;height:16px"></i></a>
-    {% endif %}
+    
+    <a href="https://github.com/sudongpo" class="sidebar-social-link" target="_blank"><i data-lucide="github" style="width:16px;height:16px"></i></a>
+    
+    
+    <a href="https://linkedin.com/in/sudongpo" class="sidebar-social-link" target="_blank"><i data-lucide="linkedin" style="width:16px;height:16px"></i></a>
+    
+    
+    <a href="mailto:sudongpo@history.cn" class="sidebar-social-link"><i data-lucide="mail" style="width:16px;height:16px"></i></a>
+    
   </div>
 </aside>
 
@@ -417,177 +415,183 @@ body {
 <main class="main">
 
 <!-- ABOUT -->
-{% if data.about and data.about.bio %}
-<section class="content-section" id="about">
-  <div class="section-divider"></div>
-  <h1 class="section-heading">关于我</h1>
-  <p class="section-subheading">{{ data.name }}{% if data.title %} · {{ data.title }}{% endif %}</p>
-  <div class="about-text">
-    {% if data.about.paragraphs %}
-      {% for para in data.about.paragraphs %}
-    <p>{{ para }}</p>
-      {% endfor %}
-    {% else %}
-    <p>{{ data.about.bio }}</p>
-    {% endif %}
-  </div>
-</section>
-{% endif %}
+
 
 <!-- STORY -->
-{% if data.story and (data.story.experiences or data.story.challenges or data.story.insights) %}
-{% if data.story.experiences %}
+
+
 <section class="content-section" id="story-experiences">
   <div class="section-divider"></div>
   <h2 class="section-heading">经历</h2>
   <div class="story-phase">
     <div class="story-phase-title">✦ 经历</div>
     <div class="story-phase-content">
-      {% if data.story.experiences is string %}
-      <p>{{ data.story.experiences }}</p>
-      {% else %}
-      {% for para in data.story.experiences %}
-      <p>{{ para }}</p>
-      {% endfor %}
-      {% endif %}
+      
+      <p>苏轼一生历经北宋仁宗、英宗，神宗、哲宗、徽宗五朝，仕途屡起屡落。早年随父苏洵、弟苏辙进京应试，嘉祐二年（1057年）进士及第。</p>
+      
     </div>
   </div>
 </section>
-{% endif %}
 
-{% if data.story.challenges %}
+
+
 <section class="content-section" id="story-challenges">
   <div class="section-divider"></div>
   <h2 class="section-heading">挑战</h2>
   <div class="story-phase">
     <div class="story-phase-title">✦ 挑战</div>
     <div class="story-phase-content">
-      {% if data.story.challenges is string %}
-      <p>{{ data.story.challenges }}</p>
-      {% else %}
-      {% for para in data.story.challenges %}
-      <p>{{ para }}</p>
-      {% endfor %}
-      {% endif %}
+      
+      <p>苏轼一生三次贬谪，每每置于死地而后生。黄州贬谪：四十三岁因乌台诗案下狱百余日，几近处死，贬黄州团练副使不得签书公事，人生跌入谷底。</p>
+      
     </div>
   </div>
 </section>
-{% endif %}
 
-{% if data.story.insights %}
+
+
 <section class="content-section" id="story-insights">
   <div class="section-divider"></div>
   <h2 class="section-heading">洞见</h2>
   <div class="story-phase">
     <div class="story-phase-title">✦ 洞见</div>
     <div class="story-phase-content">
-      {% if data.story.insights is string %}
-      <p>{{ data.story.insights }}</p>
-      {% else %}
-      {% for para in data.story.insights %}
-      <p>{{ para }}</p>
-      {% endfor %}
-      {% endif %}
+      
+      <p>苏轼的旷达并非天生，而是一次次与命运博弈后的超脱。他曾说：吾上可陪玉皇大帝，下可陪卑田院乞儿。无论庙堂还是田间，他都能与人真诚相对。</p>
+      
     </div>
   </div>
 </section>
-{% endif %}
-{% endif %}
+
+
 
 <!-- NEWS / BLOG -->
-{% if data.news %}
+
 <section class="content-section" id="news">
   <div class="section-divider"></div>
   <h2 class="section-heading">最新动态</h2>
   <div class="news-list">
-    {% for item in data.news %}
+    
     <div class="news-item">
-      {% if item.date %}<span class="news-date">{{ item.date }}</span>{% endif %}
-      <a href="{{ item.url or '#' }}" class="news-title" target="_blank">{{ item.title }}</a>
+      <span class="news-date">2024-03</span>
+      <a href="#" class="news-title" target="_blank">苏轼研究新成果发布</a>
     </div>
-    {% endfor %}
+    
+    <div class="news-item">
+      <span class="news-date">2023-11</span>
+      <a href="#" class="news-title" target="_blank">儋州发现苏轼亲笔题字</a>
+    </div>
+    
   </div>
 </section>
-{% endif %}
+
 
 <!-- PUBLICATIONS -->
-{% if data.publications %}
+
 <section class="content-section" id="publications">
   <div class="section-divider"></div>
   <h2 class="section-heading">发表成果</h2>
   <div class="pub-list">
-    {% for pub in data.publications %}
+    
     <div class="pub-item">
-      <div class="pub-title">{{ pub.title }}</div>
-      {% if pub.authors %}<div class="pub-authors">{{ pub.authors }}</div>{% endif %}
-      {% if pub.venue %}<div class="pub-venue">{{ pub.venue }}</div>{% endif %}
-      {% if pub.description %}<div class="pub-desc">{{ pub.description }}</div>{% endif %}
+      <div class="pub-title">《东坡易传》</div>
+      <div class="pub-authors">苏轼</div>
+      <div class="pub-venue">元丰三年</div>
+      <div class="pub-desc">对《易经》的系统注解</div>
     </div>
-    {% endfor %}
+    
+    <div class="pub-item">
+      <div class="pub-title">《东坡志林》</div>
+      <div class="pub-authors">苏轼</div>
+      <div class="pub-venue">元丰四年</div>
+      <div class="pub-desc">随笔杂文合集</div>
+    </div>
+    
   </div>
 </section>
-{% endif %}
+
 
 <!-- PROJECTS -->
-{% if data.projects %}
+
 <section class="content-section" id="projects">
   <div class="section-divider"></div>
   <h2 class="section-heading">项目作品</h2>
   <div class="projects-grid">
-    {% for project in data.projects %}
+    
     <div class="project-item">
-      <div class="project-name">{{ project.title or project.name }}</div>
-      {% if project.description %}<div class="project-desc">{{ project.description }}</div>{% endif %}
-      {% if project.tags %}
+      <div class="project-name">徐州抗洪（1077年）</div>
+      <div class="project-desc">黄河决口，苏轼庐于城上，过家不入，组织五千民夫筑堤抗洪。</div>
+      
       <div class="project-tags">
-        {% for tag in project.tags %}<span class="project-tag">{{ tag }}</span>{% endfor %}
+        <span class="project-tag">水利</span><span class="project-tag">抗洪</span><span class="project-tag">政绩</span>
       </div>
-      {% endif %}
+      
     </div>
-    {% endfor %}
+    
+    <div class="project-item">
+      <div class="project-name">杭州苏堤与西湖疏浚</div>
+      <div class="project-desc">用湖底淤泥筑成长堤，建三塔，疏浚西湖，恢复水域生态。</div>
+      
+      <div class="project-tags">
+        <span class="project-tag">水利</span><span class="project-tag">市政</span><span class="project-tag">文化遗存</span>
+      </div>
+      
+    </div>
+    
+    <div class="project-item">
+      <div class="project-name">《黄州寒食诗帖》</div>
+      <div class="project-desc">黄州第三年书写的两首寒食诗，自嘲诗书俱老，情感沉郁顿挫。</div>
+      
+      <div class="project-tags">
+        <span class="project-tag">书法</span><span class="project-tag">诗词</span><span class="project-tag">文人画</span>
+      </div>
+      
+    </div>
+    
   </div>
 </section>
-{% endif %}
+
 
 <!-- SKILLS -->
-{% if data.skills and data.skills.categories %}
-<section class="content-section" id="skills">
-  <div class="section-divider"></div>
-  <h2 class="section-heading">技能</h2>
-  <div class="skills-grid">
-    {% for cat in data.skills.categories %}
-    <div class="skill-group">
-      <div class="skill-group-title">{{ cat.name }}</div>
-      <div class="skill-list">
-        {% for item in cat.skill_list %}
-        <span class="skill-item">{{ item }}</span>
-        {% endfor %}
-      </div>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
+
 
 <!-- EXPERIENCE -->
-{% if data.experience %}
+
 <section class="content-section" id="experience">
   <div class="section-divider"></div>
   <h2 class="section-heading">职业经历</h2>
   <div class="exp-list">
-    {% for exp in data.experience %}
+    
     <div class="exp-item">
       <div class="exp-header">
-        <span class="exp-title">{{ exp.role or exp.title }}</span>
-        {% if exp.period or exp.date %}<span class="exp-date">{{ exp.period or exp.date }}</span>{% endif %}
+        <span class="exp-title">大理评事、凤翔签判</span>
+        <span class="exp-date">1061-1065</span>
       </div>
-      {% if exp.company %}<div class="exp-company">{{ exp.company }}</div>{% endif %}
-      {% if exp.description %}<div class="exp-desc">{{ exp.description }}</div>{% endif %}
+      <div class="exp-company">凤翔府</div>
+      <div class="exp-desc">协助知府处理文书刑狱，改革衙前役法减轻百姓负担，组织修建东湖。</div>
     </div>
-    {% endfor %}
+    
+    <div class="exp-item">
+      <div class="exp-header">
+        <span class="exp-title">黄州团练副使</span>
+        <span class="exp-date">1080-1084</span>
+      </div>
+      <div class="exp-company">黄州</div>
+      <div class="exp-desc">因乌台诗案贬黄州，躬耕东坡，自号东坡居士。完成《易传》《论语说》两部学术著作。</div>
+    </div>
+    
+    <div class="exp-item">
+      <div class="exp-header">
+        <span class="exp-title">知州</span>
+        <span class="exp-date">1089-1091</span>
+      </div>
+      <div class="exp-company">杭州</div>
+      <div class="exp-desc">主持疏浚西湖，用淤泥筑成苏堤，建三塔，设立中国第一家公立医院「安乐坊」。</div>
+    </div>
+    
   </div>
 </section>
-{% endif %}
+
 
 <!-- CONTACT -->
 <section class="content-section" id="contact">
@@ -595,26 +599,26 @@ body {
   <h2 class="section-heading">联系方式</h2>
   <div>
 
-    {% if data.socials and data.socials.email %}
+    
     <div class="contact-item">
       <div class="contact-icon"><i data-lucide="mail" style="width:16px;height:16px"></i></div>
-      <div class="contact-text"><a href="mailto:{{ data.socials.email }}">{{ data.socials.email }}</a></div>
+      <div class="contact-text"><a href="mailto:sudongpo@history.cn">sudongpo@history.cn</a></div>
     </div>
-    {% endif %}
+    
 
-    {% if data.socials and data.socials.linkedin %}
+    
     <div class="contact-item">
       <div class="contact-icon"><i data-lucide="linkedin" style="width:16px;height:16px"></i></div>
-      <div class="contact-text"><a href="{{ data.socials.linkedin }}" target="_blank">LinkedIn</a></div>
+      <div class="contact-text"><a href="https://linkedin.com/in/sudongpo" target="_blank">LinkedIn</a></div>
     </div>
-    {% endif %}
+    
 
-    {% if data.socials and data.socials.github %}
+    
     <div class="contact-item">
       <div class="contact-icon"><i data-lucide="github" style="width:16px;height:16px"></i></div>
-      <div class="contact-text"><a href="{{ data.socials.github }}" target="_blank">GitHub</a></div>
+      <div class="contact-text"><a href="https://github.com/sudongpo" target="_blank">GitHub</a></div>
     </div>
-    {% endif %}
+    
 
   </div>
 </section>

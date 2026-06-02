@@ -2,16 +2,18 @@
 
 ## 每次修复的固定流程
 
-1. **修复** — 改一处，commit message 描述改了什么
-2. **测试** — 用 `python -c "..."` 验证 adapter 输出，或 `render_html_template()` 验证 HTML 生成
-3. **通过** → 更新 README + SPEC.md（描述本次修复解决了什么问题）→ 推送 GitHub
-4. **失败** → 重新修，再次测试，直到通过，再更新文档
+1. **分析** — 先读 `skill/examples/hermes_personal_site.html` 等 Hermes 示例，确认参考结构
+2. **修复** — 改一处，commit message 描述改了什么
+3. **测试** — 用 `python -c "..."` 验证 adapter 输出，或 `render_html_template()` 验证 HTML 生成
+4. **通过** → 更新 README + SPEC.md（描述本次修复解决了什么问题）→ 推送 GitHub
+5. **失败** → 重新修，再次测试，直到通过，再更新文档
 
 ## 禁止事项
 
 - 不允许同时修复多个独立问题（无法定位报错来源）
 - 不通过验证不推送（避免污染 GitHub 历史）
 - README / SPEC.md 不留「待修复」「未知」等悬空状态
+- 结构改动前未参考 Hermes 示例（`skill/examples/`）
 
 ## commit message 格式
 

@@ -9,14 +9,32 @@
 - `saas/` — Vercel 部署版（Web UI，浏览器直接使用）
 
 **最新修复**：
-- `saas/nextjs/app/generate/page.tsx` 改为按需加载 `pdfjs-dist`，解决 Next.js 构建阶段的浏览器 API 依赖问题。
-- 生产构建已验证通过：`npm run build` 成功，`/generate` 与主页可正常渲染。
+- `skill/core.py` 所有 `open(args.content)` 添加 `encoding="utf-8"`，解决 Windows GBK 环境下读取 UTF-8 中文 JSON 失败问题。
+- 三套 Jinja2 模板（developerfolio / alfolio / rahulbeniwal）全部可基于 `test_data_all_fields.json` 生成苏轼完整样例。
+- `adapter_output.json` 加入 `.gitignore`。
+- **SaaS 新增模板模式**：`/api/generate` 支持 `template` 参数（developerfolio / alfolio / rahulbeniwal），使用纯 TypeScript 字符串模板引擎渲染完整 HTML，与 Skill 逻辑一致。Step3 UI 新增模板选择 Tab。
+- `saas/nextjs/next.config.js` 配置 webpack 支持 `.html` 文件作为 `asset/source` 模块直接导入。
+- **SaaS 修复 template-renderer.ts 嵌套 for 循环 bug**：原 `processFor` 用非贪婪正则 `([\s\S]*?)` 捕获 body，嵌套场景下会错误地在内层 `{% endfor %}` 就停止；改用 `findMatchingEndfor` 找匹配 endfor 实现嵌套正确性。同时修复字符串元素早期返回 bug（`if (!isObj(item)) return toStr(item)` 导致内层循环 `<span class="skill-tag">{{ item }}</span>` 整体被跳过），改为 `itemMap = isObj(item) ? item : {}` 确保 primitive 类型也走完整渲染流程。
 
 **Vercel 部署地址**：`https://ip-website-generator-saas.vercel.app`
 
 ---
 
-## 核心架构：Surface × Design System × Component × Template
+## 核心架构：双轨并行
+
+```
+skill/                          saas/
+  ↓ Python CLI                   ↓ Next.js + TypeScript
+  本地运行                       Vercel 部署
+  rendering/ 渲染引擎             nextjs/lib/ 渲染器（TS 端口）
+```
+
+**独立维护，不互通**：
+- `skill/rendering/` — Python 原版（本地 CLI）
+- `saas/nextjs/lib/` — TypeScript 端口版（Vercel Serverless）
+- 两套代码独立演进，不要混用，不要让 saas 调用 skill 的 Python
+
+## Surface × Design System × Component × Template
 
 ```
 用户场景（Surface）
@@ -176,6 +194,7 @@ ip-website-generator/
 ### SaaS 版本
 - [x] `/api/generate` 响应字段名一致 ✅ 2026-05-22 → `renderPage()` 返回 `html_base64`
 - [x] `saas/nextjs/lib/css-builder.ts` 10 套设计系统 ✅ 2026-05-22 端口完成（10套，完整实现）
+- [x] SaaS `/api/generate` 支持 template 参数 + Step3 UI 模板选择器 ✅ 2026-05-26
 
 ---
 
@@ -187,7 +206,6 @@ ip-website-generator/
 - [ ] Surface 层接入 render_page（`--surface` 参数生效）
 
 ### SaaS 版本
-- [ ] Vercel 部署后 bug 修复并上线
 - [ ] `saas/nextjs/lib/css-builder.ts` 补充 44 套设计系统至 54 套
 - [ ] 落地页 `personal-ip-site/index.html` 与 SaaS 集成或合并
 
@@ -206,6 +224,78 @@ ip-website-generator/
 5. **Timeline** — 经历/成长曲线/未来方向
 6. **Resources** — 人脉/信息工具/影响力
 7. **Form** — 外在呈现/品牌关键词/他人评价/氛围
+
+---
+
+## 叙事结构重构（2026-05-25）
+
+### 问题诊断
+- **About + Story 重复** — About 应从 Story 提取精华，非独立全文
+- **Framework 单独成区块** — 方法论应融入 Skills 内作为子项
+- **Timeline + Experience 重复** — 两者都是经历，合并为一个
+- **Soul/Identity/Challenge 引述碎片化** — 合并精简
+
+### 解决方案
+| 问题 | 解决方案 |
+|------|---------|
+| About + Story 重复 | 合并为「我是谁」：bio 做简介 + story 三段（经历/挑战/洞见）做细节 |
+| 独立 SOUL 大声明区块 | 移除，soul_statement 在 Identity Stats Grid 左上角展示一行 |
+| 独立 FRAMEWORK 大区块 | 方法论卡片下沉到 SKILLS 模块底部 |
+| 独立 TIMELINE 区块 | 移除，experience 模块本身就是时间线 |
+| 重复的 CHALLENGE QUOTE | 保留为轻量横条，引述核心挑战 |
+
+### 各模板最终区块顺序
+
+**developerfolio**（深色科技风）：
+`HERO → Identity Stats → 我是谁 → 技能(含方法论) → 职业经历 → 教育 → 项目 → 成就 → 文章 → 评价 → 联系 → FOOTER`
+
+**alfolio**（学术风）：
+`侧栏(含头像/MBTI/关键词) → 我是谁 → 技能(含方法论) → 职业经历 → 联系方式 → 评价`
+
+**rahulbeniwal**（极简项目风）：
+`HERO → Identity Stats → 我是谁 → 挑战引述 → 项目 → 技能(含方法论) → 职业经历 → 联系 → 评价 → FOOTER`
+
+### Adapter 字段传递（三个适配器同步）
+- `mbti` — 从 `story.mbti` 提取
+- `soul_statement` — 从 `story.insights` 提取
+- `challenge_quote` — 从 `story.challenges` 提取
+- `framework_items` — 优先独立字段，回退从 `about.bio` 拆分段落
+- `stats` — `{mbti, skills, years, availability}` (to_alfolio/to_rahulbeniwal 新增)
+- `testimonials` / `resources` — 直通传递
+
+### 数据缺失自动隐藏
+所有新增区块均为 `{% if data.xxx %}` 条件渲染，数据缺失时区块自动隐藏不报错。
+
+---
+
+## 叙事结构重构 v2（2026-05-25 下午）
+
+### 核心理念
+以 Hermes 三个示例（`hermes_personal_site.html` 等）为基准，重构模板结构：
+- SOUL（内核）：价值观/原则卡片/最深挑战
+- FRAMEWORK（方法论）：方法论卡片网格
+- FORM（风格）：相处方式/MBTI
+- STORY（故事）：成长轨迹时间线
+- SKILLS（技能）：技能分类
+- WORKS（作品）：项目卡片
+
+### developerfolio 区块结构（参考 Hermes 示例）
+```
+HERO → SOUL（原则+最深挑战）→ FRAMEWORK（方法论网格）→ FORM（MBTI）→ STORY（成长轨迹）→ SKILLS（技能图谱）→ WORKS（项目作品）→ CONTACT → FOOTER
+```
+
+### 关键字段映射
+| Hermes 数据字段 | developerfolio 模板变量 |
+|---------------|----------------------|
+| `story.insights` | `data.story.insights` → Soul 大声明 |
+| `form.keywords[]` | `data.form.keywords` → 原则卡片 |
+| `story.deepest_challenge` | `data.story.deepest_challenge` → 深挑战引述 |
+| `framework_items[]` | `data.framework_items` → 方法论卡片 |
+| `mbti` / `mbti_description` | `data.mbti` / `data.mbti_description` → MBTI 卡片 |
+| `form.interaction_styles[]` | `data.form.interaction_styles` → 相处方式列表 |
+| `story.timeline[]` | `data.story.timeline` → 故事时间线 |
+| `skills.categories[]` | `data.skills.categories` → 技能标签 |
+| `projects[]` | `data.projects` → 项目卡片 |
 
 ---
 
