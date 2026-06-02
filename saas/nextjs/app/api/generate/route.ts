@@ -196,7 +196,9 @@ export async function POST(request: NextRequest) {
           title: profileData.role,
           bio: frameworkDim?.text || profileData.summary || '',
           company: profileData.company,
-          skills: profileData.skills,
+          skills: profileData.skills?.length
+            ? { categories: [{ name: '技能', skill_list: profileData.skills }] }
+            : { categories: [] },
           education: profileData.education,
           projects: Array.isArray(profileData.projects) ? profileData.projects.map((title: string) => ({ title, description: '', outcome: '' })) : [],
           achievements: profileData.achievements,
