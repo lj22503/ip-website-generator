@@ -868,6 +868,63 @@ export default function GeneratePage() {
                 ))}
               </div>
 
+              <div style={{ marginBottom: 24 }}>
+                <p style={{ fontSize: '0.75rem', color: '#9090a8', marginBottom: 8, fontWeight: 600 }}>页面结构</p>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTemplate('developerfolio')}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: 8,
+                      border: selectedTemplate === 'developerfolio' ? '2px solid #0075de' : '1px solid rgba(255,255,255,0.12)',
+                      background: selectedTemplate === 'developerfolio' ? 'rgba(0,117,222,0.15)' : 'rgba(20,20,28,0.9)',
+                      color: selectedTemplate === 'developerfolio' ? '#55d4eb' : '#9090a8',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    深色科技风
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTemplate('alfolio')}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: 8,
+                      border: selectedTemplate === 'alfolio' ? '2px solid #7c3aed' : '1px solid rgba(255,255,255,0.12)',
+                      background: selectedTemplate === 'alfolio' ? 'rgba(124,58,237,0.15)' : 'rgba(20,20,28,0.9)',
+                      color: selectedTemplate === 'alfolio' ? '#a78bfa' : '#9090a8',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    学术侧栏
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedTemplate('rahulbeniwal')}
+                    style={{
+                      padding: '8px 14px',
+                      borderRadius: 8,
+                      border: selectedTemplate === 'rahulbeniwal' ? '2px solid #e8ff58' : '1px solid rgba(255,255,255,0.12)',
+                      background: selectedTemplate === 'rahulbeniwal' ? 'rgba(232,255,88,0.1)' : 'rgba(20,20,28,0.9)',
+                      color: selectedTemplate === 'rahulbeniwal' ? '#e8ff58' : '#9090a8',
+                      cursor: 'pointer',
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      transition: 'all 0.2s',
+                    }}
+                  >
+                    极简项目风
+                  </button>
+                </div>
+              </div>
+
               <div className={styles.previewFrame}>
                 <div className={styles.previewBar}>
                   <div className={styles.previewDots}>
